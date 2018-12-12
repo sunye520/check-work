@@ -3,6 +3,7 @@ package com.yogee.youge.interfaces.check;
 import com.yogee.youge.common.utils.StringUtils;
 import com.yogee.youge.interfaces.util.HttpResultUtil;
 import com.yogee.youge.interfaces.util.HttpServletRequestUtils;
+import com.yogee.youge.modules.check.entity.CheckGoOut;
 import com.yogee.youge.modules.check.service.CheckGoOutService;
 import com.yogee.youge.modules.check.service.CheckLeavePermitService;
 import org.slf4j.Logger;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -46,10 +48,35 @@ public class ApproverInterface {
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
         String total = (String) jsonData.get("total");
         String count = (String) jsonData.get("count");
+        String type = (String) jsonData.get("type");   //1-外出，2-假条
         String userId = (String) jsonData.get("userId");
         if (StringUtils.isEmpty(total) || StringUtils.isEmpty(count)) {
             return HttpResultUtil.errorJson("total,count值为空");
         }
+        if (StringUtils.isEmpty(type)) {
+            return HttpResultUtil.errorJson("type值为空!");
+        }
+        if (StringUtils.isEmpty(userId)) {
+            return HttpResultUtil.errorJson("userId值为空!");
+        }
+
+        if(type.equals("1")) {
+            List<CheckGoOut> checkGoOuts = checkGoOutService.queryAllByUserid(total, count, userId);
+
+
+        }else{
+
+
+
+
+        }
+
+
+
+
+
+
+
 
 
 

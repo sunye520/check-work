@@ -3,15 +3,16 @@
  */
 package com.yogee.youge.modules.check.service;
 
-import java.util.List;
-
+import com.yogee.youge.common.persistence.Page;
+import com.yogee.youge.common.service.CrudService;
+import com.yogee.youge.modules.check.dao.CheckGoOutDao;
+import com.yogee.youge.modules.check.entity.CheckGoOut;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.yogee.youge.common.persistence.Page;
-import com.yogee.youge.common.service.CrudService;
-import com.yogee.youge.modules.check.entity.CheckGoOut;
-import com.yogee.youge.modules.check.dao.CheckGoOutDao;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 外出Service
@@ -43,5 +44,17 @@ public class CheckGoOutService extends CrudService<CheckGoOutDao, CheckGoOut> {
 	public void delete(CheckGoOut checkGoOut) {
 		super.delete(checkGoOut);
 	}
+
+
+	//根据用户id查询所有出差信息，按照审核状态倒叙
+	public List<CheckGoOut> queryAllByUserid(String total, String count,String userId){
+		Map map = new HashMap();
+		map.put("total",Integer.parseInt(total));
+		map.put("count",Integer.parseInt(count));
+		map.put("userId",userId);
+		return dao.queryAllByUserid(map);
+	}
+
+
 	
 }
