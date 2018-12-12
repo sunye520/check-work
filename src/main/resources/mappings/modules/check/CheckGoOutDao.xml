@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yogee.youge.modules.check.dao.CheckGoOutDao">
+    
+	<sql id="checkGoOutColumns">
+		a.id AS "id",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.type AS "type",
+		a.user_id AS "user.id",
+		a.user_name AS "userName",
+		a.start_time AS "startTime",
+		a.end_time AS "endTime",
+		a.approver_type AS "approverType",
+		a.time AS "time",
+		a.content AS "content",
+		a.vehicle AS "vehicle",
+		a.one_way_roundtrip AS "oneWayRoundtrip",
+		a.departure_city AS "departureCity",
+		a.objective_city AS "objectiveCity",
+		a.department_id AS "departmentId",
+		u6.name AS "user.name"
+	</sql>
+	
+	<sql id="checkGoOutJoins">
+		LEFT JOIN sys_user u6 ON u6.id = a.user_id
+	</sql>
+    
+	<select id="get" resultType="CheckGoOut">
+		SELECT 
+			<include refid="checkGoOutColumns"/>
+		FROM check_go_out a
+		<include refid="checkGoOutJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="CheckGoOut">
+		SELECT 
+			<include refid="checkGoOutColumns"/>
+		FROM check_go_out a
+		<include refid="checkGoOutJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="CheckGoOut">
+		SELECT 
+			<include refid="checkGoOutColumns"/>
+		FROM check_go_out a
+		<include refid="checkGoOutJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO check_go_out(
+			id,
+			create_date,
+			update_date,
+			del_flag,
+			type,
+			user_id,
+			user_name,
+			start_time,
+			end_time,
+			approver_type,
+			time,
+			content,
+			vehicle,
+			one_way_roundtrip,
+			departure_city,
+			objective_city,
+			department_id
+		) VALUES (
+			#{id},
+			#{createDate},
+			#{updateDate},
+			#{delFlag},
+			#{type},
+			#{user.id},
+			#{userName},
+			#{startTime},
+			#{endTime},
+			#{approverType},
+			#{time},
+			#{content},
+			#{vehicle},
+			#{oneWayRoundtrip},
+			#{departureCity},
+			#{objectiveCity},
+			#{departmentId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE check_go_out SET 	
+			update_date = #{updateDate},
+			type = #{type},
+			user_id = #{user.id},
+			user_name = #{userName},
+			start_time = #{startTime},
+			end_time = #{endTime},
+			approver_type = #{approverType},
+			time = #{time},
+			content = #{content},
+			vehicle = #{vehicle},
+			one_way_roundtrip = #{oneWayRoundtrip},
+			departure_city = #{departureCity},
+			objective_city = #{objectiveCity},
+			department_id = #{departmentId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE check_go_out SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
