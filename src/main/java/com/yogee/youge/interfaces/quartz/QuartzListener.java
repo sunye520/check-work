@@ -26,5 +26,6 @@ public class QuartzListener  {
 //    @Scheduled(cron = "0/10 * * * * ?")     //10秒钟
     public synchronized void executeLapsedOrder() {
 
+
     }
 }
