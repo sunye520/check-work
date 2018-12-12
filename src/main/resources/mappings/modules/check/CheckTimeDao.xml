@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yogee.youge.modules.check.dao.CheckTimeDao">
+    
+	<sql id="checkTimeColumns">
+		a.id AS "id",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.morning AS "morning",
+		a.afternoon AS "afternoon"
+	</sql>
+	
+	<sql id="checkTimeJoins">
+	</sql>
+    
+	<select id="get" resultType="CheckTime">
+		SELECT 
+			<include refid="checkTimeColumns"/>
+		FROM check_time a
+		<include refid="checkTimeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="CheckTime">
+		SELECT 
+			<include refid="checkTimeColumns"/>
+		FROM check_time a
+		<include refid="checkTimeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="CheckTime">
+		SELECT 
+			<include refid="checkTimeColumns"/>
+		FROM check_time a
+		<include refid="checkTimeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO check_time(
+			id,
+			create_date,
+			update_date,
+			del_flag,
+			morning,
+			afternoon
+		) VALUES (
+			#{id},
+			#{createDate},
+			#{updateDate},
+			#{delFlag},
+			#{morning},
+			#{afternoon}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE check_time SET 	
+			update_date = #{updateDate},
+			morning = #{morning},
+			afternoon = #{afternoon}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE check_time SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	<select id="getOne" resultType="CheckTime">
+		select * from check_time
+		where del_flag = 0
+		limit 1;
+	</select>
+	
+</mapper>

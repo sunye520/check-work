@@ -23,7 +23,7 @@ public class util {
     public static String formatMoney(Object source) {
         return String.format(Constant.FORMAT_MONEY, Double.parseDouble(source.toString())).trim();
     }
-    
+
 
     /**
      *  获取ping++的支付渠道

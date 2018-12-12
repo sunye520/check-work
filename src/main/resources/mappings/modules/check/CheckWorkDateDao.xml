@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yogee.youge.modules.check.dao.CheckWorkDateDao">
+    
+	<sql id="checkWorkDateColumns">
+		a.id AS "id",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.dates AS "dates",
+		a.status AS "status",
+		a.all_date AS "allDate"
+	</sql>
+	
+	<sql id="checkWorkDateJoins">
+	</sql>
+    
+	<select id="get" resultType="CheckWorkDate">
+		SELECT 
+			<include refid="checkWorkDateColumns"/>
+		FROM check_work_date a
+		<include refid="checkWorkDateJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="CheckWorkDate">
+		SELECT 
+			<include refid="checkWorkDateColumns"/>
+		FROM check_work_date a
+		<include refid="checkWorkDateJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="CheckWorkDate">
+		SELECT 
+			<include refid="checkWorkDateColumns"/>
+		FROM check_work_date a
+		<include refid="checkWorkDateJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO check_work_date(
+			id,
+			create_date,
+			update_date,
+			del_flag,
+			dates,
+			status,
+			all_date
+		) VALUES (
+			#{id},
+			#{createDate},
+			#{updateDate},
+			#{delFlag},
+			#{dates},
+			#{status},
+			#{allDate}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE check_work_date SET 	
+			update_date = #{updateDate},
+			dates = #{dates},
+			status = #{status},
+			all_date = #{allDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE check_work_date SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	<select id="findByDate" resultType="CheckWorkDate">
+		select *
+		from check_work_date
+		where del_flag = 0
+		and all_date = #{date}
+		limit 1;
+	</select>
+
+	<select id="findByYearAndMonth" resultType="CheckWorkDate">
+		select *
+		from check_work_date
+		where del_flag = 0
+		and dates = #{date}
+	</select>
+	
+</mapper>
