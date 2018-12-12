@@ -18,6 +18,8 @@ import java.util.Map;
 @MyBatisDao
 public interface CheckGoOutDao extends CrudDao<CheckGoOut> {
 
+    //根据用户id查询所有出差信息，按照审核状态倒叙
     List<CheckGoOut> queryAllByUserid(Map map);
 
+    String queryAllCount();
 }

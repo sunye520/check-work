@@ -135,5 +135,25 @@
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
+
+	<select id="queryAllByUserid"  resultType="CheckGoOut">
+		SELECT
+		*
+		FROM
+		check_go_out
+		WHERE
+		user_id = #{userId}
+		AND del_flag = '0'
+		ORDER BY
+		approver_type DESC
+		limit #{total},#{count}
+	</select>
+
+	<select id="queryAllCount" resultType="String">
+		SELECT
+		COUNT(*) AS count
+		FROM
+		check_go_out
+	</select>
 	
 </mapper>

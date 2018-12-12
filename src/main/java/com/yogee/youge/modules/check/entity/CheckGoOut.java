@@ -3,12 +3,11 @@
  */
 package com.yogee.youge.modules.check.entity;
 
-import org.hibernate.validator.constraints.Length;
-import com.yogee.youge.modules.sys.entity.User;
-import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import com.yogee.youge.common.persistence.DataEntity;
+import org.hibernate.validator.constraints.Length;
+
+import java.util.Date;
 
 /**
  * 外出Entity
@@ -19,11 +18,11 @@ public class CheckGoOut extends DataEntity<CheckGoOut> {
 	
 	private static final long serialVersionUID = 1L;
 	private String type;		// 类型（1-出差，2-外出）
-	private User user;		// 用户id
+	private String userId;		// 用户id
 	private String userName;		// 用户名称
 	private Date startTime;		// 开始时间
 	private Date endTime;		// 结束时间
-	private String approverType;		// 审核状态（1-审核成功，2-审核中，3审核失败）
+	private String approverType;		// 审核状态（1-审核成功，2-审核失败，3-审核中）
 	private String time;		// 出差/外出时长
 	private String content;		// 出差/外出事由
 	private String vehicle;		// 交通工具（1-飞机，2-火车，3-汽车，4-其他）
@@ -49,12 +48,12 @@ public class CheckGoOut extends DataEntity<CheckGoOut> {
 		this.type = type;
 	}
 	
-	public User getUser() {
-		return user;
+	public String getUserId() {
+		return userId;
 	}
 
-	public void setUser(User user) {
-		this.user = user;
+	public void setUser(String user) {
+		this.userId = userId;
 	}
 	
 	@Length(min=0, max=64, message="用户名称长度必须介于 0 和 64 之间")

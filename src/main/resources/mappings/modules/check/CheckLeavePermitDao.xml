@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yogee.youge.modules.check.dao.CheckLeavePermitDao">
-    
+
 	<sql id="checkLeavePermitColumns">
 		a.id AS "id",
 		a.create_date AS "createDate",
@@ -18,22 +18,22 @@
 		a.department_id AS "departmentId",
 		u6.name AS "user.name"
 	</sql>
-	
+
 	<sql id="checkLeavePermitJoins">
 		LEFT JOIN sys_user u6 ON u6.id = a.user_id
 	</sql>
-    
+
 	<select id="get" resultType="CheckLeavePermit">
-		SELECT 
-			<include refid="checkLeavePermitColumns"/>
+		SELECT
+		<include refid="checkLeavePermitColumns"/>
 		FROM check_leave_permit a
 		<include refid="checkLeavePermitJoins"/>
 		WHERE a.id = #{id}
 	</select>
-	
+
 	<select id="findList" resultType="CheckLeavePermit">
-		SELECT 
-			<include refid="checkLeavePermitColumns"/>
+		SELECT
+		<include refid="checkLeavePermitColumns"/>
 		FROM check_leave_permit a
 		<include refid="checkLeavePermitJoins"/>
 		<where>
@@ -48,15 +48,15 @@
 			</otherwise>
 		</choose>
 	</select>
-	
+
 	<select id="findAllList" resultType="CheckLeavePermit">
-		SELECT 
-			<include refid="checkLeavePermitColumns"/>
+		SELECT
+		<include refid="checkLeavePermitColumns"/>
 		FROM check_leave_permit a
 		<include refid="checkLeavePermitJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
-		</where>		
+		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
 				ORDER BY ${page.orderBy}
@@ -66,7 +66,7 @@
 			</otherwise>
 		</choose>
 	</select>
-	
+
 	<insert id="insert">
 		INSERT INTO check_leave_permit(
 			id,
@@ -98,7 +98,7 @@
 			#{departmentId}
 		)
 	</insert>
-	
+
 	<update id="update">
 		UPDATE check_leave_permit SET 	
 			update_date = #{updateDate},
@@ -113,11 +113,31 @@
 			department_id = #{departmentId}
 		WHERE id = #{id}
 	</update>
-	
+
 	<update id="delete">
 		UPDATE check_leave_permit SET 
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
-	
+
+
+	<select id="queryAllByUserid" resultType="CheckLeavePermit">
+		SELECT
+			*
+		FROM
+			check_leave_permit
+		WHERE
+			user_id = #{userId}
+		AND del_flag = '0'
+		ORDER BY
+		approver_type DESC
+		limit #{total},#{count}
+	</select>
+
+	<select id="queryAllCount" resultType="String">
+		SELECT
+			COUNT(*) AS count
+		FROM
+			check_leave_permit
+	</select>
 </mapper>

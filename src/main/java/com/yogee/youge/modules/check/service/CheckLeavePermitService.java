@@ -3,15 +3,16 @@
  */
 package com.yogee.youge.modules.check.service;
 
-import java.util.List;
-
+import com.yogee.youge.common.persistence.Page;
+import com.yogee.youge.common.service.CrudService;
+import com.yogee.youge.modules.check.dao.CheckLeavePermitDao;
+import com.yogee.youge.modules.check.entity.CheckLeavePermit;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.yogee.youge.common.persistence.Page;
-import com.yogee.youge.common.service.CrudService;
-import com.yogee.youge.modules.check.entity.CheckLeavePermit;
-import com.yogee.youge.modules.check.dao.CheckLeavePermitDao;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 假条Service
@@ -42,6 +43,20 @@ public class CheckLeavePermitService extends CrudService<CheckLeavePermitDao, Ch
 	@Transactional(readOnly = false)
 	public void delete(CheckLeavePermit checkLeavePermit) {
 		super.delete(checkLeavePermit);
+	}
+
+
+	//根据用户id查询所有出差信息，按照审核状态倒叙
+	public List<CheckLeavePermit> queryAllByUserid(String total, String count,String userId){
+		Map map = new HashMap();
+		map.put("total",Integer.parseInt(total));
+		map.put("count",Integer.parseInt(count));
+		map.put("userId",userId);
+		return dao.queryAllByUserid(map);
+	}
+
+	public String queryAllCount() {
+		return dao.queryAllCount();
 	}
 	
 }

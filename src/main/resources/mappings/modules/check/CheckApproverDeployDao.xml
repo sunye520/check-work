@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yogee.youge.modules.check.dao.CheckApproverDeployDao">
-    
+
 	<sql id="checkApproverDeployColumns">
 		a.id AS "id",
 		a.create_date AS "createDate",
@@ -10,25 +10,24 @@
 		a.type AS "type",
 		a.department_id AS "departmentId",
 		a.approver_id AS "approverId",
-		a.approver_type AS "approverType",
 		a.cc_id AS "ccId",
 		a.time AS "time"
 	</sql>
-	
+
 	<sql id="checkApproverDeployJoins">
 	</sql>
-    
+
 	<select id="get" resultType="CheckApproverDeploy">
-		SELECT 
-			<include refid="checkApproverDeployColumns"/>
+		SELECT
+		<include refid="checkApproverDeployColumns"/>
 		FROM check_approver_deploy a
 		<include refid="checkApproverDeployJoins"/>
 		WHERE a.id = #{id}
 	</select>
-	
+
 	<select id="findList" resultType="CheckApproverDeploy">
-		SELECT 
-			<include refid="checkApproverDeployColumns"/>
+		SELECT
+		<include refid="checkApproverDeployColumns"/>
 		FROM check_approver_deploy a
 		<include refid="checkApproverDeployJoins"/>
 		<where>
@@ -43,15 +42,15 @@
 			</otherwise>
 		</choose>
 	</select>
-	
+
 	<select id="findAllList" resultType="CheckApproverDeploy">
-		SELECT 
-			<include refid="checkApproverDeployColumns"/>
+		SELECT
+		<include refid="checkApproverDeployColumns"/>
 		FROM check_approver_deploy a
 		<include refid="checkApproverDeployJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
-		</where>		
+		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
 				ORDER BY ${page.orderBy}
@@ -61,7 +60,7 @@
 			</otherwise>
 		</choose>
 	</select>
-	
+
 	<insert id="insert">
 		INSERT INTO check_approver_deploy(
 			id,
@@ -71,7 +70,6 @@
 			type,
 			department_id,
 			approver_id,
-			approver_type,
 			cc_id,
 			time
 		) VALUES (
@@ -82,28 +80,38 @@
 			#{type},
 			#{departmentId},
 			#{approverId},
-			#{approverType},
 			#{ccId},
 			#{time}
 		)
 	</insert>
-	
+
 	<update id="update">
 		UPDATE check_approver_deploy SET 	
 			update_date = #{updateDate},
 			type = #{type},
 			department_id = #{departmentId},
 			approver_id = #{approverId},
-			approver_type = #{approverType},
 			cc_id = #{ccId},
 			time = #{time}
 		WHERE id = #{id}
 	</update>
-	
+
 	<update id="delete">
 		UPDATE check_approver_deploy SET 
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
-	
+
+
+	<select id="queryDeployInfo" resultType="CheckApproverDeploy">
+		SELECT
+		*
+		FROM
+			check_approver_deploy
+		WHERE
+			department_id = #{departmentId}
+		AND type = #{leaveType}
+		AND time = #{time}
+		AND del_flag = '0'
+	</select>
 </mapper>

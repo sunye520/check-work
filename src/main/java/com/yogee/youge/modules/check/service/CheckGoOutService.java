@@ -55,6 +55,13 @@ public class CheckGoOutService extends CrudService<CheckGoOutDao, CheckGoOut> {
 		return dao.queryAllByUserid(map);
 	}
 
+	public String queryAllCount() {
+		return dao.queryAllCount();
+	}
+
+
+
+
 
 	
 }

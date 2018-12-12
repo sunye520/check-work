@@ -7,6 +7,8 @@ import com.yogee.youge.common.persistence.CrudDao;
 import com.yogee.youge.common.persistence.annotation.MyBatisDao;
 import com.yogee.youge.modules.check.entity.CheckApproverDeploy;
 
+import java.util.Map;
+
 /**
  * 审核人员配置表DAO接口
  * @author zhangjian
@@ -14,5 +16,7 @@ import com.yogee.youge.modules.check.entity.CheckApproverDeploy;
  */
 @MyBatisDao
 public interface CheckApproverDeployDao extends CrudDao<CheckApproverDeploy> {
-	
+
+    CheckApproverDeploy queryDeployInfo(Map map);
+
 }

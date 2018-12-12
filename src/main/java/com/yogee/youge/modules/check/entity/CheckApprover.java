@@ -3,11 +3,9 @@
  */
 package com.yogee.youge.modules.check.entity;
 
-import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.hibernate.validator.constraints.Length;
-
 import com.yogee.youge.common.persistence.DataEntity;
+import org.hibernate.validator.constraints.Length;
 
 /**
  * 审批Entity
@@ -17,11 +15,11 @@ import com.yogee.youge.common.persistence.DataEntity;
 public class CheckApprover extends DataEntity<CheckApprover> {
 	
 	private static final long serialVersionUID = 1L;
-	private Date time;		// 审核时间
+	private String time;		// 审核时间
 	private String approverId;		// 审核人id
 	private String leavePermitId;		// 假条/外出id
 	private String type;		// 类型（1-假条，2-外出）
-	private String approverType;		// 审核状态（1-审核成功，2-审核中，3审核失败）
+	private String approverType;		// 审核状态（1-审核成功，2-审核失败，3-审核中）
 	private String childrenId;		// 下级审批人id
 	private String display;		// 是否显示（1-显示，2-隐藏）
 	
@@ -34,11 +32,11 @@ public class CheckApprover extends DataEntity<CheckApprover> {
 	}
 
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	public Date getTime() {
+	public String getTime() {
 		return time;
 	}
 
-	public void setTime(Date time) {
+	public void setTime(String time) {
 		this.time = time;
 	}
 	
