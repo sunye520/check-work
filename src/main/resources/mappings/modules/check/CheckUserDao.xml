@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yogee.youge.modules.check.dao.CheckUserDao">
+    
+	<sql id="checkUserColumns">
+		a.id AS "id",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.number AS "number",
+		a.name AS "name",
+		a.xingbie AS "xingbie",
+		a.bumen AS "bumen",
+		a.erji_bumen AS "erjiBumen",
+		a.gangwei AS "gangwei",
+		a.jishu_leibie AS "jishuLeibie",
+		a.cengji_leibie AS "cengjiLeibie",
+		a.yuangong_type AS "yuangongType",
+		a.ruzhi_date AS "ruzhiDate",
+		a.hetong_type AS "hetongType",
+		a.hetong_time AS "hetongTime",
+		a.hetong_number AS "hetongNumber",
+		a.shiyongqi_time AS "shiyongqiTime",
+		a.shiyongqi_date AS "shiyongqiDate",
+		a.hetong_leixing AS "hetongLeixing",
+		a.zhuanzheng_date AS "zhuanzhengDate",
+		a.shenfenzheng AS "shenfenzheng",
+		a.birthday AS "birthday",
+		a.jiguan AS "jiguan",
+		a.minzu AS "minzu",
+		a.zhengzhi_mianmao AS "zhengzhiMianmao",
+		a.hunyin_zhuangkuang AS "hunyinZhuangkuang",
+		a.huji_xingzhi AS "hujiXingzhi",
+		a.diyi_xueli AS "diyiXueli",
+		a.diyi_zhuanye AS "diyiZhuanye",
+		a.diyi_yuanxiao AS "diyiYuanxiao",
+		a.shifou_tongzhao AS "shifouTongzhao",
+		a.zuigao_xueli AS "zuigaoXueli",
+		a.zhuanye AS "zhuanye",
+		a.biye_yuanxiao AS "biyeYuanxiao",
+		a.telephone AS "telephone",
+		a.xianzhuzhi AS "xianzhuzhi",
+		a.jinji_lianxiren AS "jinjiLianxiren",
+		a.jinji_telephone AS "jinjiTelephone",
+		a.yuangongzuodanwei AS "yuangongzuodanwei",
+		a.shifou_lizhi AS "shifouLizhi",
+		a.lizhi_leixing AS "lizhiLeixing"
+	</sql>
+	
+	<sql id="checkUserJoins">
+	</sql>
+    
+	<select id="get" resultType="CheckUser">
+		SELECT 
+			<include refid="checkUserColumns"/>
+		FROM check_user a
+		<include refid="checkUserJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="CheckUser">
+		SELECT 
+			<include refid="checkUserColumns"/>
+		FROM check_user a
+		<include refid="checkUserJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="CheckUser">
+		SELECT 
+			<include refid="checkUserColumns"/>
+		FROM check_user a
+		<include refid="checkUserJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO check_user(
+			id,
+			create_date,
+			update_date,
+			del_flag,
+			number,
+			name,
+			xingbie,
+			bumen,
+			erji_bumen,
+			gangwei,
+			jishu_leibie,
+			cengji_leibie,
+			yuangong_type,
+			ruzhi_date,
+			hetong_type,
+			hetong_time,
+			hetong_number,
+			shiyongqi_time,
+			shiyongqi_date,
+			hetong_leixing,
+			zhuanzheng_date,
+			shenfenzheng,
+			birthday,
+			jiguan,
+			minzu,
+			zhengzhi_mianmao,
+			hunyin_zhuangkuang,
+			huji_xingzhi,
+			diyi_xueli,
+			diyi_zhuanye,
+			diyi_yuanxiao,
+			shifou_tongzhao,
+			zuigao_xueli,
+			zhuanye,
+			biye_yuanxiao,
+			telephone,
+			xianzhuzhi,
+			jinji_lianxiren,
+			jinji_telephone,
+			yuangongzuodanwei,
+			shifou_lizhi,
+			lizhi_leixing
+		) VALUES (
+			#{id},
+			#{createDate},
+			#{updateDate},
+			#{delFlag},
+			#{number},
+			#{name},
+			#{xingbie},
+			#{bumen},
+			#{erjiBumen},
+			#{gangwei},
+			#{jishuLeibie},
+			#{cengjiLeibie},
+			#{yuangongType},
+			#{ruzhiDate},
+			#{hetongType},
+			#{hetongTime},
+			#{hetongNumber},
+			#{shiyongqiTime},
+			#{shiyongqiDate},
+			#{hetongLeixing},
+			#{zhuanzhengDate},
+			#{shenfenzheng},
+			#{birthday},
+			#{jiguan},
+			#{minzu},
+			#{zhengzhiMianmao},
+			#{hunyinZhuangkuang},
+			#{hujiXingzhi},
+			#{diyiXueli},
+			#{diyiZhuanye},
+			#{diyiYuanxiao},
+			#{shifouTongzhao},
+			#{zuigaoXueli},
+			#{zhuanye},
+			#{biyeYuanxiao},
+			#{telephone},
+			#{xianzhuzhi},
+			#{jinjiLianxiren},
+			#{jinjiTelephone},
+			#{yuangongzuodanwei},
+			#{shifouLizhi},
+			#{lizhiLeixing}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE check_user SET 	
+			update_date = #{updateDate},
+			number = #{number},
+			name = #{name},
+			xingbie = #{xingbie},
+			bumen = #{bumen},
+			erji_bumen = #{erjiBumen},
+			gangwei = #{gangwei},
+			jishu_leibie = #{jishuLeibie},
+			cengji_leibie = #{cengjiLeibie},
+			yuangong_type = #{yuangongType},
+			ruzhi_date = #{ruzhiDate},
+			hetong_type = #{hetongType},
+			hetong_time = #{hetongTime},
+			hetong_number = #{hetongNumber},
+			shiyongqi_time = #{shiyongqiTime},
+			shiyongqi_date = #{shiyongqiDate},
+			hetong_leixing = #{hetongLeixing},
+			zhuanzheng_date = #{zhuanzhengDate},
+			shenfenzheng = #{shenfenzheng},
+			birthday = #{birthday},
+			jiguan = #{jiguan},
+			minzu = #{minzu},
+			zhengzhi_mianmao = #{zhengzhiMianmao},
+			hunyin_zhuangkuang = #{hunyinZhuangkuang},
+			huji_xingzhi = #{hujiXingzhi},
+			diyi_xueli = #{diyiXueli},
+			diyi_zhuanye = #{diyiZhuanye},
+			diyi_yuanxiao = #{diyiYuanxiao},
+			shifou_tongzhao = #{shifouTongzhao},
+			zuigao_xueli = #{zuigaoXueli},
+			zhuanye = #{zhuanye},
+			biye_yuanxiao = #{biyeYuanxiao},
+			telephone = #{telephone},
+			xianzhuzhi = #{xianzhuzhi},
+			jinji_lianxiren = #{jinjiLianxiren},
+			jinji_telephone = #{jinjiTelephone},
+			yuangongzuodanwei = #{yuangongzuodanwei},
+			shifou_lizhi = #{shifouLizhi},
+			lizhi_leixing = #{lizhiLeixing}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE check_user SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
