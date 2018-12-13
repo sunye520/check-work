@@ -90,9 +90,7 @@
 		<div class="control-group">
 			<label class="control-label">入职时间：</label>
 			<div class="controls">
-				<input name="ruzhiDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate "
-					value="<fmt:formatDate value="${checkUser.ruzhiDate}" pattern="yyyy-MM-dd HH:mm:ss"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
+				<form:input path="ruzhiDate" htmlEscape="false" maxlength="64" class="input-xlarge "/>
 			</div>
 		</div>
 		<div class="control-group">
@@ -122,9 +120,7 @@
 		<div class="control-group">
 			<label class="control-label">试用期到期日期：</label>
 			<div class="controls">
-				<input name="shiyongqiDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate "
-					value="<fmt:formatDate value="${checkUser.shiyongqiDate}" pattern="yyyy-MM-dd HH:mm:ss"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
+				<form:input path="shiyongqiDate" htmlEscape="false" maxlength="64" class="input-xlarge "/>
 			</div>
 		</div>
 		<div class="control-group">
@@ -136,9 +132,7 @@
 		<div class="control-group">
 			<label class="control-label">转正日期：</label>
 			<div class="controls">
-				<input name="zhuanzhengDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate "
-					value="<fmt:formatDate value="${checkUser.zhuanzhengDate}" pattern="yyyy-MM-dd HH:mm:ss"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
+				<form:input path="zhuanzhengDate" htmlEscape="false" maxlength="64" class="input-xlarge "/>
 			</div>
 		</div>
 		<div class="control-group">
@@ -151,6 +145,13 @@
 			<label class="control-label">出生日期：</label>
 			<div class="controls">
 				<form:input path="birthday" htmlEscape="false" maxlength="64" class="input-xlarge "/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">参加工作时间：</label>
+			<div class="controls">
+				<form:input path="canjiagongzuoDate" htmlEscape="false" maxlength="64" class="input-xlarge required"/>
+				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">

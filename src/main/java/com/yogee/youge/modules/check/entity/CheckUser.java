@@ -4,12 +4,6 @@
 package com.yogee.youge.modules.check.entity;
 
 import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.Length;
-import java.util.Date;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.Length;
-
 import com.yogee.youge.common.persistence.DataEntity;
 
 /**
@@ -29,16 +23,17 @@ public class CheckUser extends DataEntity<CheckUser> {
 	private String jishuLeibie;		// 技术类别
 	private String cengjiLeibie;		// 层级类别
 	private String yuangongType;		// 员工类型
-	private Date ruzhiDate;		// 入职时间
+	private String ruzhiDate;		// 入职时间
 	private String hetongType;		// 合同类型
 	private String hetongTime;		// 合同年限
 	private String hetongNumber;		// 第几次签订合同
 	private String shiyongqiTime;		// 试用期期限/月
-	private Date shiyongqiDate;		// 试用期到期日期
+	private String shiyongqiDate;		// 试用期到期日期
 	private String hetongLeixing;		// 合同类型(0:未转正 1：转正)
-	private Date zhuanzhengDate;		// 转正日期
+	private String zhuanzhengDate;		// 转正日期
 	private String shenfenzheng;		// 身份证号
 	private String birthday;		// 出生日期
+	private String canjiagongzuoDate;		// 参加工作时间
 	private String jiguan;		// 籍贯
 	private String minzu;		// 民族
 	private String zhengzhiMianmao;		// 政治面貌
@@ -148,12 +143,12 @@ public class CheckUser extends DataEntity<CheckUser> {
 		this.yuangongType = yuangongType;
 	}
 	
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	public Date getRuzhiDate() {
+	@Length(min=0, max=64, message="入职时间长度必须介于 0 和 64 之间")
+	public String getRuzhiDate() {
 		return ruzhiDate;
 	}
 
-	public void setRuzhiDate(Date ruzhiDate) {
+	public void setRuzhiDate(String ruzhiDate) {
 		this.ruzhiDate = ruzhiDate;
 	}
 	
@@ -193,12 +188,12 @@ public class CheckUser extends DataEntity<CheckUser> {
 		this.shiyongqiTime = shiyongqiTime;
 	}
 	
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	public Date getShiyongqiDate() {
+	@Length(min=0, max=64, message="试用期到期日期长度必须介于 0 和 64 之间")
+	public String getShiyongqiDate() {
 		return shiyongqiDate;
 	}
 
-	public void setShiyongqiDate(Date shiyongqiDate) {
+	public void setShiyongqiDate(String shiyongqiDate) {
 		this.shiyongqiDate = shiyongqiDate;
 	}
 	
@@ -211,12 +206,12 @@ public class CheckUser extends DataEntity<CheckUser> {
 		this.hetongLeixing = hetongLeixing;
 	}
 	
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	public Date getZhuanzhengDate() {
+	@Length(min=0, max=64, message="转正日期长度必须介于 0 和 64 之间")
+	public String getZhuanzhengDate() {
 		return zhuanzhengDate;
 	}
 
-	public void setZhuanzhengDate(Date zhuanzhengDate) {
+	public void setZhuanzhengDate(String zhuanzhengDate) {
 		this.zhuanzhengDate = zhuanzhengDate;
 	}
 	
@@ -236,6 +231,15 @@ public class CheckUser extends DataEntity<CheckUser> {
 
 	public void setBirthday(String birthday) {
 		this.birthday = birthday;
+	}
+	
+	@Length(min=1, max=64, message="参加工作时间长度必须介于 1 和 64 之间")
+	public String getCanjiagongzuoDate() {
+		return canjiagongzuoDate;
+	}
+
+	public void setCanjiagongzuoDate(String canjiagongzuoDate) {
+		this.canjiagongzuoDate = canjiagongzuoDate;
 	}
 	
 	@Length(min=0, max=64, message="籍贯长度必须介于 0 和 64 之间")
