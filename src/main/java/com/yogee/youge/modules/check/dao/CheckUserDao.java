@@ -7,6 +7,9 @@ import com.yogee.youge.common.persistence.CrudDao;
 import com.yogee.youge.common.persistence.annotation.MyBatisDao;
 import com.yogee.youge.modules.check.entity.CheckUser;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * 员工信息DAO接口
  * @author sunye
@@ -14,5 +17,6 @@ import com.yogee.youge.modules.check.entity.CheckUser;
  */
 @MyBatisDao
 public interface CheckUserDao extends CrudDao<CheckUser> {
-	
+
+    List<Map> findListByNameLikeAndCounts(Map map);
 }

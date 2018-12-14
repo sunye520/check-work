@@ -3,7 +3,9 @@
  */
 package com.yogee.youge.modules.check.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,5 +45,19 @@ public class CheckUserService extends CrudService<CheckUserDao, CheckUser> {
 	public void delete(CheckUser checkUser) {
 		super.delete(checkUser);
 	}
-	
+
+	/**
+	 * 根据搜索查找用户
+	 * @param nameLike
+	 * @param total
+	 * @param count
+	 * @return
+	 */
+	public List<Map> findListByNameLikeAndCounts(String nameLike, String total, String count) {
+		Map map = new HashMap();
+		map.put("nameLike",nameLike);
+		map.put("total",Integer.parseInt(total));
+		map.put("count",Integer.parseInt(count));
+		return dao.findListByNameLikeAndCounts(map);
+	}
 }

@@ -10,8 +10,56 @@ public class DateUtil {
 
     private final static SimpleDateFormat dateFormatYYYYMMDD = new SimpleDateFormat("yyyy-MM-dd");
 
+
     /**
-     * 获取指定月份全部日期
+     * 根据起止日期取年份
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    public static int getYear(Date startDate,Date endDate){
+        Calendar c1 = Calendar.getInstance();
+        Calendar c2 = Calendar.getInstance();
+        c1.setTime(startDate);
+        c2.setTime(endDate);
+        int year1 = c1.get(Calendar.YEAR);
+        int year2 = c2.get(Calendar.YEAR);
+        // 获取年的差值 
+        return year1 - year2;
+    }
+
+    /**
+     * 根据起止日期取月份
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    public static int getMonth(Date startDate, Date endDate) {
+        Calendar c1 = Calendar.getInstance();
+        Calendar c2 = Calendar.getInstance();
+        c1.setTime(startDate);
+        c2.setTime(endDate);
+        int year1 = c1.get(Calendar.YEAR);
+        int year2 = c2.get(Calendar.YEAR);
+        int month1 = c1.get(Calendar.MONTH);
+        int month2 = c2.get(Calendar.MONTH);
+        int day1 = c1.get(Calendar.DAY_OF_MONTH);
+        int day2 = c2.get(Calendar.DAY_OF_MONTH);
+        // 获取年的差值 
+        int yearInterval = year1 - year2; // 如果 d1的 月-日 小于 d2的 月-日 那么 yearInterval-- 这样就得到了相差的年数
+        if (month1 < month2 || month1 == month2 && day1 < day2)
+            yearInterval--;
+        // 获取月数差值
+        int monthInterval = (month1 + 12) - month2;
+        if (day1 < day2)
+            monthInterval--;
+        monthInterval %= 12;
+        int monthsDiff = Math.abs(yearInterval * 12 + monthInterval);
+        return monthsDiff;
+    }
+
+    /**
+    * 获取指定月份全部日期
      * @param year
      * @param month
      * @return
