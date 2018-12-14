@@ -3,13 +3,20 @@
  */
 package com.yogee.youge.modules.sys.web;
 
+import java.io.*;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolationException;
 
+import freemarker.template.Configuration;
+import freemarker.template.Template;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -166,10 +173,31 @@ public class UserController extends BaseController {
     @RequestMapping(value = "export", method=RequestMethod.POST)
     public String exportFile(User user, HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes) {
 		try {
-            String fileName = "用户数据"+DateUtils.getDate("yyyyMMddHHmmss")+".xlsx";
+           /* String fileName = "用户数据"+DateUtils.getDate("yyyyMMddHHmmss")+".xlsx";
             Page<User> page = systemService.findUser(new Page<User>(request, response, -1), user);
-    		new ExportExcel("用户数据", User.class).setDataList(page.getList()).write(response, fileName).dispose();
-    		return null;
+    		new ExportExcel("用户数据", User.class).setDataList(page.getList()).write(response, fileName).dispose();*/
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("a",10);
+			map.put("b",0.5);
+			File file = null;
+			InputStream inputStream = null;
+			ServletOutputStream out = null;
+			request.setCharacterEncoding("UTF-8");
+			//根据模板类型
+			file = ExportExcel.createExcel(map,"myexcel","user.ftl",request);
+			inputStream = new FileInputStream(file);
+			response.setCharacterEncoding("utf-8");
+			response.setContentType("application/msexcel");
+			response.setHeader("content-disposition", "attachment;filename="+ URLEncoder.encode("员工结构分析" + ".xlsx", "UTF-8"));
+			out = response.getOutputStream();
+			byte[] buffer = new byte[512]; // 缓冲区
+			int bytesToRead = -1;
+			// 通过循环将读入的Excel文件的内容输出到浏览器中
+			while ((bytesToRead = inputStream.read(buffer)) != -1) {
+				out.write(buffer, 0, bytesToRead);
+			}
+			out.flush();
+			return null;
 		} catch (Exception e) {
 			addMessage(redirectAttributes, "导出用户失败！失败信息："+e.getMessage());
 		}

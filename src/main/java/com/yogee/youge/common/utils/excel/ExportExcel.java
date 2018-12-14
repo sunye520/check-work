@@ -3,10 +3,7 @@
  */
 package com.yogee.youge.common.utils.excel;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -16,12 +13,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.yogee.youge.common.utils.Encodes;
 import com.yogee.youge.common.utils.Reflections;
 import com.yogee.youge.common.utils.excel.annotation.ExcelField;
 import com.yogee.youge.modules.sys.utils.DictUtils;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -518,5 +518,40 @@ public class ExportExcel {
 //		log.debug("Export success.");
 //		
 //	}
+	private static Configuration configuration = null;
+	private static Map<String, Template> allTemplates = null;
+	private static String realPath;
 
+	/**
+	 * 根据模板创建文件
+	 * @param dataMap 数据
+	 * @param type 文件类别标识
+	 * @param valueName 模板文件
+	 * @param request
+	 * @return
+	 */
+	public static File createExcel(Map<?, ?> dataMap, String type, String valueName,HttpServletRequest request){
+		try {
+			configuration = new Configuration();
+			configuration.setDefaultEncoding("UTF-8");
+			realPath = request.getSession().getServletContext().getRealPath("/");
+			configuration.setDirectoryForTemplateLoading(new File(realPath+"WEB-INF/template"));
+			allTemplates = new HashMap<String, Template>();
+			allTemplates.put(type, configuration.getTemplate(valueName));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		String name = "temp" + (int) (Math.random() * 100000) + ".xls";
+		File file = new File(name);
+		Template template = allTemplates.get(type);
+		try {
+			Writer w = new OutputStreamWriter(new FileOutputStream(file), "utf-8");
+			template.process(dataMap, w);
+			w.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return file;
+	}
 }
