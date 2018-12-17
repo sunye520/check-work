@@ -1,11 +1,19 @@
 package com.yogee.youge.interfaces.check;
 
 import com.yogee.youge.common.utils.StringUtils;
+import com.yogee.youge.common.utils.excel.ExportExcel;
 import com.yogee.youge.interfaces.util.DateUtil;
 import com.yogee.youge.interfaces.util.HttpResultUtil;
 import com.yogee.youge.interfaces.util.HttpServletRequestUtils;
 import com.yogee.youge.modules.check.entity.CheckUser;
 import com.yogee.youge.modules.check.service.CheckUserService;
+import org.apache.commons.fileupload.disk.DiskFileItem;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,15 +22,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import javax.mail.Multipart;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 员工花名册
@@ -260,10 +271,49 @@ public class EmployeeInterface {
      */
     @RequestMapping(value = "employeeImport",method = RequestMethod.POST)
     @ResponseBody
-    public String employeeImport(HttpServletRequest req){
+    public String employeeImport(HttpServletRequest req,MultipartFile file){
         logger.info("app employeeImport---------- Start--------");
-//        Map jsonData = HttpServletRequestUtils.readJsonData(req);
-        return null;
+        List<List<String>> lists = new ArrayList<List<String>>();
+        String name = file.getOriginalFilename();
+        System.out.println(name);
+        String fileType = name.substring(name.lastIndexOf(".") + 1);
+        CommonsMultipartFile cf = (CommonsMultipartFile)file;
+        DiskFileItem fi = (DiskFileItem)cf.getFileItem();
+        File f = fi.getStoreLocation();
+        InputStream is;
+        try {
+            is = new FileInputStream(f);
+            //获取工作薄
+            Workbook wb = null;
+            if (fileType.equals("xls")) {
+                wb = new HSSFWorkbook(is);
+            } else if (fileType.equals("xlsx")) {
+                wb = new XSSFWorkbook(is);
+            } else {
+                return null;
+            }
+
+            //读取第一个工作页sheet
+            Sheet sheet = wb.getSheetAt(0);
+            //第一行为标题
+            for (Row row : sheet) {
+                ArrayList<String> list = new ArrayList<String>();
+                for (Cell cell : row) {
+                    //根据不同类型转化成字符串
+                    if (cell.equals("")){
+                        list.add("");
+                    }else {
+                        cell.setCellType(Cell.CELL_TYPE_STRING);
+                        list.add(cell.getStringCellValue());
+                    }
+                }
+                lists.add(list);
+            }
+            System.out.println(lists);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return HttpResultUtil.successJson(new HashMap());
     }
 
 
@@ -274,9 +324,16 @@ public class EmployeeInterface {
      */
     @RequestMapping(value = "employeeExport",method = RequestMethod.POST)
     @ResponseBody
-    public String employeeExport(HttpServletRequest req){
+    public String employeeExport(HttpServletRequest req, HttpServletResponse res){
         logger.info("app employeeExport---------- Start--------");
-//        MultipartFile
+//        try {
+//            String fileName = "xxx.xlsx";
+//            ExportExcel exportExcel = new ExportExcel("123", CheckUser.class);
+//            exportExcel.setDataList(new ArrayList<>());
+//            exportExcel.write(res, fileName).dispose();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
         return null;
     }
 }

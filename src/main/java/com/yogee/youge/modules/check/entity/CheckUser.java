@@ -26,6 +26,7 @@ public class CheckUser extends DataEntity<CheckUser> {
 	private String ruzhiDate;		// 入职时间
 	private String hetongType;		// 合同类型
 	private String hetongTime;		// 合同年限
+	private String hetongdaoqiTime;   //合同到期时间
 	private String hetongNumber;		// 第几次签订合同
 	private String shiyongqiTime;		// 试用期期限/月
 	private String shiyongqiDate;		// 试用期到期日期
@@ -53,6 +54,21 @@ public class CheckUser extends DataEntity<CheckUser> {
 	private String yuangongzuodanwei;		// 原来工作单位
 	private String shifouLizhi;		// 是否离职
 	private String lizhiLeixing;		// 离职类型(0：主动  1：被动）
+	private String lizhiTime;         //离职时间
+
+
+	/**
+	 * others
+	 */
+	private String no;  //序号
+	private String nowDate;//现在日期
+	private String workAgeYear; //工作年限/年
+	private String workAgeMonth; //工作年限
+	private String companyAgeYear; //司龄/年
+	private String companyAgeMonth; //司龄
+	private String age;   //年龄
+
+
 	
 	public CheckUser() {
 		super();
@@ -412,5 +428,76 @@ public class CheckUser extends DataEntity<CheckUser> {
 	public void setLizhiLeixing(String lizhiLeixing) {
 		this.lizhiLeixing = lizhiLeixing;
 	}
-	
+
+	public String getLizhiTime() {
+		return lizhiTime;
+	}
+
+	public void setLizhiTime(String lizhiTime) {
+		this.lizhiTime = lizhiTime;
+	}
+
+	public String getNo() {
+		return no;
+	}
+
+	public void setNo(String no) {
+		this.no = no;
+	}
+
+	public String getNowDate() {
+		return nowDate;
+	}
+
+	public void setNowDate(String nowDate) {
+		this.nowDate = nowDate;
+	}
+
+	public String getWorkAgeYear() {
+		return workAgeYear;
+	}
+
+	public void setWorkAgeYear(String workAgeYear) {
+		this.workAgeYear = workAgeYear;
+	}
+
+	public String getWorkAgeMonth() {
+		return workAgeMonth;
+	}
+
+	public void setWorkAgeMonth(String workAgeMonth) {
+		this.workAgeMonth = workAgeMonth;
+	}
+
+	public String getCompanyAgeYear() {
+		return companyAgeYear;
+	}
+
+	public void setCompanyAgeYear(String companyAgeYear) {
+		this.companyAgeYear = companyAgeYear;
+	}
+
+	public String getCompanyAgeMonth() {
+		return companyAgeMonth;
+	}
+
+	public void setCompanyAgeMonth(String companyAgeMonth) {
+		this.companyAgeMonth = companyAgeMonth;
+	}
+
+	public String getHetongdaoqiTime() {
+		return hetongdaoqiTime;
+	}
+
+	public void setHetongdaoqiTime(String hetongdaoqiTime) {
+		this.hetongdaoqiTime = hetongdaoqiTime;
+	}
+
+	public String getAge() {
+		return age;
+	}
+
+	public void setAge(String age) {
+		this.age = age;
+	}
 }

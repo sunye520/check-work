@@ -19,4 +19,7 @@ import java.util.Map;
 public interface CheckUserDao extends CrudDao<CheckUser> {
 
     List<Map> findListByNameLikeAndCounts(Map map);
+
+    List<CheckUser> findAll();
+
 }

@@ -60,4 +60,12 @@ public class CheckUserService extends CrudService<CheckUserDao, CheckUser> {
 		map.put("count",Integer.parseInt(count));
 		return dao.findListByNameLikeAndCounts(map);
 	}
+
+	/**
+	 * 所有员工
+	 * @return
+	 */
+	public List<CheckUser> findAll() {
+		return dao.findAll();
+	}
 }

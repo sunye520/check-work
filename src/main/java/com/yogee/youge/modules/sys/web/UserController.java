@@ -5,16 +5,18 @@ package com.yogee.youge.modules.sys.web;
 
 import java.io.*;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolationException;
 
+import com.yogee.youge.interfaces.util.DateUtil;
+import com.yogee.youge.modules.check.entity.CheckUser;
+import com.yogee.youge.modules.check.service.CheckUserService;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -54,8 +56,12 @@ import com.yogee.youge.modules.sys.utils.UserUtils;
 @RequestMapping(value = "${adminPath}/sys/user")
 public class UserController extends BaseController {
 
+	private final static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
 	@Autowired
 	private SystemService systemService;
+	@Autowired
+	private CheckUserService checkUserService;
 	
 	@ModelAttribute
 	public User get(@RequestParam(required=false) String id) {
@@ -170,7 +176,7 @@ public class UserController extends BaseController {
 	 * @return
 	 */
 	@RequiresPermissions("sys:user:view")
-    @RequestMapping(value = "export", method=RequestMethod.POST)
+    @RequestMapping(value = "xxxexport", method=RequestMethod.POST)
     public String exportFile(User user, HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes) {
 		try {
            /* String fileName = "用户数据"+DateUtils.getDate("yyyyMMddHHmmss")+".xlsx";
@@ -203,6 +209,84 @@ public class UserController extends BaseController {
 		}
 		return "redirect:" + adminPath + "/sys/user/list?repage";
     }
+
+
+	/**
+	 * 导出用户数据
+	 * @param
+	 * @param request
+	 * @param response  employeeExportFile
+	 * @param redirectAttributes
+	 * @return
+	 */
+	@RequiresPermissions("sys:user:view")
+	@RequestMapping(value = "export", method=RequestMethod.POST)
+	public String exportFile(HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes) {
+		try {
+			Date date = new Date();
+			Map<String, Object> map = new HashMap<String, Object>();
+			List<CheckUser> userList = checkUserService.findAll();
+			List<CheckUser> newList = new ArrayList<>();
+			if (userList.size() != 0){
+				int i = 1;
+				for (CheckUser checkUser : userList) {
+					checkUser.setNo(String.valueOf(i));//序号
+					checkUser.setNowDate(sdf.format(date));//现在日期
+					String ruzhiDate = checkUser.getRuzhiDate();
+					String canjiagongzuoDate = checkUser.getCanjiagongzuoDate();
+					try {
+						Date date1 = sdf.parse(ruzhiDate);
+						Date date2 = sdf.parse(canjiagongzuoDate);
+						int year1 = DateUtil.getYear(date1,date);
+						int month1 = DateUtil.getMonth(date1,date);
+						int year2 = DateUtil.getYear(date2,date);
+						int month2 = DateUtil.getMonth(date2,date);
+						checkUser.setWorkAgeMonth(String.valueOf(month2));//工作年限
+						checkUser.setWorkAgeYear(String.valueOf(year2));//工作年限/年
+						checkUser.setCompanyAgeMonth(String.valueOf(month1));//司龄
+						checkUser.setCompanyAgeYear(String.valueOf(year1));//司龄/年
+					} catch (ParseException e) {
+						logger.debug("日期格式错误");
+					}
+					String bir = checkUser.getBirthday();
+					if (bir != null){
+						try{
+							String age = String.valueOf(DateUtil.getAge(DateUtil.parse(bir)));
+							checkUser.setAge(age);
+						}catch (Exception e){
+							logger.debug("没有生日");
+						}
+					}
+					newList.add(checkUser);
+				}
+			}
+			map.put("userList",userList);
+			File file = null;
+			InputStream inputStream = null;
+			ServletOutputStream out = null;
+			request.setCharacterEncoding("UTF-8");
+			//根据模板类型
+			file = ExportExcel.createExcel(map,"myexcel","employee.ftl",request);
+			inputStream = new FileInputStream(file);
+			response.setCharacterEncoding("utf-8");
+			response.setContentType("application/msexcel");
+			response.setHeader("content-disposition", "attachment;filename="+ URLEncoder.encode("员工花名册" + ".xlsx", "UTF-8"));
+			out = response.getOutputStream();
+			byte[] buffer = new byte[512]; // 缓冲区
+			int bytesToRead = -1;
+			// 通过循环将读入的Excel文件的内容输出到浏览器中
+			while ((bytesToRead = inputStream.read(buffer)) != -1) {
+				out.write(buffer, 0, bytesToRead);
+			}
+			out.flush();
+			return null;
+		} catch (Exception e) {
+			addMessage(redirectAttributes, "导出用户失败！失败信息："+e.getMessage());
+		}
+		return "redirect:" + adminPath + "/sys/user/list?repage";
+	}
+
+
 
 	/**
 	 * 导入用户数据
