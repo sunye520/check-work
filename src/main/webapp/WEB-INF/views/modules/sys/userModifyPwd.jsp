@@ -65,7 +65,7 @@
 	</form:form>--%>
 
 
-	<form action="/api/downloadTransaction"method="post" enctype="multipart/form-data" id="form">
+	<form action="/api/downloadAdjustingExcel"method="post" enctype="multipart/form-data" id="form">
 		<table>
 			<tbody >
 			<tr >
