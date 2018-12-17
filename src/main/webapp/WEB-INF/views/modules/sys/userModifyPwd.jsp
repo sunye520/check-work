@@ -35,7 +35,7 @@
 		<li><a href="${ctx}/sys/user/info">个人信息</a></li>
 		<li class="active"><a href="${ctx}/sys/user/modifyPwd">修改密码</a></li>
 	</ul><br/>
-	<form:form id="inputForm" modelAttribute="user" action="${ctx}/sys/user/modifyPwd" method="post" class="form-horizontal">
+	<%--<form:form id="inputForm" modelAttribute="user" action="${ctx}/sys/user/modifyPwd" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
 		<sys:message content="${message}"/>
 		<div class="control-group">
@@ -62,6 +62,41 @@
 		<div class="form-actions">
 			<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>
 		</div>
-	</form:form>
+	</form:form>--%>
+
+
+	<form action="/api/downloadTransaction"method="post" enctype="multipart/form-data" id="form">
+		<table>
+			<tbody >
+			<tr >
+				<td>下载文件:</td>
+				<td style="padding-left: 80px;">
+					<button type="submit" class="btn btn-primary btn-q btn-outline fa fa-upload" class="easyui-validatebox" data-options="required:true">下载</button>
+				</td>
+			</tr>
+			　　		</tbody>
+		</table>
+	</form>
+
+
+
+
+		<%--<form action="/api/test"method="post" enctype="multipart/form-data" id="form">--%>
+            <%--<table>--%>
+                <%--<tbody >--%>
+                    <%--<tr >--%>
+                        <%--<td>上传文件:</td>--%>
+                            <%--<td style="padding-left: 10px;">--%>
+                                <%--<input type="file" name="file" id="fileInput">--%>
+
+                            <%--</td>--%>
+                        <%--<td style="padding-left: 80px;">--%>
+                        <%--<button type="submit" class="btn btn-primary btn-q btn-outline fa fa-upload" class="easyui-validatebox" data-options="required:true">上传</button>--%>
+                        <%--</td>--%>
+                    <%--</tr>--%>
+        <%--　　		</tbody>--%>
+            <%--</table>--%>
+        <%--</form>--%>
+
 </body>
 </html>

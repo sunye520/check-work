@@ -20,6 +20,8 @@ public interface CheckUserDao extends CrudDao<CheckUser> {
 
     List<Map> findListByNameLikeAndCounts(Map map);
 
+    CheckUser findBynumber(Map map);
+
     List<CheckUser> findAll();
 
 }

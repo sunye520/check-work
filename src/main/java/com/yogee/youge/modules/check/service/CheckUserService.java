@@ -3,17 +3,16 @@
  */
 package com.yogee.youge.modules.check.service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.yogee.youge.common.persistence.Page;
+import com.yogee.youge.common.service.CrudService;
+import com.yogee.youge.modules.check.dao.CheckUserDao;
+import com.yogee.youge.modules.check.entity.CheckUser;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.yogee.youge.common.persistence.Page;
-import com.yogee.youge.common.service.CrudService;
-import com.yogee.youge.modules.check.entity.CheckUser;
-import com.yogee.youge.modules.check.dao.CheckUserDao;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 员工信息Service
@@ -59,6 +58,17 @@ public class CheckUserService extends CrudService<CheckUserDao, CheckUser> {
 		map.put("total",Integer.parseInt(total));
 		map.put("count",Integer.parseInt(count));
 		return dao.findListByNameLikeAndCounts(map);
+	}
+
+
+	/**
+	 * 根据工号查找用户
+	 * @return
+	 */
+	public CheckUser findBynumber(String number) {
+		Map map = new HashMap();
+		map.put("number",number);
+		return dao.findBynumber(map);
 	}
 
 	/**

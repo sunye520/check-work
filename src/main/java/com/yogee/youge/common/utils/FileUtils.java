@@ -3,27 +3,20 @@
  */
 package com.yogee.youge.common.utils;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.RandomAccessFile;
-import java.util.Enumeration;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.google.common.collect.Lists;
 import org.apache.tools.zip.ZipEntry;
 import org.apache.tools.zip.ZipFile;
 import org.apache.tools.zip.ZipOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.misc.BASE64Encoder;
 
-import com.google.common.collect.Lists;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.net.URLEncoder;
+import java.util.Enumeration;
+import java.util.List;
 
 /**
  * 文件操作工具类
@@ -32,6 +25,24 @@ import com.google.common.collect.Lists;
  * @version 2015-3-16
  */
 public class FileUtils extends org.apache.commons.io.FileUtils {
+
+
+	public static String filenameEncoding(String filename, HttpServletRequest request) throws IOException {
+		String agent = request.getHeader("User-Agent"); //获取浏览器
+		if (agent.contains("Firefox")) {
+			BASE64Encoder base64Encoder = new BASE64Encoder();
+			filename = "=?utf-8?B?"
+					+ base64Encoder.encode(filename.getBytes("utf-8"))
+					+ "?=";
+		} else if(agent.contains("MSIE")) {
+			filename = URLEncoder.encode(filename, "utf-8");
+		} else if(agent.contains ("Safari")) {
+			filename = new String (filename.getBytes ("utf-8"),"ISO8859-1");
+		} else {
+			filename = URLEncoder.encode(filename, "utf-8");
+		}
+		return filename;
+	}
 	
 	private static Logger logger = LoggerFactory.getLogger(FileUtils.class);
 
@@ -965,4 +976,6 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
 		}
 		return fileName.substring(0, fileName.lastIndexOf("."));
 	}
+
+
 }

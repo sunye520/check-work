@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yogee.youge.modules.check.dao.CheckChangeResultDao">
+    
+	<sql id="checkChangeResultColumns">
+		a.id AS "id",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.bumen AS "bumen",
+		a.benyue_renshu AS "benyueRenshu",
+		a.shangyuemo_renshu AS "shangyuemoRenshu",
+		a.ruzhi AS "ruzhi",
+		a.lizhi_zhudong AS "lizhiZhudong",
+		a.lizhi_beidong AS "lizhiBeidong",
+		a.zhuanzheng AS "zhuanzheng",
+		a.tiaogang AS "tiaogang",
+		a.tiaoxin AS "tiaoxin",
+		a.zhixing_shijian AS "zhixingShijian",
+		a.beizhu AS "beizhu"
+	</sql>
+	
+	<sql id="checkChangeResultJoins">
+	</sql>
+    
+	<select id="get" resultType="CheckChangeResult">
+		SELECT 
+			<include refid="checkChangeResultColumns"/>
+		FROM check_change_result a
+		<include refid="checkChangeResultJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="CheckChangeResult">
+		SELECT 
+			<include refid="checkChangeResultColumns"/>
+		FROM check_change_result a
+		<include refid="checkChangeResultJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="CheckChangeResult">
+		SELECT 
+			<include refid="checkChangeResultColumns"/>
+		FROM check_change_result a
+		<include refid="checkChangeResultJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO check_change_result(
+			id,
+			create_date,
+			update_date,
+			del_flag,
+			bumen,
+			benyue_renshu,
+			shangyuemo_renshu,
+			ruzhi,
+			lizhi_zhudong,
+			lizhi_beidong,
+			zhuanzheng,
+			tiaogang,
+			tiaoxin,
+			zhixing_shijian,
+			beizhu
+		) VALUES (
+			#{id},
+			#{createDate},
+			#{updateDate},
+			#{delFlag},
+			#{bumen},
+			#{benyueRenshu},
+			#{shangyuemoRenshu},
+			#{ruzhi},
+			#{lizhiZhudong},
+			#{lizhiBeidong},
+			#{zhuanzheng},
+			#{tiaogang},
+			#{tiaoxin},
+			#{zhixingShijian},
+			#{beizhu}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE check_change_result SET 	
+			update_date = #{updateDate},
+			bumen = #{bumen},
+			benyue_renshu = #{benyueRenshu},
+			shangyuemo_renshu = #{shangyuemoRenshu},
+			ruzhi = #{ruzhi},
+			lizhi_zhudong = #{lizhiZhudong},
+			lizhi_beidong = #{lizhiBeidong},
+			zhuanzheng = #{zhuanzheng},
+			tiaogang = #{tiaogang},
+			tiaoxin = #{tiaoxin},
+			zhixing_shijian = #{zhixingShijian},
+			beizhu = #{beizhu}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE check_change_result SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
