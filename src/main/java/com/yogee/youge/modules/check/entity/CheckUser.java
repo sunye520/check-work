@@ -52,13 +52,18 @@ public class CheckUser extends DataEntity<CheckUser> {
 	private String jinjiLianxiren;		// 紧急联系人
 	private String jinjiTelephone;		// 紧急联系人电话
 	private String yuangongzuodanwei;		// 原来工作单位
+
+
+	/**
+	 * 实体类有
+	 */
 	private String shifouLizhi;		// 是否离职
 	private String lizhiLeixing;		// 离职类型(0：主动  1：被动）
 	private String lizhiTime;         //离职时间
 
 
 	/**
-	 * others
+	 * 实体类没有，需要计算
 	 */
 	private String no;  //序号
 	private String nowDate;//现在日期

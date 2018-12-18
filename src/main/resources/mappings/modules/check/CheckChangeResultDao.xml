@@ -125,5 +125,42 @@
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
+
+	<select id="queryChangeResultByType" resultType="CheckChangeResult">
+		SELECT
+		*
+		FROM
+		check_change_result
+		WHERE
+		del_flag = '0'
+		AND DATE_FORMAT(create_date, '%Y-%m-%d') = #{date}
+		AND type = #{type}
+	</select>
+
+
+	<select id="queryChangeResultCount" resultType="CheckChangeResult">
+		SELECT
+			sum(benyue_renshu) AS benyue_renshu,
+			sum(shangyuemo_renshu) AS shangyuemo_renshu,
+			sum(ruzhi) AS ruzhi,
+			sum(lizhi_zhudong) AS lizhi_zhudong,
+			sum(lizhi_beidong) AS lizhi_beidong,
+			sum(zhuanzheng) AS zhuanzheng,
+			sum(tiaogang) AS tiaogang,
+			sum(tiaoxin) AS tiaoxin
+		FROM
+			check_change_result
+		WHERE
+			del_flag = '0'
+		AND DATE_FORMAT(create_date, '%Y-%m-%d') = #{date}
+	</select>
+
+	<select id="selectPokemons" parameterType="java.util.List" resultType="CheckChangeResult">
+		select * from check_change_result where bumen = #{bumen}
+		<foreach collection="list" index="index" item="item">
+			UNION ALL
+			select * from check_change_result where bumen = #{item}
+		</foreach>
+	</select>
 	
 </mapper>

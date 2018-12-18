@@ -147,7 +147,8 @@
 			yuangongzuodanwei,
 			shifou_lizhi,
 			lizhi_leixing,
-			lizhi_time
+			lizhi_time,
+			hetongdaoqi_time
 		) VALUES (
 			#{id},
 			#{createDate},
@@ -192,7 +193,8 @@
 			#{yuangongzuodanwei},
 			#{shifouLizhi},
 			#{lizhiLeixing},
-			#{lizhiTime}
+			#{lizhiTime},
+			#{hetongdaoqiTime}
 		)
 	</insert>
 
@@ -238,7 +240,8 @@
 			yuangongzuodanwei = #{yuangongzuodanwei},
 			shifou_lizhi = #{shifouLizhi},
 			lizhi_leixing = #{lizhiLeixing},
-			lizhi_time = #{lizhiTime}
+			lizhi_time = #{lizhiTime},
+			hetongdaoqi_time = #{hetongdaoqiTime}
 		WHERE id = #{id}
 	</update>
 
@@ -262,7 +265,48 @@
 	</select>
 
 	<select id="findAll" resultType="CheckUser">
-		select *
+		select
+		    number,
+			name,
+			xingbie,
+			bumen,
+			erji_bumen,
+			gangwei,
+			jishu_leibie,
+			cengji_leibie,
+			yuangong_type,
+			ruzhi_date,
+			hetong_type,
+			hetong_time,
+			hetong_number,
+			shiyongqi_time,
+			shiyongqi_date,
+			CASE hetong_leixing WHEN '0' THEN '是' WHEN '1' THEN '否' END as hetong_leixing,
+			zhuanzheng_date,
+			shenfenzheng,
+			birthday,
+			canjiagongzuo_date,
+			jiguan,
+			minzu,
+			zhengzhi_mianmao,
+			hunyin_zhuangkuang,
+			huji_xingzhi,
+			diyi_xueli,
+			diyi_zhuanye,
+			diyi_yuanxiao,
+			shifou_tongzhao,
+			zuigao_xueli,
+			zhuanye,
+			biye_yuanxiao,
+			telephone,
+			xianzhuzhi,
+			jinji_lianxiren,
+			jinji_telephone,
+			yuangongzuodanwei,
+			shifou_lizhi,
+			lizhi_leixing,
+			lizhi_time,
+			hetongdaoqi_time
 		from check_user
 		where del_flag = 0
 		order by cast(number as UNSIGNED INTEGER)
@@ -276,5 +320,14 @@
 		AND number = #{number}
 		limit 1
 	</select>
+
+	<select id="findByNumber">
+		select * from check_user where number = #{number} and del_flag = 0
+	</select>
+
+	<select id="findByName">
+		select * from check_user where name = #{name} and del_flag = 0
+	</select>
+
 
 </mapper>

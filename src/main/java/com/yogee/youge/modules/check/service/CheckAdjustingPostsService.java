@@ -45,14 +45,14 @@ public class CheckAdjustingPostsService extends CrudService<CheckAdjustingPostsD
 		super.delete(checkAdjustingPosts);
 	}
 
-	// 根据创建时间查询调岗记录总和（部门）
+	// 根据创建时间和部门 查询调岗记录总和（部门）
 	public List<Map> findCountByTimeDepartment(String bumen , String date) {
 		Map map = new HashMap();
 		map.put("bumen",bumen);
 		map.put("date",date);
 		return dao.findCountByTimeDepartment(map);
 	}
-	// 根据创建时间查询调岗记录总和（技术）
+	// 根据创建时间和技术岗位 查询调岗记录总和（技术）
 	public List<Map> findCountByTimeTechnology(String bumen , String date) {
 		Map map = new HashMap();
 		map.put("bumen",bumen);
@@ -60,14 +60,20 @@ public class CheckAdjustingPostsService extends CrudService<CheckAdjustingPostsD
 		return dao.findCountByTimeTechnology(map);
 	}
 
-
-	// 根据创建时间查询调岗记录总和（技术）
-	public List<CheckAdjustingPosts> selectPokemons(List<String> list , String bumen) {
+	// 根据创建时间查询调岗记录总和（合计）
+	public List<Map> findTimeTechnologyCount(String date) {
 		Map map = new HashMap();
-		map.put("list",list);
-		map.put("bumen",bumen);
-		return dao.selectPokemons(map);
+		map.put("date",date);
+		return dao.findTimeTechnologyCount(map);
 	}
+
+
+
+
+
+
+
+
 
 
 	

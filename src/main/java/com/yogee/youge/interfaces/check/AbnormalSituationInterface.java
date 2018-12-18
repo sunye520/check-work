@@ -5,8 +5,10 @@ import com.yogee.youge.common.utils.excel.ExportExcel;
 import com.yogee.youge.interfaces.util.HttpResultUtil;
 import com.yogee.youge.interfaces.util.HttpServletRequestUtils;
 import com.yogee.youge.modules.check.entity.CheckAdjustingPosts;
+import com.yogee.youge.modules.check.entity.CheckChangeResult;
 import com.yogee.youge.modules.check.entity.CheckUser;
 import com.yogee.youge.modules.check.service.CheckAdjustingPostsService;
+import com.yogee.youge.modules.check.service.CheckChangeResultService;
 import com.yogee.youge.modules.check.service.CheckUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,25 +46,13 @@ public class AbnormalSituationInterface {
     private CheckUserService checkUserService;
     @Autowired
     private CheckAdjustingPostsService checkAdjustingPostsService;
+    @Autowired
+    private CheckChangeResultService checkChangeResultService;
 
-    /**
-     * 查询企划文件列表
-     * @param request
-     * @return
-     */
-    @RequestMapping(value = "downloadTransaction", method = RequestMethod.POST)
-    @ResponseBody
-    public String downloadTransaction(HttpServletRequest request,HttpServletResponse response) {
-        logger.info("查询企划文件列表 downloadTransaction ----------Start--------");
-
-        Map mapData = new HashMap();
-
-        return HttpResultUtil.successJson(mapData);
-    }
 
 
     /**
-     * 保存调动信息
+     * 保存调动信息(修改部门，二级部门，岗位)
      * @return
      */
     @RequestMapping(value = "saveAdjustingPosts", method = RequestMethod.POST)
@@ -132,7 +122,6 @@ public class AbnormalSituationInterface {
         }
 
 
-
     /**
      * 查询调动信息
      * @return
@@ -141,21 +130,6 @@ public class AbnormalSituationInterface {
     @ResponseBody
     public String queryAdjustingPosts(HttpServletRequest request) {
         logger.info("查询调动信息 queryAdjustingPosts ----------Start--------");
-        Map mapData = new HashMap();
-
-
-        List<String> str = new ArrayList<>();
-        str.add("行政部");
-        str.add("人事部");
-
-        List<CheckAdjustingPosts> asdasda = checkAdjustingPostsService.selectPokemons(str, "技术部");
-        for (CheckAdjustingPosts checkAdjustingPosts : asdasda) {
-            System.out.println(checkAdjustingPosts.getId());
-        }
-
-
-        List<Map> listDepartment = new ArrayList<>();
-        List<Map> listTechnology = new ArrayList<>();
 
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
         String year = (String)jsonData.get("year");
@@ -166,144 +140,48 @@ public class AbnormalSituationInterface {
         if (StringUtils.isEmpty(month)){
             return HttpResultUtil.errorJson("month为空!");
         }
+        //查询数据
+        Map mapData = query(year, month);
 
-        //2018-12
-        String createDate = year + "-" + month;
-
-
-        //获取当前年月
-//        Date d = new Date();
-//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
-//        String createDate = sdf.format(d);
-
-        //根据部门查询调岗记录数
-        List<Map> countByTimeDepartment = checkAdjustingPostsService.findCountByTimeDepartment("技术部",createDate);
-        for (Map map : countByTimeDepartment) {
-            Map map1 = new HashMap();
-            map1.put("bumen",map.get("from_bumen") == null ? "" : map.get("from_bumen").toString());//部门
-            map1.put("benyue",map.get("benyue") == null ? "" : map.get("benyue").toString());//本月
-            map1.put("shangyue",map.get("shangyue") == null ? "" : map.get("shangyue").toString());//上月
-            map1.put("ruzhi",map.get("ruzhi") == null ? "" : map.get("ruzhi").toString());//入职
-            map1.put("zhudonglizhi",map.get("zhudonglizhi") == null ? "" : map.get("zhudonglizhi").toString());//主动离职
-            map1.put("beidonglizhi",map.get("beidonglizhi") == null ? "" : map.get("beidonglizhi").toString());//被动离职
-            map1.put("zhuangzheng",map.get("zhuangzheng") == null ? "" : map.get("zhuangzheng").toString());//转正
-            map1.put("diaodong",map.get("diaodong") == null ? "" : map.get("diaodong").toString());//调动
-            map1.put("tiaoxin",map.get("tiaoxin") == null ? "" : map.get("tiaoxin").toString());//调薪
-            map1.put("beizhu",map.get("beizhu") == null ? "" : map.get("beizhu").toString());//备注
-            listDepartment.add(map1);
-        }
-
-        //根据技术岗位查询调岗记录数
-        List<Map> countByTimeTechnology = checkAdjustingPostsService.findCountByTimeTechnology("JAVA", createDate);
-        for (Map map : countByTimeTechnology) {
-            Map map1 = new HashMap();
-            map1.put("bumen",map.get("jishu_leibie") == null ? "" : map.get("jishu_leibie").toString());//部门
-            map1.put("benyue",map.get("benyue") == null ? "" : map.get("benyue").toString());//本月
-            map1.put("shangyue",map.get("shangyue") == null ? "" : map.get("shangyue").toString());//上月
-            map1.put("ruzhi",map.get("ruzhi") == null ? "" : map.get("ruzhi").toString());//入职
-            map1.put("zhudonglizhi",map.get("zhudonglizhi") == null ? "" : map.get("zhudonglizhi").toString());//主动离职
-            map1.put("beidonglizhi",map.get("beidonglizhi") == null ? "" : map.get("beidonglizhi").toString());//被动离职
-            map1.put("zhuangzheng",map.get("zhuangzheng") == null ? "" : map.get("zhuangzheng").toString());//转正
-            map1.put("diaodong",map.get("diaodong") == null ? "" : map.get("diaodong").toString());//调动
-            map1.put("tiaoxin",map.get("tiaoxin") == null ? "" : map.get("tiaoxin").toString());//调薪
-            map1.put("beizhu",map.get("beizhu") == null ? "" : map.get("beizhu").toString());//备注
-            listTechnology.add(map1);
-        }
-        mapData.put("listDepartment", listDepartment);
-        mapData.put("listTechnology", listTechnology);
         return HttpResultUtil.successJson(mapData);
     }
 
 
 
-
-
-
-
-
-
-
-
     /**
-     * 查询调动信息
+     * 导出调动信息Excel
      * @return
      */
-    @RequestMapping(value = "downloadAdjustingExcel", method = RequestMethod.POST)
+    @RequestMapping(value = "downloadAdjustingExcel")
     @ResponseBody
     public String downloadAdjustingExcel(HttpServletRequest request, HttpServletResponse response) {
         logger.info("导出调动信息Excel downloadAdjustingExcel ----------Start--------");
-        Map mapData = new HashMap();
-
-//Map jsonData = HttpServletRequestUtils.readJsonData(request);
-//        String year = (String)jsonData.get("year");
-//        String month = (String)jsonData.get("month");
-//        if (StringUtils.isEmpty(year)){
-//            return HttpResultUtil.errorJson("year为空!");
-//        }
-//        if (StringUtils.isEmpty(month)){
-//            return HttpResultUtil.errorJson("month为空!");
-//        }
+        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+        String year = (String)jsonData.get("year");
+        String month = (String)jsonData.get("month");
+        if (StringUtils.isEmpty(year)){
+            return HttpResultUtil.errorJson("year为空!");
+        }
+        if (StringUtils.isEmpty(month)){
+            return HttpResultUtil.errorJson("month为空!");
+        }
         try {
 
-            String year = "2018";
-            String month = "12";
-            //2018-12
-            String createDate = year + "-" + month;
+            //查询数据
+            Map mapData = query(year, month);
+            mapData.put("year", year);
+            mapData.put("month", month);
 
-//            List<Map> listDepartment = new ArrayList<>();
-//            List<Map> listTechnology = new ArrayList<>();
-//            //根据部门查询调岗记录数
-//            List<Map> countByTimeDepartment = checkAdjustingPostsService.findCountByTimeDepartment("技术部",createDate);
-//            for (Map map : countByTimeDepartment) {
-//                Map map1 = new HashMap();
-//                map1.put("bumen",map.get("from_bumen") == null ? "" : map.get("from_bumen").toString());//部门
-//                map1.put("benyue",map.get("benyue") == null ? "" : map.get("benyue").toString());//本月
-//                map1.put("shangyue",map.get("shangyue") == null ? "" : map.get("shangyue").toString());//上月
-//                map1.put("ruzhi",map.get("ruzhi") == null ? "" : map.get("ruzhi").toString());//入职
-//                map1.put("zhudonglizhi",map.get("zhudonglizhi") == null ? "" : map.get("zhudonglizhi").toString());//主动离职
-//                map1.put("beidonglizhi",map.get("beidonglizhi") == null ? "" : map.get("beidonglizhi").toString());//被动离职
-//                map1.put("zhuangzheng",map.get("zhuangzheng") == null ? "" : map.get("zhuangzheng").toString());//转正
-//                map1.put("diaodong",map.get("diaodong") == null ? "" : map.get("diaodong").toString());//调动
-//                map1.put("tiaoxin",map.get("tiaoxin") == null ? "" : map.get("tiaoxin").toString());//调薪
-//                map1.put("beizhu",map.get("beizhu") == null ? "" : map.get("beizhu").toString());//备注
-//                listDepartment.add(map1);
-//            }
-//
-//            //根据技术岗位查询调岗记录数
-//            List<Map> countByTimeTechnology = checkAdjustingPostsService.findCountByTimeTechnology("JAVA", createDate);
-//            for (Map map : countByTimeTechnology) {
-//                Map map1 = new HashMap();
-//                map1.put("bumen",map.get("jishu_leibie") == null ? "" : map.get("jishu_leibie").toString());//部门
-//                map1.put("benyue",map.get("benyue") == null ? "" : map.get("benyue").toString());//本月
-//                map1.put("shangyue",map.get("shangyue") == null ? "" : map.get("shangyue").toString());//上月
-//                map1.put("ruzhi",map.get("ruzhi") == null ? "" : map.get("ruzhi").toString());//入职
-//                map1.put("zhudonglizhi",map.get("zhudonglizhi") == null ? "" : map.get("zhudonglizhi").toString());//主动离职
-//                map1.put("beidonglizhi",map.get("beidonglizhi") == null ? "" : map.get("beidonglizhi").toString());//被动离职
-//                map1.put("zhuangzheng",map.get("zhuangzheng") == null ? "" : map.get("zhuangzheng").toString());//转正
-//                map1.put("diaodong",map.get("diaodong") == null ? "" : map.get("diaodong").toString());//调动
-//                map1.put("tiaoxin",map.get("tiaoxin") == null ? "" : map.get("tiaoxin").toString());//调薪
-//                map1.put("beizhu",map.get("beizhu") == null ? "" : map.get("beizhu").toString());//备注
-//                listTechnology.add(map1);
-//            }
-//            mapData.put("listDepartment", listDepartment);
-//            mapData.put("listTechnology", listTechnology);
-
-            Map<String, Object> map = new HashMap<String, Object>();
-
-            map.put("year", year);
-            map.put("month", month);
-            //map.put("listDepartment",listDepartment);
-            //map.put("listTechnology",listTechnology);
             File file = null;
             InputStream inputStream = null;
             ServletOutputStream out = null;
             request.setCharacterEncoding("UTF-8");
             //根据模板类型
-            file = ExportExcel.createExcel(map,"myexcel","adjusting.ftl",request);
+            file = ExportExcel.createExcel(mapData,"myexcel","adjusting.ftl",request);
             inputStream = new FileInputStream(file);
             response.setCharacterEncoding("utf-8");
             response.setContentType("application/msexcel");
-            response.setHeader("content-disposition", "attachment;filename="+ URLEncoder.encode("12312312312" + ".xlsx", "UTF-8"));
+            response.setHeader("content-disposition", "attachment;filename="+ URLEncoder.encode("月末人员异动统计表空" + ".xls", "UTF-8"));
             out = response.getOutputStream();
             byte[] buffer = new byte[512]; // 缓冲区
             int bytesToRead = -1;
@@ -314,8 +192,154 @@ public class AbnormalSituationInterface {
             out.flush();
             return null;
         } catch (Exception e) {
-
+            return HttpResultUtil.errorJson("导出Excel失败!");
         }
+    }
+
+
+
+    //查询组装数据
+    public Map query(String year, String month) {
+        Map mapData = new HashMap();
+        //2018-12
+        String createDate = year + "-" + month;
+        List<CheckChangeResult> listDepartment = null;
+        List<CheckChangeResult> listTechnology = null;
+        List<CheckChangeResult> listCount = null;
+
+
+        //先查询统计表，如果没有的话 进行拼装（部门）
+        listDepartment = checkChangeResultService.queryChangeResultByType(createDate, "1");
+        if(listDepartment == null){
+
+            //TODO  这里需要获取 部门 进行循环拼接
+            //根据部门查询调岗记录数
+            List<Map> countByTimeDepartment = checkAdjustingPostsService.findCountByTimeDepartment("技术部",createDate);
+            if(countByTimeDepartment != null){
+                for (Map map : countByTimeDepartment) {
+                    CheckChangeResult checkChangeResult = new CheckChangeResult();
+                    checkChangeResult.setBumen(map.get("from_bumen") == null ? "" : map.get("from_bumen").toString());//部门
+                    checkChangeResult.setBenyueRenshu(map.get("benyue") == null ? "" : map.get("benyue").toString());//本月
+                    checkChangeResult.setShangyuemoRenshu(map.get("shangyue") == null ? "" : map.get("shangyue").toString());//上月
+                    checkChangeResult.setRuzhi(map.get("ruzhi") == null ? "" : map.get("ruzhi").toString());//入职
+                    checkChangeResult.setLizhiZhudong(map.get("zhudonglizhi") == null ? "" : map.get("zhudonglizhi").toString());//主动离职
+                    checkChangeResult.setLizhiBeidong(map.get("beidonglizhi") == null ? "" : map.get("beidonglizhi").toString());//被动离职
+                    checkChangeResult.setZhuanzheng(map.get("zhuanzheng") == null ? "" : map.get("zhuanzheng").toString());//转正
+                    checkChangeResult.setTiaogang(map.get("tiaodong") == null ? "" : map.get("tiaodong").toString());//调动
+                    checkChangeResult.setTiaoxin(map.get("tiaoxin") == null ? "" : map.get("tiaoxin").toString());//调薪
+                    checkChangeResult.setBeizhu(map.get("beizhu") == null ? "" : map.get("beizhu").toString());//备注
+                    checkChangeResultService.save(checkChangeResult);
+                    listDepartment.add(checkChangeResult);
+                }
+            }else{
+                CheckChangeResult checkChangeResult = new CheckChangeResult();
+                checkChangeResult.setBumen("");//部门
+                checkChangeResult.setBenyueRenshu("0");//本月
+                checkChangeResult.setShangyuemoRenshu("0");//上月
+                checkChangeResult.setRuzhi("0");//入职
+                checkChangeResult.setLizhiZhudong("0");//主动离职
+                checkChangeResult.setLizhiBeidong("0");//被动离职
+                checkChangeResult.setZhuanzheng("0");//转正
+                checkChangeResult.setTiaogang("0");//调动
+                checkChangeResult.setTiaoxin("0");//调薪
+                checkChangeResult.setBeizhu("0");//备注
+                listDepartment.add(checkChangeResult);
+            }
+        }
+
+
+
+        //先查询统计表，如果没有的话 进行拼装（技术）
+        listTechnology = checkChangeResultService.queryChangeResultByType(createDate, "2");
+        if(listTechnology == null){
+
+
+            //TODO  这里需要获取 技术类 进行循环拼接
+            //根据技术岗位查询调岗记录数
+            List<Map> countByTimeTechnology = checkAdjustingPostsService.findCountByTimeTechnology("JAVA", createDate);
+            if(countByTimeTechnology != null){
+                for (Map map : countByTimeTechnology) {
+                    CheckChangeResult checkChangeResult = new CheckChangeResult();
+                    checkChangeResult.setBumen(map.get("jishu_leibie") == null ? "" : map.get("jishu_leibie").toString());//部门
+                    checkChangeResult.setBenyueRenshu(map.get("benyue") == null ? "" : map.get("benyue").toString());//本月
+                    checkChangeResult.setShangyuemoRenshu(map.get("shangyue") == null ? "" : map.get("shangyue").toString());//上月
+                    checkChangeResult.setRuzhi(map.get("ruzhi") == null ? "" : map.get("ruzhi").toString());//入职
+                    checkChangeResult.setLizhiZhudong(map.get("zhudonglizhi") == null ? "" : map.get("zhudonglizhi").toString());//主动离职
+                    checkChangeResult.setLizhiBeidong(map.get("beidonglizhi") == null ? "" : map.get("beidonglizhi").toString());//被动离职
+                    checkChangeResult.setZhuanzheng(map.get("zhuanzheng") == null ? "" : map.get("zhuanzheng").toString());//转正
+                    checkChangeResult.setTiaogang(map.get("tiaodong") == null ? "" : map.get("tiaodong").toString());//调动
+                    checkChangeResult.setTiaoxin(map.get("tiaoxin") == null ? "" : map.get("tiaoxin").toString());//调薪
+                    checkChangeResult.setBeizhu(map.get("beizhu") == null ? "" : map.get("beizhu").toString());//备注
+                    checkChangeResultService.save(checkChangeResult);
+                    listTechnology.add(checkChangeResult);
+                }
+            }else{
+                CheckChangeResult checkChangeResult = new CheckChangeResult();
+                checkChangeResult.setBumen("");//部门
+                checkChangeResult.setBenyueRenshu("0");//本月
+                checkChangeResult.setShangyuemoRenshu("0");//上月
+                checkChangeResult.setRuzhi("0");//入职
+                checkChangeResult.setLizhiZhudong("0");//主动离职
+                checkChangeResult.setLizhiBeidong("0");//被动离职
+                checkChangeResult.setZhuanzheng("0");//转正
+                checkChangeResult.setTiaogang("0");//调动
+                checkChangeResult.setTiaoxin("0");//调薪
+                checkChangeResult.setBeizhu("0");//备注
+                listTechnology.add(checkChangeResult);
+            }
+        }
+
+        //先查询统计表，如果没有的话 进行拼装（总数）
+        listCount = checkChangeResultService.queryChangeResultCount(createDate);
+        if(listCount == null){
+            List<Map> timeTechnologyCount = checkAdjustingPostsService.findTimeTechnologyCount(createDate);
+            if(timeTechnologyCount != null){
+                CheckChangeResult checkChangeResult = new CheckChangeResult();
+                checkChangeResult.setBenyueRenshu(timeTechnologyCount.get(0).get("benyue") == null ? "" : timeTechnologyCount.get(0).get("benyue").toString());//本月
+                checkChangeResult.setShangyuemoRenshu(timeTechnologyCount.get(0).get("shangyue") == null ? "" : timeTechnologyCount.get(0).get("shangyue").toString());//上月
+                checkChangeResult.setRuzhi(timeTechnologyCount.get(0).get("ruzhi") == null ? "" : timeTechnologyCount.get(0).get("ruzhi").toString());//入职
+                checkChangeResult.setLizhiZhudong(timeTechnologyCount.get(0).get("zhudonglizhi") == null ? "" : timeTechnologyCount.get(0).get("zhudonglizhi").toString());//主动离职
+                checkChangeResult.setLizhiBeidong(timeTechnologyCount.get(0).get("beidonglizhi") == null ? "" : timeTechnologyCount.get(0).get("beidonglizhi").toString());//被动离职
+                checkChangeResult.setZhuanzheng(timeTechnologyCount.get(0).get("zhuanzheng") == null ? "" : timeTechnologyCount.get(0).get("zhuanzheng").toString());//转正
+                checkChangeResult.setTiaogang(timeTechnologyCount.get(0).get("tiaodong") == null ? "" : timeTechnologyCount.get(0).get("tiaodong").toString());//调动
+                checkChangeResult.setTiaoxin(timeTechnologyCount.get(0).get("tiaoxin") == null ? "" : timeTechnologyCount.get(0).get("tiaoxin").toString());//调薪
+                checkChangeResult.setBeizhu(timeTechnologyCount.get(0).get("beizhu") == null ? "" : timeTechnologyCount.get(0).get("beizhu").toString());//备注
+                listCount.add(checkChangeResult);
+            }else{
+                CheckChangeResult checkChangeResult = new CheckChangeResult();
+                checkChangeResult.setBenyueRenshu("0");//本月
+                checkChangeResult.setShangyuemoRenshu("0");//上月
+                checkChangeResult.setRuzhi("0");//入职
+                checkChangeResult.setLizhiZhudong("0");//主动离职
+                checkChangeResult.setLizhiBeidong("0");//被动离职
+                checkChangeResult.setZhuanzheng("0");//转正
+                checkChangeResult.setTiaogang("0");//调动
+                checkChangeResult.setTiaoxin("0");//调薪
+                checkChangeResult.setBeizhu("");//备注
+                listCount.add(checkChangeResult);
+            }
+        }
+        mapData.put("listDepartment", listDepartment);
+        mapData.put("listTechnology", listTechnology);
+        mapData.put("listCount", listCount);
+
+        return mapData;
+    }
+
+
+
+    @RequestMapping(value = "asd",method = RequestMethod.POST)
+    @ResponseBody
+    public String asd(HttpServletRequest req){
+        logger.info("app asd---------- Start--------");
+
+        Map mapData = new HashMap();
+        List<String> list = new ArrayList<>();
+        list.add("技术部");
+        list.add("总裁办");
+        List<CheckChangeResult> asd = checkChangeResultService.selectPokemons(list, "经理");
+        mapData.put("asd",asd);
         return HttpResultUtil.successJson(mapData);
     }
+
 }

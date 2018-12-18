@@ -21,6 +21,9 @@ public interface CheckAdjustingPostsDao extends CrudDao<CheckAdjustingPosts> {
     List<Map> findCountByTimeDepartment(Map map);
     List<Map> findCountByTimeTechnology(Map map);
 
-    List<CheckAdjustingPosts> selectPokemons(Map map);
+
+
+    List<Map> findTimeTechnologyCount(Map map);
+
 
 }

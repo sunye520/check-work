@@ -78,4 +78,16 @@ public class CheckUserService extends CrudService<CheckUserDao, CheckUser> {
 	public List<CheckUser> findAll() {
 		return dao.findAll();
 	}
+
+
+	public List<CheckUser> findByNumber (String number){
+		Map map = new HashMap();
+		map.put("number",number);
+		return dao.findByNumber(map);
+	}
+	public List<CheckUser> findByName (String name){
+		Map map = new HashMap();
+		map.put("name",name);
+		return dao.findByName(map);
+	}
 }
