@@ -24,6 +24,7 @@ public interface CheckUserDao extends CrudDao<CheckUser> {
 
     List<CheckUser> findAll();
 
+    List<CheckUser> findListByName(Map map);
     List<CheckUser> findByNumber(Map map);
 
     List<CheckUser> findByName(Map map);

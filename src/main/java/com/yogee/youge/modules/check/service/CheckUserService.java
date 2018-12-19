@@ -78,6 +78,12 @@ public class CheckUserService extends CrudService<CheckUserDao, CheckUser> {
 	public List<CheckUser> findAll() {
 		return dao.findAll();
 	}
+	//根据员工姓名查询
+	public List<CheckUser> findListByName(String name) {
+		Map map = new HashMap();
+		map.put("name",name);
+		return dao.findListByName(map);
+	}
 
 
 	public List<CheckUser> findByNumber (String number){

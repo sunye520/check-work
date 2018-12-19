@@ -36,5 +36,8 @@
 	<!-- 微信缓存 -->
 	<cache name="wxCache" maxElementsInMemory="2" eternal="false" timeToLiveSeconds="7000" overflowToDisk="true"
 		   memoryStoreEvictionPolicy="FIFO"/>
+	<!-- 上班、午休、下班时间缓存 -->
+	<cache name="businessDate" maxElementsInMemory="3" eternal="false" timeToLiveSeconds="7000" overflowToDisk="true"
+		   memoryStoreEvictionPolicy="FIFO"/>
 
 </ehcache>

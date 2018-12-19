@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yogee.youge.modules.check.dao.CheckPunchCardDao">
+    
+	<sql id="checkPunchCardColumns">
+		a.id AS "id",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.name AS "name",
+		a.number AS "number",
+		a.punch_date AS "punchDate",
+		a.shang_cell_time AS "shangCellTime",
+		a.shang_chi AS "shangChi",
+		a.shang_chi_time AS "shangChiTime",
+		a.shang_chi_name AS "shangChiName",
+		a.shang_ask_leave AS "shangAskLeave",
+		a.shang_ask_leave_time AS "shangAskLeaveTime",
+		a.xia_cell_time AS "xiaCellTime",
+		a.xia_zao AS "xiaZao",
+		a.xia_zao_time AS "xiaZaoTime",
+		a.xia_zao_name AS "xiaZaoName",
+		a.xia_ask_leave AS "xiaAskLeave",
+		a.xia_ask_leave_time AS "xiaAskLeaveTime"
+	</sql>
+	
+	<sql id="checkPunchCardJoins">
+	</sql>
+    
+	<select id="get" resultType="CheckPunchCard">
+		SELECT 
+			<include refid="checkPunchCardColumns"/>
+		FROM check_punch_card a
+		<include refid="checkPunchCardJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="CheckPunchCard">
+		SELECT 
+			<include refid="checkPunchCardColumns"/>
+		FROM check_punch_card a
+		<include refid="checkPunchCardJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="CheckPunchCard">
+		SELECT 
+			<include refid="checkPunchCardColumns"/>
+		FROM check_punch_card a
+		<include refid="checkPunchCardJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO check_punch_card(
+			id,
+			create_date,
+			update_date,
+			del_flag,
+			name,
+			number,
+			punch_date,
+			shang_cell_time,
+			shang_chi,
+			shang_chi_time,
+			shang_chi_name,
+			shang_ask_leave,
+			shang_ask_leave_time,
+			xia_cell_time,
+			xia_zao,
+			xia_zao_time,
+			xia_zao_name,
+			xia_ask_leave,
+			xia_ask_leave_time
+		) VALUES (
+			#{id},
+			#{createDate},
+			#{updateDate},
+			#{delFlag},
+			#{name},
+			#{number},
+			#{punchDate},
+			#{shangCellTime},
+			#{shangChi},
+			#{shangChiTime},
+			#{shangChiName},
+			#{shangAskLeave},
+			#{shangAskLeaveTime},
+			#{xiaCellTime},
+			#{xiaZao},
+			#{xiaZaoTime},
+			#{xiaZaoName},
+			#{xiaAskLeave},
+			#{xiaAskLeaveTime}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE check_punch_card SET 	
+			update_date = #{updateDate},
+			name = #{name},
+			number = #{number},
+			punch_date = #{punchDate},
+			shang_cell_time = #{shangCellTime},
+			shang_chi = #{shangChi},
+			shang_chi_time = #{shangChiTime},
+			shang_chi_name = #{shangChiName},
+			shang_ask_leave = #{shangAskLeave},
+			shang_ask_leave_time = #{shangAskLeaveTime},
+			xia_cell_time = #{xiaCellTime},
+			xia_zao = #{xiaZao},
+			xia_zao_time = #{xiaZaoTime},
+			xia_zao_name = #{xiaZaoName},
+			xia_ask_leave = #{xiaAskLeave},
+			xia_ask_leave_time = #{xiaAskLeaveTime}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE check_punch_card SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+
+	<select id="findCountByNameAndPunchDate" resultType="CheckPunchCard">
+		SELECT
+		<include refid="checkPunchCardColumns"/>
+		FROM check_punch_card a
+		<include refid="checkPunchCardJoins"/>
+		WHERE
+		a.del_flag = 0
+		AND a.name = #{name}
+		AND a.punch_date = #{punchDate}
+	</select>
+
+	<select id="findCountByNumberAndPunchDate" resultType="CheckPunchCard">
+		SELECT
+		<include refid="checkPunchCardColumns"/>
+		FROM check_punch_card a
+		<include refid="checkPunchCardJoins"/>
+		WHERE
+		a.del_flag = 0
+		AND a.number = #{number}
+		AND a.punch_date = #{punchDate}
+	</select>
+
+	<delete id="deleteByNameAndPunchDate">
+		DELETE FROM
+		check_punch_card
+		WHERE
+			del_flag = 0
+		AND name = #{name}
+		AND punch_date = #{punchDate}
+	</delete>
+
+	<insert id="saveList" parameterType="list">
+		insert into check_punch_card
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			id,
+			create_date,
+			update_date,
+			del_flag,
+			name,
+			number,
+			punch_date,
+			shang_cell_time,
+			shang_chi,
+			shang_chi_time,
+			shang_chi_name,
+			shang_ask_leave,
+			shang_ask_leave_time,
+			xia_cell_time,
+			xia_zao,
+			xia_zao_time,
+			xia_zao_name,
+			xia_ask_leave,
+			xia_ask_leave_time
+		</trim>
+		value
+		<foreach collection="list" item="item" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				<choose>
+					<when test="item.id!= null">
+						#{item.id,jdbcType=VARCHAR},
+					</when>
+					<otherwise>
+						NULL,
+					</otherwise>
+				</choose>
+				NOW(),
+				NOW(),
+				'0',
+				<choose>
+					<when test="item.name != null">
+						#{item.name,jdbcType=VARCHAR},
+					</when>
+					<otherwise>
+						NULL,
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="item.number!= null">
+						#{item.number,jdbcType=VARCHAR},
+					</when>
+					<otherwise>
+						NULL,
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="item.punchDate != null">
+						#{item.punchDate,jdbcType=VARCHAR},
+					</when>
+					<otherwise>
+						NULL,
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="item.shangCellTime != null">
+						#{item.shangCellTime,jdbcType=VARCHAR},
+					</when>
+					<otherwise>
+						NULL,
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="item.shangChi != null">
+						#{item.shangChi,jdbcType=VARCHAR},
+					</when>
+					<otherwise>
+						NULL,
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="item.shangChiTime != null">
+						#{item.shangChiTime,jdbcType=VARCHAR},
+					</when>
+					<otherwise>
+						NULL,
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="item.shangChiName != null">
+						#{item.shangChiName,jdbcType=VARCHAR},
+					</when>
+					<otherwise>
+						NULL,
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="item.shangAskLeave != null">
+						#{item.shangAskLeave,jdbcType=VARCHAR},
+					</when>
+					<otherwise>
+						NULL,
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="item.shangAskLeaveTime != null">
+						#{item.shangAskLeaveTime,jdbcType=VARCHAR},
+					</when>
+					<otherwise>
+						NULL,
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="item.xiaCellTime != null">
+						#{item.xiaCellTime,jdbcType=VARCHAR},
+					</when>
+					<otherwise>
+						NULL,
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="item.xiaZao != null">
+						#{item.xiaZao,jdbcType=VARCHAR},
+					</when>
+					<otherwise>
+						NULL,
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="item.xiaZaoTime != null">
+						#{item.xiaZaoTime,jdbcType=VARCHAR},
+					</when>
+					<otherwise>
+						NULL,
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="item.xiaZaoName != null">
+						#{item.xiaZaoName,jdbcType=VARCHAR},
+					</when>
+					<otherwise>
+						NULL,
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="item.xiaAskLeave != null">
+						#{item.xiaAskLeave,jdbcType=VARCHAR},
+					</when>
+					<otherwise>
+						NULL,
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="item.xiaAskLeaveTime != null">
+						#{item.xiaAskLeaveTime,jdbcType=VARCHAR},
+					</when>
+					<otherwise>
+						NULL,
+					</otherwise>
+				</choose>
+			</trim>
+		</foreach>
+	</insert>
+
+
+	<select id="findByYearMonth" resultType="CheckPunchCard">
+		SELECT
+		<include refid="checkPunchCardColumns"/>
+		FROM check_punch_card a
+		<include refid="checkPunchCardJoins"/>
+		<where>
+			a.del_flag = '0'
+			AND SUBSTR(a.punch_date,1,7) = #{punchDate}
+		</where>
+		ORDER BY a.number,a.punch_date
+	</select>
+
+	<select id="findNumberByYearMonth" resultType="CheckPunchCard">
+		SELECT
+		<include refid="checkPunchCardColumns"/>
+		FROM check_punch_card a
+		<include refid="checkPunchCardJoins"/>
+		<where>
+			a.del_flag = '0'
+			AND SUBSTR(a.punch_date,1,7) = #{punchDate}
+		</where>
+		group by a.number
+		ORDER BY a.number
+	</select>
+
+	<select id="findAskLiveTimeByNumber" resultType="CheckPunchCard">
+		SELECT
+			X.number,
+			X.`value`,
+			SUM(X.time) AS sumTime
+		FROM
+			(
+				(
+					SELECT
+						number,
+						s.VALUE,
+						SUM(a.shang_ask_leave_time) AS time,
+						s.sort
+					FROM
+						check_punch_card a
+					LEFT JOIN sys_dict s ON a.shang_ask_leave = s.`value`
+					AND s.type = 'qingjia_leixing'
+					WHERE
+						a.number = #{number}
+						AND a.shang_ask_leave != '0'
+						AND SUBSTR(a.punch_date,1,7) = #{punchDate}
+					GROUP BY
+						a.shang_ask_leave
+				)
+				UNION ALL
+					(
+						SELECT
+							number,
+							s.VALUE,
+							SUM(a.xia_ask_leave_time) AS time,
+							s.sort
+						FROM
+							check_punch_card a
+						LEFT JOIN sys_dict s ON a.xia_ask_leave = s.`value`
+						AND s.type = 'qingjia_leixing'
+						WHERE
+							a.number = #{number}
+						AND a.xia_ask_leave != '0'
+						AND SUBSTR(a.punch_date,1,7) = #{punchDate}
+						GROUP BY
+							a.xia_ask_leave
+					)
+			) X
+		GROUP BY
+			X.VALUE
+		ORDER BY
+			X.sort
+	</select>
+
+	<select id="findShangChiByNumber" resultType="CheckPunchCard">
+			SELECT
+				a.number,
+				a.shang_chi_time
+			FROM
+				check_punch_card a
+			WHERE
+				a.number = #{number}
+			AND a.shang_chi ='1'
+			AND SUBSTR(a.punch_date, 1, 7)= #{punchDate}
+	</select>
+	<select id="findXiaZaoByNumber" resultType="CheckPunchCard">
+			SELECT
+				a.number,
+				a.xia_zao_time
+			FROM
+				check_punch_card a
+			WHERE
+				a.number = #{number}
+			AND a.xia_zao ='1'
+			AND SUBSTR(a.punch_date, 1, 7)= #{punchDate}
+	</select>
+
+</mapper>
