@@ -72,7 +72,36 @@
 			#{delFlag}
 		)
 	</insert>
-	
+	<insert id="insetDict">
+		INSERT INTO sys_dict(
+			id,
+			value,
+			label,
+			type,
+			description,
+			sort,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{value},
+			#{label},
+			#{type},
+			#{description},
+			#{sort},
+			'1',
+			NOW(),
+			'1',
+			NOW(),
+			'',
+			'0'
+		)
+	</insert>
+
 	<update id="update">
 		UPDATE sys_dict SET 
 			value = #{value}, 
@@ -91,5 +120,25 @@
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
+
+	<select id="findDictByMap" resultType="Dict">
+		  SELECT
+			id,
+			label,
+			value,
+			description,
+			sort,
+			type
+		FROM sys_dict a
+		WHERE a. del_flag ='0'
+		AND a.create_date > '2018-12-01 00:00:00'
+		<if test="label != null and label != ''">
+			AND label CONCAT('%', #{label}, '%')
+		</if>
+		<if test="description != null and description != ''">
+			AND description CONCAT('%', #{description}, '%')
+		</if>
+		ORDER BY type, sort, update_date DESC
+	</select>
 	
 </mapper>

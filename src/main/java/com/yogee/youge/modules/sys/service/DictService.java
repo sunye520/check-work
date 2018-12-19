@@ -4,6 +4,7 @@
 package com.yogee.youge.modules.sys.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.yogee.youge.common.service.CrudService;
 import com.yogee.youge.modules.sys.utils.DictUtils;
@@ -43,4 +44,11 @@ public class DictService extends CrudService<DictDao, Dict> {
 		CacheUtils.remove(DictUtils.CACHE_DICT_MAP);
 	}
 
+	public List<Dict> findDictByMap(Map map) {
+		return dao.findDictByMap(map);
+	}
+	@Transactional(readOnly = false)
+	public void insetDict(Dict dict) {
+		dao.insetDict(dict);
+	}
 }

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yogee.youge.modules.check.dao.CheckDepartmentDao">
+    
+	<sql id="checkDepartmentColumns">
+		a.id AS "id",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.name AS "name",
+		a.parent_id AS "parentId",
+		a.department_type AS "departmentType"
+	</sql>
+	
+	<sql id="checkDepartmentJoins">
+	</sql>
+    
+	<select id="get" resultType="CheckDepartment">
+		SELECT 
+			<include refid="checkDepartmentColumns"/>
+		FROM check_department a
+		<include refid="checkDepartmentJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="CheckDepartment">
+		SELECT 
+			<include refid="checkDepartmentColumns"/>
+		FROM check_department a
+		<include refid="checkDepartmentJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="CheckDepartment">
+		SELECT 
+			<include refid="checkDepartmentColumns"/>
+		FROM check_department a
+		<include refid="checkDepartmentJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO check_department(
+			id,
+			create_date,
+			update_date,
+			del_flag,
+			name,
+			parent_id,
+			department_type
+		) VALUES (
+			#{id},
+			#{createDate},
+			#{updateDate},
+			#{delFlag},
+			#{name},
+			#{parentId},
+			#{departmentType}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE check_department SET 	
+			update_date = #{updateDate},
+			name = #{name},
+			parent_id = #{parentId},
+			department_type = #{departmentType}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE check_department SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	<!--部门列表-->
+	<select id="findDepartment" resultType="CheckDepartment">
+		SELECT
+			p.id parentId,
+			p.name parentName,
+			a.id sonId,
+			a.name sonName
+		FROM
+			check_department a
+		LEFT JOIN check_department p ON a.parent_id = p.id
+		WHERE
+			a.department_type = 2
+		and a.del_flag = 0
+		UNION ALL
+		SELECT
+			a.id parentId,
+			a.name parentName,
+			'' AS sonId,
+			'' AS sonName
+		FROM
+			check_department a
+		WHERE
+			a.department_type = 1
+		and a.del_flag = 0
+		AND a.id NOT IN (
+			SELECT
+				t.parent_id
+			FROM
+				check_department t
+			WHERE
+				t.department_type = 2
+			and t.del_flag = 0
+			GROUP BY t.parent_id
+		)
+	</select>
+
+	<!--查看-->
+	<select id="findDepartmentByName" resultType="java.lang.Integer">
+		SELECT
+		count(a.id)
+		FROM check_department a
+		WHERE a.del_flag = '0'
+		and a.name =#{name}
+	</select>
+	<!--查询一级部门-->
+	<select id="findParentDepartment" resultType="CheckDepartment">
+		SELECT
+			a.id parentId,
+			a.name parentName
+		FROM
+			check_department a
+		WHERE
+		 a.del_flag = 0
+		and a.department_type = '1'
+	</select>
+
+</mapper>

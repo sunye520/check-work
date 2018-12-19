@@ -4,6 +4,7 @@
 package com.yogee.youge.modules.sys.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import com.yogee.youge.common.persistence.CrudDao;
 import com.yogee.youge.common.persistence.annotation.MyBatisDao;
@@ -18,5 +19,8 @@ import com.yogee.youge.modules.sys.entity.Dict;
 public interface DictDao extends CrudDao<Dict> {
 
 	public List<String> findTypeList(Dict dict);
-	
+
+    List<Dict> findDictByMap(Map map);
+
+    void insetDict(Dict dict);
 }
