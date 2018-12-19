@@ -29,4 +29,22 @@ public interface CheckUserDao extends CrudDao<CheckUser> {
 
     List<CheckUser> findByName(Map map);
 
+    long findAllCount(CheckUser checkUser);
+
+    List<Map> findCheckUserByGender();
+
+    List<Map> findCheckUserByEducation();
+
+    List<Map> findCheckUserByTechnology();
+
+    List<Map> findCheckUserByLevel();
+
+    List<Map> findCheckUserByPolitics();
+
+    List<Map> findCheckUserAge();
+
+    List<Map> findCheckUserWorkingYears();
+
+    List<Map> findCheckUserByDepartment();
+
 }

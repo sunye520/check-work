@@ -337,4 +337,46 @@
 	</select>
 
 
+	<select id="findAllCount" resultType="long">
+		SELECT
+			COUNT(1)
+		FROM check_user a
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+
+
+	<select id="findCheckUserByGender" resultType="java.util.HashMap">
+		SELECT  xingbie , COUNT(id) AS count FROM check_user WHERE del_flag = 0 GROUP BY xingbie;
+	</select>
+
+	<select id="findCheckUserByEducation" resultType="java.util.HashMap">
+		SELECT  zuigao_xueli , COUNT(id) AS count FROM check_user WHERE del_flag = 0 GROUP BY zuigao_xueli;
+	</select>
+
+	<select id="findCheckUserByTechnology" resultType="java.util.HashMap">
+		SELECT  jishu_leibie , COUNT(id) AS count FROM check_user WHERE del_flag = 0 GROUP BY jishu_leibie;
+	</select>
+
+	<select id="findCheckUserByLevel" resultType="java.util.HashMap">
+		SELECT  cengji_leibie , COUNT(id) AS count FROM check_user WHERE del_flag = 0 GROUP BY cengji_leibie;
+	</select>
+
+	<select id="findCheckUserByPolitics" resultType="java.util.HashMap">
+		SELECT  zhengzhi_mianmao , COUNT(id) AS count FROM check_user WHERE del_flag = 0 GROUP BY zhengzhi_mianmao;
+	</select>
+
+	<select id="findCheckUserAge" resultType="java.util.HashMap">
+		SELECT  name , ROUND(DATEDIFF(CURDATE(), birthday)/365.2422) AS age FROM check_user WHERE del_flag = 0 ;
+	</select>
+
+	<select id="findCheckUserWorkingYears" resultType="java.util.HashMap">
+		SELECT  name , ROUND(DATEDIFF(CURDATE(), ruzhi_date)/365.2422) AS years FROM check_user WHERE del_flag = 0 ;
+	</select>
+
+	<select id="findCheckUserByDepartment" resultType="java.util.HashMap">
+		SELECT  bumen , COUNT(id) AS count FROM check_user WHERE del_flag = 0 GROUP BY bumen;
+	</select>
+
+
+
 </mapper>
