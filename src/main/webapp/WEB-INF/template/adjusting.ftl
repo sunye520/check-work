@@ -553,6 +553,10 @@
             </Borders>
               <Interior ss:Color="#D9D9D9" ss:Pattern="Solid"/>
         </Style>
+        <Style ss:ID="s83">
+            <Alignment ss:Horizontal="Center"/>
+            <Font ss:FontName="宋体" x:CharSet="134" ss:Size="11" ss:Color="#000000"/>
+        </Style>
     </Styles>
     <Worksheet ss:Name="201811">
         <Table ss:ExpandedColumnCount="15" ss:ExpandedRowCount="${listDepartment?size+listTechnology?size+10}" x:FullColumns="1" x:FullRows="1" ss:StyleID="s51"
@@ -675,10 +679,13 @@
             <#if listTechnology?? >
                 <#list listTechnology as checkchangeresult>
                         <Row ss:Height="18.5">
-                            <Cell ss:StyleID="s59">
-                                <Data ss:Type="String">技术细分</Data>
-                            </Cell>
-                            <Cell ss:StyleID="s59">
+                            <#if checkchangeresult_index = 0 >
+                                <Cell ss:StyleID="s59" ss:MergeDown="${listTechnology?size-1}" >
+                                    <Data ss:Type="String">技术细分</Data>
+                                </Cell>
+                            </#if>
+
+                            <Cell ss:Index="2" ss:StyleID="s59">
                                 <Data ss:Type="String">${checkchangeresult.bumen?if_exists}</Data>
                             </Cell>
                             <Cell ss:StyleID="s58">
