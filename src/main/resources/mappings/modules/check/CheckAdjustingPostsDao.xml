@@ -113,14 +113,12 @@
 	<!-- 部门调岗 -->
 	<select id="findCountByTimeDepartment" resultType="java.util.HashMap">
 		select
-		from_bumen,
+		(select name from check_department where del_flag = '0' and department_type = '1' and name = #{bumen}) from_bumen,
 		(select count(id) from check_user where del_flag = '0' and shifou_lizhi = '0' and bumen = #{bumen}
-		and SUBSTRING(create_date, '1', '7') = #{date}
 		) benyue ,
 		IFNULL((select benyue_renshu from check_change_result where del_flag = '0' and bumen = #{bumen}
-		and SUBSTRING(create_date, '1', '7') = #{date}
+		and SUBSTRING(create_date, '1', '7') = #{formatDate}
 		) ,(select count(id) from check_user where del_flag = '0' and shifou_lizhi = '0' and bumen = #{bumen}
-		and SUBSTRING(create_date, '1', '7') = #{date}
 		)) shangyue ,
 		(select count(id) from check_user where del_flag = '0' and shifou_lizhi = '0' and bumen = #{bumen}
 		AND SUBSTRING(ruzhi_date, '1', '7') = #{date}
@@ -146,19 +144,55 @@
 		) ,'') beizhu
 		from
 		check_adjusting_posts where del_flag = '0' and from_bumen = #{bumen}
+		and SUBSTRING(create_date, '1', '7') = #{date}
+
+		<foreach collection="list" index="index" item="item">
+			UNION ALL
+			select
+			(select name from check_department where del_flag = '0' and department_type = '1' and name = #{item}) from_bumen,
+			(select count(id) from check_user where del_flag = '0' and shifou_lizhi = '0' and bumen = #{item}
+			) benyue ,
+			IFNULL((select benyue_renshu from check_change_result where del_flag = '0' and bumen = #{item}
+			and SUBSTRING(create_date, '1', '7') = #{formatDate}
+			) ,(select count(id) from check_user where del_flag = '0' and shifou_lizhi = '0' and bumen = #{item}
+			)) shangyue ,
+			(select count(id) from check_user where del_flag = '0' and shifou_lizhi = '0' and bumen = #{item}
+			AND SUBSTRING(ruzhi_date, '1', '7') = #{date}
+			) ruzhi ,
+			(select count(id) from check_user where del_flag = '0' and shifou_lizhi = '1' and lizhi_leixing = '0' and bumen
+			= #{item}
+			AND SUBSTRING(lizhi_time, '1', '7') = #{date}
+			) zhudonglizhi ,
+			(select count(id) from check_user where del_flag = '0' and shifou_lizhi = '1' and lizhi_leixing = '1' and bumen
+			= #{item}
+			AND SUBSTRING(lizhi_time, '1', '7') = #{date}
+			) beidonglizhi ,
+			(select count(id) from check_user where del_flag = '0' and hetong_leixing = '1' and shifou_lizhi = '0' and bumen
+			= #{item}
+			and SUBSTRING(zhuanzheng_date, '1', '7') = #{date}
+			) zhuanzheng ,
+			count(id) as tiaodong,
+			<!-- 调薪这条临时补位-->
+			(select count(id) from check_user where del_flag = '0000000000'
+			) tiaoxin,
+			IFNULL((select beizhu from check_change_result where del_flag = '0' and bumen = #{item}
+			and SUBSTRING(create_date, '1', '7') = #{date}
+			) ,'') beizhu
+			from
+			check_adjusting_posts where del_flag = '0' and from_bumen = #{item}
+			and SUBSTRING(create_date, '1', '7') = #{date}
+		</foreach>
 	</select>
 
-	<!-- 技术调岗 -->
-	<select id="findCountByTimeTechnology" resultType="java.util.HashMap">
+	<!-- 技术调岗 OK-->
+	<select id="findCountByTimeTechnology" parameterType="java.util.List" resultType="java.util.HashMap">
 		select
-		jishu_leibie,
+		(select label from sys_dict where del_flag = '0' and label = #{bumen} ) jishu_leibie ,
 		(select count(id) from check_user where del_flag = '0' and shifou_lizhi = '0' and jishu_leibie = #{bumen}
-		and SUBSTRING(create_date, '1', '7') = #{date}
 		) benyue ,
 		IFNULL((select benyue_renshu from check_change_result where del_flag = '0' and bumen = #{bumen}
-		and SUBSTRING(create_date, '1', '7') = #{date}
+		and SUBSTRING(create_date, '1', '7') = #{formatDate} -- 传本月-1月的时间
 		) ,(select count(id) from check_user where del_flag = '0' and shifou_lizhi = '0' and jishu_leibie = #{bumen}
-		and SUBSTRING(create_date, '1', '7') = #{date}
 		)) shangyue ,
 		(select count(id) from check_user where del_flag = '0' and shifou_lizhi = '0' and jishu_leibie = #{bumen}
 		AND SUBSTRING(ruzhi_date, '1', '7') = #{date}
@@ -184,19 +218,56 @@
 		) ,'') beizhu
 		from
 		check_adjusting_posts where del_flag = '0' and jishu_leibie = #{bumen}
+		and SUBSTRING(create_date, '1', '7') = #{date}
+
+		<foreach collection="list" index="index" item="item">
+			UNION ALL
+			select
+			(select label from sys_dict where del_flag = '0' and label = #{item} ) jishu_leibie ,
+			(select count(id) from check_user where del_flag = '0' and shifou_lizhi = '0' and jishu_leibie = #{item}
+			) benyue ,
+			IFNULL((select benyue_renshu from check_change_result where del_flag = '0' and bumen = #{item}
+			and SUBSTRING(create_date, '1', '7') = #{formatDate} -- 传本月-1月的时间
+			) ,(select count(id) from check_user where del_flag = '0' and shifou_lizhi = '0' and jishu_leibie = #{item}
+			)) shangyue ,
+			(select count(id) from check_user where del_flag = '0' and shifou_lizhi = '0' and jishu_leibie = #{item}
+			AND SUBSTRING(ruzhi_date, '1', '7') = #{date}
+			) ruzhi ,
+			(select count(id) from check_user where del_flag = '0' and shifou_lizhi = '1' and lizhi_leixing = '0' and
+			jishu_leibie = #{item}
+			AND SUBSTRING(lizhi_time, '1', '7') = #{date}
+			) zhudonglizhi ,
+			(select count(id) from check_user where del_flag = '0' and shifou_lizhi = '1' and lizhi_leixing = '1' and
+			jishu_leibie = #{item}
+			AND SUBSTRING(lizhi_time, '1', '7') = #{date}
+			) beidonglizhi ,
+			(select count(id) from check_user where del_flag = '0' and hetong_leixing = '1' and shifou_lizhi = '0' and
+			jishu_leibie = #{item}
+			and SUBSTRING(zhuanzheng_date, '1', '7') = #{date}
+			) zhuanzheng ,
+			count(id) as tiaodong,
+			<!-- 调薪这条临时补位-->
+			(select count(id) from check_user where del_flag = '0000000000'
+			) tiaoxin,
+			IFNULL((select beizhu from check_change_result where del_flag = '0' and bumen = #{item}
+			and SUBSTRING(create_date, '1', '7') = #{date}
+			) ,'') beizhu
+			from
+			check_adjusting_posts where del_flag = '0' and jishu_leibie = #{item}
+			and SUBSTRING(create_date, '1', '7') = #{date}
+		</foreach>
+
 	</select>
 
 
-	<!-- 查询总数 -->
+	<!-- 查询总数 OK-->
 	<select id="findTimeTechnologyCount" resultType="java.util.HashMap">
 		select
 		(select count(id) from check_user where del_flag = '0' and shifou_lizhi = '0'
-		and SUBSTRING(create_date, '1', '7') = #{date}
 		) benyue ,
 		IFNULL((select benyue_renshu from check_change_result where del_flag = '0'
-		and SUBSTRING(create_date, '1', '7') = #{date}
+		and SUBSTRING(create_date, '1', '7') = #{formatDate}
 		) ,(select count(id) from check_user where del_flag = '0' and shifou_lizhi = '0'
-		and SUBSTRING(create_date, '1', '7') = #{date}
 		)) shangyue ,
 		(select count(id) from check_user where del_flag = '0' and shifou_lizhi = '0'
 		AND SUBSTRING(ruzhi_date, '1', '7') = #{date}
@@ -210,18 +281,13 @@
 		(select count(id) from check_user where del_flag = '0' and hetong_leixing = '1' and shifou_lizhi = '0'
 		and SUBSTRING(zhuanzheng_date, '1', '7') = #{date}
 		) zhuanzheng ,
-		count(id) as tiaodong,
+		count(id) as tiaodong ,
 		<!-- 调薪这条临时补位-->
 		(select count(id) from check_user where del_flag = '0000000000'
-		) tiaoxin,
-		IFNULL((select beizhu from check_change_result where del_flag = '0'
-		and SUBSTRING(create_date, '1', '7') = #{date}
-		) ,'') beizhu
+		) tiaoxin
 		from
-		check_adjusting_posts where del_flag = '0'
+		check_adjusting_posts where del_flag = '0' and bumen in(${bumenlist})
 	</select>
-
-
 
 
 </mapper>

@@ -54,7 +54,7 @@
 
 	<select id="get" resultType="CheckUser">
 		SELECT
-		<include refid="checkUserColumns"/>
+		*
 		FROM check_user a
 		<include refid="checkUserJoins"/>
 		WHERE a.id = #{id}

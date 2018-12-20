@@ -58,6 +58,19 @@ public class CheckChangeResultService extends CrudService<CheckChangeResultDao, 
 		return dao.queryChangeResultCount(map);
 	}
 
+	public List<CheckChangeResult> queryChangeResultByTypeYM(String date,String type){
+		Map map = new HashMap();
+		map.put("date",date);
+		map.put("type",type);
+		return dao.queryChangeResultByTypeYM(map);
+	}
+
+	public List<CheckChangeResult> queryChangeResultCountYM(String date){
+		Map map = new HashMap();
+		map.put("date",date);
+		return dao.queryChangeResultCountYM(map);
+	}
+
 
 	// 根据创建时间查询调岗记录总和（技术）
 	public List<CheckChangeResult> selectPokemons(List<String> list , String bumen) {
@@ -66,4 +79,28 @@ public class CheckChangeResultService extends CrudService<CheckChangeResultDao, 
 		map.put("bumen",bumen);
 		return dao.selectPokemons(map);
 	}
+
+
+	/*
+	真删除
+	 */
+	@Transactional(readOnly = false)
+	public void deleteByDate(String date,String type) {
+		Map map = new HashMap();
+		map.put("date",date);
+		map.put("type",type);
+		dao.deleteByDate(map);
+	}
+
+	/*
+	假删除
+	 */
+	@Transactional(readOnly = false)
+	public void updateByDate(String date,String type) {
+		Map map = new HashMap();
+		map.put("date",date);
+		map.put("type",type);
+		dao.updateByDate(map);
+	}
+
 }

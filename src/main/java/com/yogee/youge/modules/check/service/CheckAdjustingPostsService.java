@@ -46,24 +46,30 @@ public class CheckAdjustingPostsService extends CrudService<CheckAdjustingPostsD
 	}
 
 	// 根据创建时间和部门 查询调岗记录总和（部门）
-	public List<Map> findCountByTimeDepartment(String bumen , String date) {
+	public List<Map> findCountByTimeDepartment(String bumen , String date,List<String> list,String formatDate) {
 		Map map = new HashMap();
+		map.put("list",list);
 		map.put("bumen",bumen);
 		map.put("date",date);
+		map.put("formatDate",formatDate);
 		return dao.findCountByTimeDepartment(map);
 	}
 	// 根据创建时间和技术岗位 查询调岗记录总和（技术）
-	public List<Map> findCountByTimeTechnology(String bumen , String date) {
+	public List<Map> findCountByTimeTechnology(String bumen , String date,List<String> list,String formatDate) {
 		Map map = new HashMap();
+		map.put("list",list);
 		map.put("bumen",bumen);
 		map.put("date",date);
+		map.put("formatDate",formatDate);
 		return dao.findCountByTimeTechnology(map);
 	}
 
 	// 根据创建时间查询调岗记录总和（合计）
-	public List<Map> findTimeTechnologyCount(String date) {
+	public List<Map> findTimeTechnologyCount(String date,String formatDate,String bumenlist) {
 		Map map = new HashMap();
 		map.put("date",date);
+		map.put("formatDate",formatDate);
+		map.put("bumenlist",bumenlist);
 		return dao.findTimeTechnologyCount(map);
 	}
 

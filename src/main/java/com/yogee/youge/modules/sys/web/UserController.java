@@ -3,49 +3,42 @@
  */
 package com.yogee.youge.modules.sys.web;
 
-import java.io.*;
-import java.net.URLEncoder;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.ConstraintViolationException;
-
-import com.yogee.youge.interfaces.util.DateUtil;
-import com.yogee.youge.modules.check.entity.CheckUser;
-import com.yogee.youge.modules.check.service.CheckUserService;
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.yogee.youge.common.beanvalidator.BeanValidators;
 import com.yogee.youge.common.config.Global;
 import com.yogee.youge.common.persistence.Page;
-import com.yogee.youge.common.utils.DateUtils;
 import com.yogee.youge.common.utils.StringUtils;
 import com.yogee.youge.common.utils.excel.ExportExcel;
 import com.yogee.youge.common.utils.excel.ImportExcel;
 import com.yogee.youge.common.web.BaseController;
+import com.yogee.youge.interfaces.util.DateUtil;
+import com.yogee.youge.modules.check.entity.CheckUser;
+import com.yogee.youge.modules.check.service.CheckUserService;
 import com.yogee.youge.modules.sys.entity.Office;
 import com.yogee.youge.modules.sys.entity.Role;
 import com.yogee.youge.modules.sys.entity.User;
 import com.yogee.youge.modules.sys.service.SystemService;
 import com.yogee.youge.modules.sys.utils.UserUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolationException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.net.URLEncoder;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * 用户Controller
@@ -176,7 +169,7 @@ public class UserController extends BaseController {
 	 * @return
 	 */
 	@RequiresPermissions("sys:user:view")
-    @RequestMapping(value = "xxxexport", method=RequestMethod.POST)
+    @RequestMapping(value = "export", method=RequestMethod.POST)
     public String exportFile(User user, HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes) {
 		try {
            /* String fileName = "用户数据"+DateUtils.getDate("yyyyMMddHHmmss")+".xlsx";
@@ -190,11 +183,11 @@ public class UserController extends BaseController {
 			ServletOutputStream out = null;
 			request.setCharacterEncoding("UTF-8");
 			//根据模板类型
-			file = ExportExcel.createExcel(map,"myexcel","user.ftl",request);
+			file = ExportExcel.createExcel(map,"myexcel","adjusting.ftl",request);
 			inputStream = new FileInputStream(file);
 			response.setCharacterEncoding("utf-8");
 			response.setContentType("application/msexcel");
-			response.setHeader("content-disposition", "attachment;filename="+ URLEncoder.encode("员工结构分析" + ".xlsx", "UTF-8"));
+			response.setHeader("content-disposition", "attachment;filename="+ URLEncoder.encode("员工结构分析" + ".xls", "UTF-8"));
 			out = response.getOutputStream();
 			byte[] buffer = new byte[512]; // 缓冲区
 			int bytesToRead = -1;
@@ -220,7 +213,7 @@ public class UserController extends BaseController {
 	 * @return
 	 */
 	@RequiresPermissions("sys:user:view")
-	@RequestMapping(value = "export", method=RequestMethod.POST)
+	@RequestMapping(value = "XXXXXexport", method=RequestMethod.POST)
 	public String exportFile(HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes) {
 		try {
 			Date date = new Date();
@@ -266,11 +259,11 @@ public class UserController extends BaseController {
 			ServletOutputStream out = null;
 			request.setCharacterEncoding("UTF-8");
 			//根据模板类型
-			file = ExportExcel.createExcel(map,"myexcel","employee.ftl",request);
+			file = ExportExcel.createExcel(map,"myexcel","adjusting.ftl",request);
 			inputStream = new FileInputStream(file);
 			response.setCharacterEncoding("utf-8");
 			response.setContentType("application/msexcel");
-			response.setHeader("content-disposition", "attachment;filename="+ URLEncoder.encode("员工花名册" + ".xlsx", "UTF-8"));
+			response.setHeader("content-disposition", "attachment;filename="+ URLEncoder.encode("员工花名册" + ".xls", "UTF-8"));
 			out = response.getOutputStream();
 			byte[] buffer = new byte[512]; // 缓冲区
 			int bytesToRead = -1;

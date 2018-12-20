@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yogee.youge.modules.check.dao.CheckDepartmentDao">
-    
+
 	<sql id="checkDepartmentColumns">
 		a.id AS "id",
 		a.create_date AS "createDate",
@@ -11,30 +11,30 @@
 		a.parent_id AS "parentId",
 		a.department_type AS "departmentType"
 	</sql>
-	
+
 	<sql id="checkDepartmentJoins">
 	</sql>
-    
+
 	<select id="get" resultType="CheckDepartment">
-		SELECT 
-			<include refid="checkDepartmentColumns"/>
+		SELECT
+		<include refid="checkDepartmentColumns"/>
 		FROM check_department a
 		<include refid="checkDepartmentJoins"/>
 		WHERE a.id = #{id}
 	</select>
-	
+
 	<select id="findList" resultType="CheckDepartment">
-		SELECT 
-			<include refid="checkDepartmentColumns"/>
+		SELECT
+		<include refid="checkDepartmentColumns"/>
 		FROM check_department a
 		<include refid="checkDepartmentJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="name != null and name != ''">
-				AND a.name LIKE 
-					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
-					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
-					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+				AND a.name LIKE
+				<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
 			</if>
 		</where>
 		<choose>
@@ -46,15 +46,15 @@
 			</otherwise>
 		</choose>
 	</select>
-	
+
 	<select id="findAllList" resultType="CheckDepartment">
-		SELECT 
-			<include refid="checkDepartmentColumns"/>
+		SELECT
+		<include refid="checkDepartmentColumns"/>
 		FROM check_department a
 		<include refid="checkDepartmentJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
-		</where>		
+		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
 				ORDER BY ${page.orderBy}
@@ -64,7 +64,7 @@
 			</otherwise>
 		</choose>
 	</select>
-	
+
 	<insert id="insert">
 		INSERT INTO check_department(
 			id,
@@ -84,7 +84,7 @@
 			#{departmentType}
 		)
 	</insert>
-	
+
 	<update id="update">
 		UPDATE check_department SET 	
 			update_date = #{updateDate},
@@ -93,7 +93,7 @@
 			department_type = #{departmentType}
 		WHERE id = #{id}
 	</update>
-	
+
 	<update id="delete">
 		UPDATE check_department SET 
 			del_flag = #{DEL_FLAG_DELETE}
@@ -155,4 +155,28 @@
 		and a.department_type = '1'
 	</select>
 
+
+	<select id="findByDepartmentType" resultType="String">
+		SELECT
+			name parentName
+		FROM
+			check_department
+		WHERE
+		 del_flag = 0
+		and department_type = #{str}
+	</select>
+
+
+	<select id="querySonById" resultType="String">
+		SELECT
+			NAME
+		FROM
+			check_department
+		WHERE
+			del_flag = '0'
+		AND parent_id = #{id}
+		ORDER BY
+			NAME
+
+	</select>
 </mapper>

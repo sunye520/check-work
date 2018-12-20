@@ -3,17 +3,16 @@
  */
 package com.yogee.youge.modules.sys.service;
 
-import java.util.List;
-import java.util.Map;
-
 import com.yogee.youge.common.service.CrudService;
+import com.yogee.youge.common.utils.CacheUtils;
+import com.yogee.youge.modules.sys.dao.DictDao;
+import com.yogee.youge.modules.sys.entity.Dict;
 import com.yogee.youge.modules.sys.utils.DictUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.yogee.youge.common.utils.CacheUtils;
-import com.yogee.youge.modules.sys.dao.DictDao;
-import com.yogee.youge.modules.sys.entity.Dict;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 字典Service
@@ -43,6 +42,13 @@ public class DictService extends CrudService<DictDao, Dict> {
 		super.delete(dict);
 		CacheUtils.remove(DictUtils.CACHE_DICT_MAP);
 	}
+
+	public List<String> findBytype(String type) {
+		return dao.findBytype(type);
+
+	}
+
+
 
 	public List<Dict> findDictByMap(Map map) {
 		return dao.findDictByMap(map);

@@ -3,15 +3,14 @@
  */
 package com.yogee.youge.modules.check.service;
 
-import java.util.List;
-
+import com.yogee.youge.common.persistence.Page;
+import com.yogee.youge.common.service.CrudService;
+import com.yogee.youge.modules.check.dao.CheckDepartmentDao;
+import com.yogee.youge.modules.check.entity.CheckDepartment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.yogee.youge.common.persistence.Page;
-import com.yogee.youge.common.service.CrudService;
-import com.yogee.youge.modules.check.entity.CheckDepartment;
-import com.yogee.youge.modules.check.dao.CheckDepartmentDao;
+import java.util.List;
 
 /**
  * 部门信息Service
@@ -60,4 +59,15 @@ public class CheckDepartmentService extends CrudService<CheckDepartmentDao, Chec
 	public List<CheckDepartment> findParentDepartment() {
 		return dao.findParentDepartment();
 	}
+
+	public List<String> findByDepartmentType(String str) {
+		return dao.findByDepartmentType(str);
+	}
+
+
+	public List<String> querySonById(String id) {
+		return dao.querySonById(id);
+	}
+
+
 }

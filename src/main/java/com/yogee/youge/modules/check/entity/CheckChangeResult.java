@@ -25,7 +25,8 @@ public class CheckChangeResult extends DataEntity<CheckChangeResult> {
 	private String tiaogang;		// 调岗
 	private String tiaoxin;		// 调薪
 	private String zhixingShijian;		// 执行时间
-	private String beizhu;		// 备注
+	private String beizhu;		// 备注\
+	private String type;
 	
 	public CheckChangeResult() {
 		super();
@@ -133,5 +134,12 @@ public class CheckChangeResult extends DataEntity<CheckChangeResult> {
 	public void setBeizhu(String beizhu) {
 		this.beizhu = beizhu;
 	}
-	
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
 }

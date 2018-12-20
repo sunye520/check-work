@@ -22,5 +22,13 @@ public interface CheckChangeResultDao extends CrudDao<CheckChangeResult> {
 
     List<CheckChangeResult> queryChangeResultCount(Map map);
 
+    List<CheckChangeResult> queryChangeResultByTypeYM(Map map);
+
+    List<CheckChangeResult> queryChangeResultCountYM(Map map);
+
     List<CheckChangeResult> selectPokemons(Map map);
+
+    void deleteByDate(Map map);
+
+    void updateByDate(Map map);
 }

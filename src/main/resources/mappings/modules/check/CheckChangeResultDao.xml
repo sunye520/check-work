@@ -17,7 +17,8 @@
 		a.tiaogang AS "tiaogang",
 		a.tiaoxin AS "tiaoxin",
 		a.zhixing_shijian AS "zhixingShijian",
-		a.beizhu AS "beizhu"
+		a.beizhu AS "beizhu",
+		a.type AS "type"
 	</sql>
 	
 	<sql id="checkChangeResultJoins">
@@ -83,7 +84,8 @@
 			tiaogang,
 			tiaoxin,
 			zhixing_shijian,
-			beizhu
+			beizhu,
+			type
 		) VALUES (
 			#{id},
 			#{createDate},
@@ -99,7 +101,8 @@
 			#{tiaogang},
 			#{tiaoxin},
 			#{zhixingShijian},
-			#{beizhu}
+			#{beizhu},
+			#{type}
 		)
 	</insert>
 	
@@ -116,7 +119,8 @@
 			tiaogang = #{tiaogang},
 			tiaoxin = #{tiaoxin},
 			zhixing_shijian = #{zhixingShijian},
-			beizhu = #{beizhu}
+			beizhu = #{beizhu},
+			type = #{type}
 		WHERE id = #{id}
 	</update>
 	
@@ -137,6 +141,17 @@
 		AND type = #{type}
 	</select>
 
+	<select id="queryChangeResultByTypeYM" resultType="CheckChangeResult">
+		SELECT
+		*
+		FROM
+		check_change_result
+		WHERE
+		del_flag = '0'
+		AND DATE_FORMAT(create_date, '%Y-%m') = #{date}
+		AND type = #{type}
+	</select>
+
 
 	<select id="queryChangeResultCount" resultType="CheckChangeResult">
 		SELECT
@@ -153,6 +168,25 @@
 		WHERE
 			del_flag = '0'
 		AND DATE_FORMAT(create_date, '%Y-%m-%d') = #{date}
+		AND type = '1'  -- check_adjusting_posts 表只查询部门的
+	</select>
+
+	<select id="queryChangeResultCountYM" resultType="CheckChangeResult">
+		SELECT
+		sum(benyue_renshu) AS benyue_renshu,
+		sum(shangyuemo_renshu) AS shangyuemo_renshu,
+		sum(ruzhi) AS ruzhi,
+		sum(lizhi_zhudong) AS lizhi_zhudong,
+		sum(lizhi_beidong) AS lizhi_beidong,
+		sum(zhuanzheng) AS zhuanzheng,
+		sum(tiaogang) AS tiaogang,
+		sum(tiaoxin) AS tiaoxin
+		FROM
+		check_change_result
+		WHERE
+		del_flag = '0'
+		AND DATE_FORMAT(create_date, '%Y-%m') = #{date}
+		AND type = '1'  -- check_adjusting_posts 表只查询部门的
 	</select>
 
 	<select id="selectPokemons" parameterType="java.util.List" resultType="CheckChangeResult">
@@ -162,5 +196,25 @@
 			select * from check_change_result where bumen = #{item}
 		</foreach>
 	</select>
+
+	<delete id="deleteByDate">
+		DELETE FROM
+		check_change_result
+		WHERE
+		del_flag = 0
+		AND SUBSTRING(create_date, '1', '7') = #{date}
+		and type = #{type}
+	</delete>
+
+
+	<update id="updateByDate">
+		UPDATE check_change_result SET
+		del_flag = '1'
+		WHERE del_flag = 0
+		and SUBSTRING(create_date, '1', '7') = #{date}
+		and type = #{type}
+	</update>
+
+
 	
 </mapper>

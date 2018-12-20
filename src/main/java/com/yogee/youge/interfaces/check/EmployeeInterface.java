@@ -6,7 +6,9 @@ import com.yogee.youge.interfaces.util.DateUtil;
 import com.yogee.youge.interfaces.util.HttpResultUtil;
 import com.yogee.youge.interfaces.util.HttpServletRequestUtils;
 import com.yogee.youge.modules.check.entity.CheckUser;
+import com.yogee.youge.modules.check.service.CheckDepartmentService;
 import com.yogee.youge.modules.check.service.CheckUserService;
+import com.yogee.youge.modules.sys.service.DictService;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -47,6 +49,10 @@ public class EmployeeInterface {
 
     @Autowired
     private CheckUserService checkUserService;
+    @Autowired
+    private DictService dictService;
+    @Autowired
+    private CheckDepartmentService checkDepartmentService;
 
     private final static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -81,23 +87,37 @@ public class EmployeeInterface {
                 String ruzhiDate = map.get("ruzhi_date")==null?"":map.get("ruzhi_date").toString(); //入职日期
                 String canjiagongzuoDate = map.get("ruzhi_date")==null?"":map.get("ruzhi_date").toString();  //参加工作日期
                 try {
-                    Date date1 = sdf.parse(ruzhiDate);
-                    Date date2 = sdf.parse(canjiagongzuoDate);
-                    int year1 = DateUtil.getYear(date1,date);
-                    int month1 = DateUtil.getMonth(date1,date);
-                    int year2 = DateUtil.getYear(date2,date);
-                    int month2 = DateUtil.getMonth(date2,date);
-                    map.put("workAgeYear",year2);
-                    map.put("workAgeMonth",month2);
-                    map.put("companyAgeYear",year1);
-                    map.put("companyAgeMonth",month1);
+                    String format = sdf.format(date);
+                    Date parse = sdf.parse(format);
+                    if(!ruzhiDate.isEmpty()){
+                        Date date1 = sdf.parse(ruzhiDate);
+                        int year1 = DateUtil.getYear(parse,date1);
+                        int month1 = DateUtil.getMonth(parse,date1);
+                        map.put("companyAgeMonth", String.valueOf(month1));//司龄
+                        map.put("companyAgeYear", String.valueOf(year1));//司龄/年
+                    }else{
+                        map.put("companyAgeMonth", "0");//司龄
+                        map.put("companyAgeYear", "0");//司龄/年
+                    }
+
+                    if(!canjiagongzuoDate.isEmpty()){
+                        Date date2 = sdf.parse(canjiagongzuoDate);
+                        int year2 = DateUtil.getYear(parse,date2);
+                        int month2 = DateUtil.getMonth(parse,date2);
+
+                        map.put("workAgeMonth", String.valueOf(month2));//工作年限
+                        map.put("workAgeYear", String.valueOf(year2));//工作年限/年
+                    }else{
+                        map.put("workAgeMonth","0");//工作年限
+                        map.put("workAgeYear", "0");//工作年限/年
+                    }
                 } catch (ParseException e) {
-                    e.printStackTrace();
-                    map.put("workAgeYear","");
-                    map.put("workAgeMonth","");
-                    map.put("companyAgeYear","");
-                    map.put("companyAgeMonth","");
+                    logger.debug("日期格式错误");
                 }
+
+
+
+
             }
         }
         Map mapData = new HashMap();
@@ -195,7 +215,7 @@ public class EmployeeInterface {
                 if(StringUtils.isEmpty(hetongNumber)) return HttpResultUtil.errorJson("第几次签订合同为空!");
                 if(StringUtils.isEmpty(shiyongqiTime)) return HttpResultUtil.errorJson("试用期期限/月为空!");
                 if(StringUtils.isEmpty(shiyongqiDate)) return HttpResultUtil.errorJson("试用期到期日期为空!");
-                if(StringUtils.isEmpty(hetongLeixing)) return HttpResultUtil.errorJson("合同类型为空!");
+                if(StringUtils.isEmpty(hetongLeixing)) return HttpResultUtil.errorJson("合同类型为空!");//是否转正
                 if(StringUtils.isEmpty(zhuanzhengDate)) return HttpResultUtil.errorJson("转正日期为空!");
                 if(StringUtils.isEmpty(shenfenzheng)) return HttpResultUtil.errorJson("身份证号为空!");
                 if(StringUtils.isEmpty(birthday)) return HttpResultUtil.errorJson("出生日期为空!");
@@ -205,18 +225,18 @@ public class EmployeeInterface {
                 if(StringUtils.isEmpty(zhengzhiMianmao)) return HttpResultUtil.errorJson("政治面貌为空!");
                 if(StringUtils.isEmpty(hunyinZhuangkuang)) return HttpResultUtil.errorJson("婚姻状况为空!");
                 if(StringUtils.isEmpty(hujiXingzhi)) return HttpResultUtil.errorJson("户籍性质为空!");
-                if(StringUtils.isEmpty(diyiXueli)) return HttpResultUtil.errorJson("第一学历为空!");
-                if(StringUtils.isEmpty(diyiZhuanye)) return HttpResultUtil.errorJson("第一专业为空!");
-                if(StringUtils.isEmpty(diyiYuanxiao)) return HttpResultUtil.errorJson("第一专业毕业院校为空!");
-                if(StringUtils.isEmpty(shifouTongzhao)) return HttpResultUtil.errorJson("是否统招为空!");
+                //if(StringUtils.isEmpty(diyiXueli)) return HttpResultUtil.errorJson("第一学历为空!");
+                //if(StringUtils.isEmpty(diyiZhuanye)) return HttpResultUtil.errorJson("第一专业为空!");
+                //if(StringUtils.isEmpty(diyiYuanxiao)) return HttpResultUtil.errorJson("第一专业毕业院校为空!");
+                //if(StringUtils.isEmpty(shifouTongzhao)) return HttpResultUtil.errorJson("是否统招为空!");
                 if(StringUtils.isEmpty(zuigaoXueli)) return HttpResultUtil.errorJson("最高学历为空!");
-                if(StringUtils.isEmpty(zhuanye)) return HttpResultUtil.errorJson("专业为空!");
-                if(StringUtils.isEmpty(biyeYuanxiao)) return HttpResultUtil.errorJson("毕业院校为空!");
+                //if(StringUtils.isEmpty(zhuanye)) return HttpResultUtil.errorJson("专业为空!");
+                //if(StringUtils.isEmpty(biyeYuanxiao)) return HttpResultUtil.errorJson("毕业院校为空!");
                 if(StringUtils.isEmpty(telephone)) return HttpResultUtil.errorJson("联系电话为空!");
                 if(StringUtils.isEmpty(xianzhuzhi)) return HttpResultUtil.errorJson("现住址为空!");
-                if(StringUtils.isEmpty(jinjiLianxiren)) return HttpResultUtil.errorJson("紧急联系人为空!");
-                if(StringUtils.isEmpty(jinjiTelephone)) return HttpResultUtil.errorJson("紧急联系人电话为空!");
-                if(StringUtils.isEmpty(yuangongzuodanwei)) return HttpResultUtil.errorJson("原来工作单位为空!");
+                //if(StringUtils.isEmpty(jinjiLianxiren)) return HttpResultUtil.errorJson("紧急联系人为空!");
+                //if(StringUtils.isEmpty(jinjiTelephone)) return HttpResultUtil.errorJson("紧急联系人电话为空!");
+                //if(StringUtils.isEmpty(yuangongzuodanwei)) return HttpResultUtil.errorJson("原来工作单位为空!");
                 break;
             case "1":
                 String userId = (String)jsonData.get("userId");
@@ -251,7 +271,13 @@ public class EmployeeInterface {
         checkUser.setHetongNumber(hetongNumber);
         checkUser.setShiyongqiTime(shiyongqiTime);
         checkUser.setShiyongqiDate(shiyongqiDate);
-        checkUser.setHetongLeixing(hetongLeixing);
+        String str = "0";
+        if(hetongLeixing.equals("是")){
+            str = "0";
+        }else{
+            str = "1";
+        }
+        checkUser.setHetongLeixing(str);
         checkUser.setZhuanzhengDate(zhuanzhengDate);
         checkUser.setShenfenzheng(shenfenzheng);
         checkUser.setBirthday(birthday);
@@ -714,6 +740,61 @@ public class EmployeeInterface {
 
 
 
+    /**
+     * 新增用户字典
+     * @return
+     */
+        @RequestMapping(value = "queryDict",method = RequestMethod.POST)
+    @ResponseBody
+    public String queryDict(HttpServletRequest request){
+        logger.info("app queryDict---------- Start--------");
+        List<String> jishuleibie = dictService.findBytype("jishuleibie"); //技术类别
+        List<String> cengjileibie = dictService.findBytype("cengjileibie"); //层级类别
+        List<String> yuangongleixing = dictService.findBytype("yuangong_leixing"); //员工类型
+        List<String> hetongleixing = dictService.findBytype("hetong_leixing"); //合同类型
+        List<String> hetongqixian = dictService.findBytype("hetong_qixian"); //合同期限
+        List<String> yes_no = dictService.findBytype("yes_no"); //是-否
+        List<String> zhengzhimianmao = dictService.findBytype("zhengzhimianmao"); //政治面貌
+        List<String> hujixingzhi = dictService.findBytype("huji_xingzhi"); //户籍性质
+        List<String> xueli = dictService.findBytype("xueli"); //学历
+        List<String> hunyin = dictService.findBytype("hunyin"); //婚姻
+        List<String> gangwei = dictService.findBytype("gangwei"); //岗位
+
+        Map mapData = new HashMap();
+        mapData.put("jishuleibie",jishuleibie);
+        mapData.put("cengjileibie",cengjileibie);
+        mapData.put("yuangongleixing",yuangongleixing);
+        mapData.put("hetongleixing",hetongleixing);
+        mapData.put("hetongqixian",hetongqixian);
+        mapData.put("yesno",yes_no);
+        mapData.put("zhengzhimianmao",zhengzhimianmao);
+        mapData.put("hujixingzhi",hujixingzhi);
+        mapData.put("xueli",xueli);
+        mapData.put("hunyinzhuangkuang",hunyin);
+        mapData.put("gangwei",gangwei);
+        return HttpResultUtil.successJson(mapData);
+    }
+
+
+    /**
+     * 部门字典  findParentDepartment 一级部门
+     * @return
+     */
+    @RequestMapping(value = "querySon",method = RequestMethod.POST)
+    @ResponseBody
+    public String querySon(HttpServletRequest request){
+        logger.info("app querySon---------- Start--------");
+        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+        String id = (String)jsonData.get("id");
+        if (StringUtils.isEmpty(id)){
+            return HttpResultUtil.errorJson("无一级部门ID!");
+        }
+        List<String> list = checkDepartmentService.querySonById(id);
+
+        Map mapData = new HashMap();
+        mapData.put("list",list);
+        return HttpResultUtil.successJson(mapData);
+    }
 
 
 
@@ -724,30 +805,30 @@ public class EmployeeInterface {
 
     public static void main(String[] args) {
         //获取时间加一年或加一月或加一天
-//        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-//        String str = "2018-8-20";
-//        Date date = null;
-//        try {
-//            date = format.parse(str);  // Thu Jan 18 00:00:00 CST 2007
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
-//        Calendar cal = Calendar.getInstance();
-//        cal.setTime(date);//设置起时间
-//        cal.add(Calendar.YEAR, 3);//增加一年
-//        cal.add(Calendar.DATE, -1);//减10天  
-//        Date time = cal.getTime();
-//        String format1 = format.format(time);
-//        System.out.println(format1 );
+        DateFormat format = new SimpleDateFormat("yyyy-MM");
+        String str = "2018-08";
+        Date date = null;
+        try {
+            date = format.parse(str);  // Thu Jan 18 00:00:00 CST 2007
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);//设置起时间
+        //cal.add(Calendar.YEAR, 3);//增加一年
+        cal.add(Calendar.MONDAY, -1);//减10天  
+        Date time = cal.getTime();
+        String format1 = format.format(time);
+        System.out.println(format1 );
 
 
-        String str = "22018119910123091X";
-        String year = str.substring(6,10);
-        String month = str.substring(10,12);
-        String date = str.substring(12, 14);
-        System.out.println(year);
-        System.out.println(month);
-        System.out.println(date);
+//        String str = "22018119910123091X";
+//        String year = str.substring(6,10);
+//        String month = str.substring(10,12);
+//        String date = str.substring(12, 14);
+//        System.out.println(year);
+//        System.out.println(month);
+//        System.out.println(date);
 
     }
 }
