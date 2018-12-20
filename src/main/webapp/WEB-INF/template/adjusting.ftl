@@ -555,7 +555,7 @@
         </Style>
     </Styles>
     <Worksheet ss:Name="201811">
-        <Table ss:ExpandedColumnCount="15" ss:ExpandedRowCount="${listDepartment?size+10}" x:FullColumns="1" x:FullRows="1" ss:StyleID="s51"
+        <Table ss:ExpandedColumnCount="15" ss:ExpandedRowCount="${listDepartment?size+listTechnology?size+10}" x:FullColumns="1" x:FullRows="1" ss:StyleID="s51"
                ss:DefaultColumnWidth="53.3" ss:DefaultRowHeight="13.5">
             <Column ss:Index="1" ss:StyleID="s51" ss:AutoFitWidth="0" ss:Width="91.3"/>
             <Column ss:Index="2" ss:StyleID="s51" ss:AutoFitWidth="0" ss:Width="73.3"/>
@@ -567,7 +567,7 @@
             <Column ss:StyleID="s51" ss:AutoFitWidth="0" ss:Width="55.3" ss:Span="2"/>
             <Row ss:Height="37.8">
                 <Cell ss:StyleID="s68" ss:MergeAcross="11">
-                    <Data ss:Type="String">年 月人员异动情况表</Data>
+                    <Data ss:Type="String">${year?if_exists}年 ${month?if_exists}月人员异动情况表</Data>
                 </Cell>
                 <Cell ss:StyleID="s63"/>
                 <Cell ss:StyleID="s63"/>
