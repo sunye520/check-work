@@ -35,4 +35,6 @@ public interface CheckPunchCardDao extends CrudDao<CheckPunchCard> {
     List<CheckPunchCard> findShangChiByNumber(Map map);
 
     List<CheckPunchCard> findXiaZaoByNumber(Map map);
+
+    List<CheckPunchCard> findByNumberAndPunchDate(Map map);
 }

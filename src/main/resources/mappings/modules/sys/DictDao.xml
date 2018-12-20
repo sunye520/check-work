@@ -145,10 +145,10 @@
 		WHERE a. del_flag ='0'
 		AND a.create_date > '2018-12-01 00:00:00'
 		<if test="label != null and label != ''">
-			AND label CONCAT('%', #{label}, '%')
+			AND a.label like CONCAT('%', #{label}, '%')
 		</if>
 		<if test="description != null and description != ''">
-			AND description CONCAT('%', #{description}, '%')
+			AND a.description like CONCAT('%', #{description}, '%')
 		</if>
 		ORDER BY type, sort, update_date DESC
 	</select>

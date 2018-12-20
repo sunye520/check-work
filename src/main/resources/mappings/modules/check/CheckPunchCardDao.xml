@@ -385,7 +385,8 @@
 					LEFT JOIN sys_dict s ON a.shang_ask_leave = s.`value`
 					AND s.type = 'qingjia_leixing'
 					WHERE
-						a.number = #{number}
+						a.del_flag ='0'
+						AND a.number = #{number}
 						AND a.shang_ask_leave != '0'
 						AND SUBSTR(a.punch_date,1,7) = #{punchDate}
 					GROUP BY
@@ -403,7 +404,8 @@
 						LEFT JOIN sys_dict s ON a.xia_ask_leave = s.`value`
 						AND s.type = 'qingjia_leixing'
 						WHERE
-							a.number = #{number}
+							a.del_flag ='0'
+						AND a.number = #{number}
 						AND a.xia_ask_leave != '0'
 						AND SUBSTR(a.punch_date,1,7) = #{punchDate}
 						GROUP BY
@@ -423,7 +425,8 @@
 			FROM
 				check_punch_card a
 			WHERE
-				a.number = #{number}
+				a.del_flag ='0'
+			AND	a.number = #{number}
 			AND a.shang_chi ='1'
 			AND SUBSTR(a.punch_date, 1, 7)= #{punchDate}
 	</select>
@@ -434,9 +437,23 @@
 			FROM
 				check_punch_card a
 			WHERE
-				a.number = #{number}
+				a.del_flag ='0'
+			AND	a.number = #{number}
 			AND a.xia_zao ='1'
 			AND SUBSTR(a.punch_date, 1, 7)= #{punchDate}
+	</select>
+
+
+	<select id="findByNumberAndPunchDate" resultType="CheckPunchCard">
+			SELECT
+				<include refid="checkPunchCardColumns"/>
+			FROM
+				check_punch_card a
+			WHERE
+				a.del_flag ='0'
+			AND	a.number = #{number}
+			AND SUBSTR(a.punch_date, 1, 7)= #{punchDate}
+			ORDER BY a.punch_date
 	</select>
 
 </mapper>

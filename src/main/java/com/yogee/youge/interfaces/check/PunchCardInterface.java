@@ -1,15 +1,14 @@
 package com.yogee.youge.interfaces.check;
 
+import com.yogee.youge.common.config.Global;
 import com.yogee.youge.common.utils.CacheUtils;
 import com.yogee.youge.common.utils.DateUtils;
 import com.yogee.youge.common.utils.IdGen;
 import com.yogee.youge.common.utils.StringUtils;
+import com.yogee.youge.common.utils.excel.ExportExcel;
 import com.yogee.youge.interfaces.util.HttpResultUtil;
 import com.yogee.youge.interfaces.util.HttpServletRequestUtils;
-import com.yogee.youge.modules.check.entity.CheckBusinessDate;
-import com.yogee.youge.modules.check.entity.CheckDepartment;
-import com.yogee.youge.modules.check.entity.CheckPunchCard;
-import com.yogee.youge.modules.check.entity.CheckUser;
+import com.yogee.youge.modules.check.entity.*;
 import com.yogee.youge.modules.check.service.CheckBusinessDateService;
 import com.yogee.youge.modules.check.service.CheckDepartmentService;
 import com.yogee.youge.modules.check.service.CheckPunchCardService;
@@ -31,11 +30,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -54,10 +57,7 @@ public class PunchCardInterface {
     private CheckUserService checkUserService;
     @Autowired
     private CheckBusinessDateService checkBusinessDateService;
-    @Autowired
-    private CheckDepartmentService checkDepartmentService;
-    @Autowired
-    private DictService dictService;
+
 
     private static final Logger logger = LoggerFactory.getLogger(PunchCardInterface.class);
 
@@ -382,7 +382,7 @@ public class PunchCardInterface {
     public String checkOnWork(HttpServletRequest request,HttpServletResponse response) {
         logger.info("checkOnWork ----------Start--------");
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
-        String yearMonth = (String)jsonData.get("yearMonth");
+            String yearMonth = (String)jsonData.get("yearMonth");
         if (StringUtils.isEmpty(yearMonth)){
             return HttpResultUtil.errorJson("月份为空!");
         }
@@ -434,6 +434,36 @@ public class PunchCardInterface {
     }
 
     /**
+     * 请假类型
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "workType", method = RequestMethod.POST)
+    @ResponseBody
+    public String workType(HttpServletRequest request,HttpServletResponse response) {
+        logger.info("workType ----------Start--------");
+        Map dataMap = new HashMap();
+        List<Dict> dictList = DictUtils.getDictList("qingjia_leixing");
+        List<Map<String,String>> listOne = new ArrayList<>();
+        for(Dict dictOne:dictList){
+            Map mapOne = new HashMap();
+            mapOne.put("label",dictOne.getLabel());
+            mapOne.put("value",dictOne.getValue());
+            listOne.add(mapOne);
+        }
+        List<Map<String,String>> listTwo = new ArrayList<>();
+        for(int i=2;i<dictList.size();i++){
+            Map mapTwo = new HashMap();
+            mapTwo.put("label",dictList.get(i).getLabel());
+            mapTwo.put("value",dictList.get(i).getValue());
+            listTwo.add(mapTwo);
+        }
+        dataMap.put("listOne",listOne);
+        dataMap.put("listTwo",listTwo);
+        return HttpResultUtil.successJson(dataMap);
+    }
+
+    /**
      * 保存考勤设置
      * @param request
      * @return
@@ -453,86 +483,97 @@ public class PunchCardInterface {
         }
         //上午参数
         String shangChi = (String)jsonData.get("shangChi");
-        if (StringUtils.isEmpty(shangChi)){
-            return HttpResultUtil.errorJson("shangChi为空!");
-        }
         String shangAskLeave = (String)jsonData.get("shangAskLeave");
-        if (StringUtils.isEmpty(shangAskLeave)){
-            return HttpResultUtil.errorJson("shangAskLeave为空!");
-        }
         String shangAskLeaveTime = (String)jsonData.get("shangAskLeaveTime");
         //下午参数
         String xiaZao = (String)jsonData.get("xiaZao");
-        if (StringUtils.isEmpty(xiaZao)){
-            return HttpResultUtil.errorJson("xiaZao为空!");
-        }
         String xiaAskLeave = (String)jsonData.get("xiaAskLeave");
-        if (StringUtils.isEmpty(xiaAskLeave)){
-            return HttpResultUtil.errorJson("xiaAskLeave为空!");
-        }
         String xiaAskLeaveTime = (String)jsonData.get("xiaAskLeaveTime");
-
-        CheckPunchCard checkPunchCard = checkPunchCardService.findCountByNumberAndPunchDate(number,punchDate);
-        if(checkPunchCard !=null){
-            //上午参数
-            if(shangChi.equals("0")){
-                //未迟到
-                checkPunchCard.setShangChi(shangChi);
-                checkPunchCard.setShangChiTime("0");
-                checkPunchCard.setShangChiName("");
-            }else{
-                //获取上班时间
-                String shangban = (String) CacheUtils.get("businessDate", "shangban");
-                if(StringUtils.isBlank(shangban)){
-                    CheckBusinessDate checkBusinessDate = checkBusinessDateService.get("1");
-                    shangban=checkBusinessDate.getShangbanDate();
-                    CacheUtils.put("businessDate", "shangban", shangban);
+        try {
+            CheckPunchCard checkPunchCard = checkPunchCardService.findCountByNumberAndPunchDate(number,punchDate);
+            if(checkPunchCard !=null){
+                if (StringUtils.isNotEmpty(shangChi)){
+                    if (StringUtils.isEmpty(shangAskLeave)){
+                        return HttpResultUtil.errorJson("shangAskLeave为空!");
+                    }
+                    //上午参数
+                    if(shangChi.equals("0")){
+                        //未迟到
+                        checkPunchCard.setShangChi(shangChi);
+                        checkPunchCard.setShangChiTime("0");
+                        checkPunchCard.setShangChiName("");
+                    }else{
+                        //获取上班时间
+                        String shangban = (String) CacheUtils.get("businessDate", "shangban");
+                        if(StringUtils.isBlank(shangban)){
+                            CheckBusinessDate checkBusinessDate = checkBusinessDateService.get("1");
+                            shangban=checkBusinessDate.getShangbanDate();
+                            CacheUtils.put("businessDate", "shangban", shangban);
+                        }
+                        SimpleDateFormat sdf=new SimpleDateFormat("HH:mm");
+                        Date b=sdf.parse(shangban);
+                        Date time1=sdf.parse(checkPunchCard.getShangCellTime());
+                        double k = (time1.getTime() - b.getTime()) / (1000 * 60);
+                        checkPunchCard.setShangChiName("迟到");
+                        checkPunchCard.setShangChi(shangChi);
+                        checkPunchCard.setShangChiTime((int)k+"");
+                    }
+                    if(!shangAskLeave.equals("0")){
+                        checkPunchCard.setShangAskLeave(shangAskLeave);
+                        checkPunchCard.setShangAskLeaveTime(shangAskLeaveTime);
+                    }
+                }else{
+                    if (StringUtils.isEmpty(xiaAskLeave)){
+                        return HttpResultUtil.errorJson("xiaAskLeave为空!");
+                    }
+                    //下午参数
+                    if(xiaZao.equals("0")){
+                        //未早退
+                        checkPunchCard.setXiaZao(xiaZao);
+                        checkPunchCard.setXiaZaoTime("0");
+                        checkPunchCard.setXiaZaoName("");
+                    }else{
+                        //获取下班时间
+                        String xiaban = (String) CacheUtils.get("businessDate", "xiaban");
+                        if(StringUtils.isBlank(xiaban)){
+                            CheckBusinessDate checkBusinessDate = checkBusinessDateService.get("1");
+                            xiaban=checkBusinessDate.getShangbanDate();
+                            CacheUtils.put("businessDate", "xiaban", xiaban);
+                        }
+                        SimpleDateFormat sdf=new SimpleDateFormat("HH:mm");
+                        Date d=sdf.parse(xiaban);
+                        Date time2=sdf.parse(checkPunchCard.getXiaCellTime());
+                        double k = (d.getTime() - time2.getTime() ) / (1000 * 60);
+                        checkPunchCard.setXiaZao(xiaZao);
+                        checkPunchCard.setXiaZaoTime((int)k+"");
+                        checkPunchCard.setXiaZaoName("早退");
+                    }
+                    if(!xiaAskLeave.equals("0")){
+                        checkPunchCard.setXiaAskLeave(xiaAskLeave);
+                        checkPunchCard.setXiaAskLeaveTime(xiaAskLeaveTime);
+                    }
                 }
-                SimpleDateFormat sdf=new SimpleDateFormat("HH:mm");
-                Date b=sdf.parse(shangban);
-                Date time1=sdf.parse(checkPunchCard.getShangCellTime());
-                double k = (time1.getTime() - b.getTime()) / (1000 * 60);
-                checkPunchCard.setShangChiName("迟到");
-                checkPunchCard.setShangChi(shangChi);
-                checkPunchCard.setShangChiTime((int)k+"");
+                checkPunchCardService.save(checkPunchCard);
             }
-            if(!shangAskLeave.equals("0")){
-                checkPunchCard.setShangAskLeave(shangAskLeave);
-                checkPunchCard.setShangAskLeaveTime(shangAskLeaveTime);
-            }
-            //下午参数
-            if(xiaZao.equals("0")){
-                //未早退
-                checkPunchCard.setXiaZao(xiaZao);
-                checkPunchCard.setXiaZaoTime("0");
-                checkPunchCard.setXiaZaoName("");
-            }else{
-                //获取下班时间
-                String xiaban = (String) CacheUtils.get("businessDate", "xiaban");
-                if(StringUtils.isBlank(xiaban)){
-                    CheckBusinessDate checkBusinessDate = checkBusinessDateService.get("1");
-                    xiaban=checkBusinessDate.getShangbanDate();
-                    CacheUtils.put("businessDate", "xiaban", xiaban);
-                }
-                SimpleDateFormat sdf=new SimpleDateFormat("HH:mm");
-                Date d=sdf.parse(xiaban);
-                Date time2=sdf.parse(checkPunchCard.getXiaCellTime());
-                double k = (d.getTime() - time2.getTime() ) / (1000 * 60);
-                checkPunchCard.setXiaZao(xiaZao);
-                checkPunchCard.setXiaZaoTime((int)k+"");
-                checkPunchCard.setXiaZaoName("早退");
-            }
-            if(!xiaAskLeave.equals("0")){
-                checkPunchCard.setXiaAskLeave(xiaAskLeave);
-                checkPunchCard.setXiaAskLeaveTime(xiaAskLeaveTime);
-            }
-            checkPunchCardService.save(checkPunchCard);
+        }catch (Exception e){
+            e.printStackTrace();
         }
         Map mapData = new HashMap();
         return HttpResultUtil.successJson(mapData);
     }
 
-
+    /**
+     * 查询上下班时间
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "selectBusinessDate", method = RequestMethod.POST)
+    @ResponseBody
+    public String selectBusinessDate(HttpServletRequest request,HttpServletResponse response) {
+        logger.info("selectBusinessDate ----------Start--------");
+        Map map = PunchCardInterface.getBusinessDate(checkBusinessDateService);
+        return HttpResultUtil.successJson(map);
+    }
 
     /**
      * 设置上下班时间
@@ -562,22 +603,13 @@ public class PunchCardInterface {
         checkBusinessDate.setXiabanDate(xiaban);
         checkBusinessDateService.save(checkBusinessDate);
         CacheUtils.put("businessDate", "shangban", shangban);
-        CacheUtils.put("businessDate", "wuxiu", shangban);
-        CacheUtils.put("businessDate", "xiaban", shangban);
+        CacheUtils.put("businessDate", "wuxiu", wuxiu);
+        CacheUtils.put("businessDate", "xiaban", xiaban);
         Map mapData = new HashMap();
+        mapData.put("shangban",shangban);
+        mapData.put("wuxiu",wuxiu);
+        mapData.put("xiaban",xiaban);
         return HttpResultUtil.successJson(mapData);
-    }
-    /**
-     * 查询上下班时间
-     * @param request
-     * @return
-     */
-    @RequestMapping(value = "selectBusinessDate", method = RequestMethod.POST)
-    @ResponseBody
-    public String selectBusinessDate(HttpServletRequest request,HttpServletResponse response) {
-        logger.info("selectBusinessDate ----------Start--------");
-        Map map = PunchCardInterface.getBusinessDate(checkBusinessDateService);
-        return HttpResultUtil.successJson(map);
     }
 
 
@@ -602,35 +634,7 @@ public class PunchCardInterface {
         return mapData;
     }
 
-    /**
-     * 请假类型
-     * @param request
-     * @return
-     */
-    @RequestMapping(value = "workType", method = RequestMethod.POST)
-    @ResponseBody
-    public String workType(HttpServletRequest request,HttpServletResponse response) {
-        logger.info("workType ----------Start--------");
-        Map dataMap = new HashMap();
-        List<Dict> dictList = DictUtils.getDictList("qingjia_leixing");
-        List<Map<String,String>> listOne = new ArrayList<>();
-        for(Dict dictOne:dictList){
-            Map mapOne = new HashMap();
-            mapOne.put("key",dictOne.getLabel());
-            mapOne.put("value",dictOne.getValue());
-            listOne.add(mapOne);
-        }
-        List<Map<String,String>> listTwo = new ArrayList<>();
-        for(int i=2;i<dictList.size();i++){
-            Map mapTwo = new HashMap();
-            mapTwo.put("key",dictList.get(i).getLabel());
-            mapTwo.put("value",dictList.get(i).getValue());
-            listTwo.add(mapTwo);
-        }
-        dataMap.put("listOne",listOne);
-        dataMap.put("listTwo",listTwo);
-        return HttpResultUtil.successJson(dataMap);
-    }
+
 
 
     /**
@@ -753,173 +757,96 @@ public class PunchCardInterface {
 
 
     /**
-     * 新增部门
+     * 导出员工考勤表excel
      * @param request
      * @return
      */
-    @RequestMapping(value = "insertDepartment", method = RequestMethod.POST)
+    @RequestMapping(value = "exportCheckOnWork", method = RequestMethod.POST)
     @ResponseBody
-    public String insertDepartment(HttpServletRequest request,HttpServletResponse response) {
-        logger.info("insertDepartment ----------Start--------");
-        Map jsonData = HttpServletRequestUtils.readJsonData(request);
-        String parentName = (String)jsonData.get("parentName");
-        String parentId = (String)jsonData.get("parentId");
-        String sonName = (String)jsonData.get("sonName");
-        try {
-            if(StringUtils.isNotEmpty(parentName)){
-                int countParentName = checkDepartmentService.findDepartmentByName(parentName);
-                if(countParentName>0){
-                    return HttpResultUtil.errorJson("您添加的一级部门名字重复!");
-                }
-                if(StringUtils.isNotEmpty(sonName)){
-                    int countSonName = checkDepartmentService.findDepartmentByName(sonName);
-                    if(countSonName>0){
-                        return HttpResultUtil.errorJson("您添加的二级部门名字重复!");
-                    }
-                    //添加一级部门同时添加二级部门
-                    CheckDepartment checkDepartmentParent = new CheckDepartment();
-                    String uuid = IdGen.uuid();
-                    checkDepartmentParent.setId(uuid);
-                    checkDepartmentParent.setName(parentName);
-                    checkDepartmentParent.setDepartmentType("1");
-                    checkDepartmentParent.setCreateDate(new Date());
-                    checkDepartmentParent.setUpdateDate(new Date());
-                    checkDepartmentService.insert(checkDepartmentParent);
-                    CheckDepartment checkDepartmentSon = new CheckDepartment();
-                    checkDepartmentSon.setName(sonName);
-                    checkDepartmentSon.setParentId(uuid);
-                    checkDepartmentSon.setDepartmentType("2");
-                    checkDepartmentService.save(checkDepartmentSon);
-                }else{
-                    //只添加了一级部门
-                    CheckDepartment checkDepartmentParent = new CheckDepartment();
-                    String uuid = IdGen.uuid();
-                    checkDepartmentParent.setId(uuid);
-                    checkDepartmentParent.setName(parentName);
-                    checkDepartmentParent.setDepartmentType("1");
-                    checkDepartmentParent.setCreateDate(new Date());
-                    checkDepartmentParent.setUpdateDate(new Date());
-                    checkDepartmentService.insert(checkDepartmentParent);
-                }
-            }else if(StringUtils.isNotEmpty(parentId) && StringUtils.isNotEmpty(sonName)){
-                int countSonName = checkDepartmentService.findDepartmentByName(sonName);
-                if(countSonName>0){
-                    return HttpResultUtil.errorJson("您添加的二级部门名字重复!");
-                }
-                //只添加添加二级部门
-                CheckDepartment checkDepartmentSon = new CheckDepartment();
-                checkDepartmentSon.setName(sonName);
-                checkDepartmentSon.setParentId(parentId);
-                checkDepartmentSon.setDepartmentType("2");
-                checkDepartmentService.save(checkDepartmentSon);
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        Map dataMap = new HashMap();
-        return HttpResultUtil.successJson(dataMap);
-    }
-    /**
-     * 部门列表
-     * @param request
-     * @return
-     */
-    @RequestMapping(value = "findDepartment", method = RequestMethod.POST)
-    @ResponseBody
-    public String findDepartment(HttpServletRequest request,HttpServletResponse response) {
-        logger.info("findDepartment ----------Start--------");
+    public String exportCheckOnWork(HttpServletRequest request,HttpServletResponse response) {
+        logger.info("exportCheckOnWork ----------Start--------");
 //        Map jsonData = HttpServletRequestUtils.readJsonData(request);
-        List<CheckDepartment> departmentList = checkDepartmentService.findDepartment();
-        Map dataMap = new HashMap();
-        dataMap.put("list",departmentList);
-        return HttpResultUtil.successJson(dataMap);
-    }
-    /**
-     * 一级部门列表
-     * @param request
-     * @return
-     */
-    @RequestMapping(value = "findParentDepartment", method = RequestMethod.POST)
-    @ResponseBody
-    public String findParentDepartment(HttpServletRequest request,HttpServletResponse response) {
-        logger.info("findParentDepartment ----------Start--------");
-        List<CheckDepartment> departmentList = checkDepartmentService.findParentDepartment();
-        Map dataMap = new HashMap();
-        dataMap.put("list",departmentList);
-        return HttpResultUtil.successJson(dataMap);
-    }
-
-
-
-    /**
-     * 字典列表
-     * @param request
-     * @return
-     */
-    @RequestMapping(value = "findDict", method = RequestMethod.POST)
-    @ResponseBody
-    public String findDict(HttpServletRequest request,HttpServletResponse response) {
-        logger.info("findDict ----------Start--------");
-        Map jsonData = HttpServletRequestUtils.readJsonData(request);
-        String label = (String)jsonData.get("label");
-        String description = (String)jsonData.get("description");
-        Map reqMap = new HashMap();
-        reqMap.put("label",label);
-        reqMap.put("description",description);
-        List<Dict> dictList = dictService.findDictByMap(reqMap);
-        Map dataMap = new HashMap();
-        dataMap.put("list",dictList);
-        return HttpResultUtil.successJson(dataMap);
-    }
-    /**
-     * 新增字典
-     * @param request
-     * @return
-     */
-    @RequestMapping(value = "insetDict", method = RequestMethod.POST)
-    @ResponseBody
-    public String insetDict(HttpServletRequest request,HttpServletResponse response) {
-        logger.info("insetDict ----------Start--------");
-        Map jsonData = HttpServletRequestUtils.readJsonData(request);
-        String value = (String)jsonData.get("value");
-        String label = (String)jsonData.get("label");
-        String type = (String)jsonData.get("type");
-        String description = (String)jsonData.get("description");
-        String sort = (String)jsonData.get("sort");
-        if (StringUtils.isEmpty(value)){
-            return HttpResultUtil.errorJson("键值为空!");
-        }
-        if (StringUtils.isEmpty(label)){
-            return HttpResultUtil.errorJson("标签为空!");
-        }
-        if (StringUtils.isEmpty(type)){
-            return HttpResultUtil.errorJson("类型为空!");
-        }
-        if (StringUtils.isEmpty(description)){
-            return HttpResultUtil.errorJson("描述为空!");
-        }
-        int sortInt = 0;
-        if (StringUtils.isEmpty(sort)){
-            return HttpResultUtil.errorJson("排序为空!");
-        }else{
-            sortInt =Integer.parseInt(sort);
-        }
+//        String yearMonth = (String)jsonData.get("yearMonth");
+//        if (StringUtils.isEmpty(yearMonth)){
+//            return HttpResultUtil.errorJson("yearMonth为空!");
+//        }
         try {
-            Dict dict = new Dict();
-            dict.setId(IdGen.uuid());
-            dict.setValue(value);
-            dict.setLabel(label);
-            dict.setType(type);
-            dict.setDescription(description);
-            dict.setSort(sortInt);
-            dict.setParentId("0");
-            dictService.insetDict(dict);
-        }catch (Exception e){
+            String yearMonth = "2018-11";
+            Map<String, Object> map = checkOnWorkMap(yearMonth);
+            File file = null;
+            InputStream inputStream = null;
+            ServletOutputStream out = null;
+            request.setCharacterEncoding("UTF-8");
+            //根据模板类型
+            file = ExportExcel.createExcel(map,"myexcel","check.ftl",request);
+            inputStream = new FileInputStream(file);
+            response.setCharacterEncoding("utf-8");
+            response.setContentType("application/msexcel");
+            response.setHeader("content-disposition", "attachment;filename="+ URLEncoder.encode("员工考勤表" + ".xls", "UTF-8"));
+            out = response.getOutputStream();
+            byte[] buffer = new byte[512]; // 缓冲区
+            int bytesToRead = -1;
+            // 通过循环将读入的Excel文件的内容输出到浏览器中
+            while ((bytesToRead = inputStream.read(buffer)) != -1) {
+                out.write(buffer, 0, bytesToRead);
+            }
+            out.flush();
+            return null;
+        } catch (Exception e) {
             e.printStackTrace();
+            return HttpResultUtil.errorJson("导出失败!");
         }
-        Map dataMap = new HashMap();
-        return HttpResultUtil.successJson(dataMap);
+
     }
+    public Map checkOnWorkMap(String punchDate) {
+        Map map = new HashMap();
+        List<Map<String,String>> resultList = new ArrayList<>();
+        List<CheckPunchCard> numberList =  checkPunchCardService.findNumberByYearMonth(punchDate);
+        for(int i=0;i<numberList.size();i++){
+            List<CheckPunchCard> checkPunchCardList = checkPunchCardService.findByNumberAndPunchDate(numberList.get(i).getNumber(),punchDate);
+
+            Map dataMap = new HashMap();
+            dataMap.put("xuhao",i+1+"");
+            dataMap.put("name",numberList.get(i).getName());
+            dataMap.put("number",numberList.get(i).getNumber());
+            for(int j=1;j<checkPunchCardList.size()+1;j++){
+                //上午打卡时间
+                dataMap.put("shangCellDay"+j,checkPunchCardList.get(j-1).getShangCellTime());
+
+                //上午迟到，请假事件
+                StringBuffer sb = new StringBuffer();
+                CheckPunchCard bean = checkPunchCardList.get(j-1);
+                if(bean.getShangChi().equals("1")){
+                    sb.append("迟到；");
+                }
+                if(!bean.getShangAskLeave().equals("0")){
+                    sb.append(DictUtils.getDictLabel(bean.getShangAskLeave(),"qingjia_leixing","")+bean.getShangAskLeaveTime()+"/时");
+                }
+                dataMap.put("shangChiDay"+j,sb.toString());
+
+                //下班打卡时间
+                dataMap.put("xiaCellDay"+j,checkPunchCardList.get(j-1).getXiaCellTime());
+
+                //下午早退，请假事件
+                StringBuffer sb2 = new StringBuffer();
+                CheckPunchCard bean2 = checkPunchCardList.get(j-1);
+                if(bean2.getXiaZao().equals("1")){
+                    sb2.append("迟到；");
+                }
+                if(!bean2.getXiaAskLeave().equals("0")){
+                    sb2.append(DictUtils.getDictLabel(bean2.getXiaAskLeave(),"qingjia_leixing","")+bean2.getXiaAskLeaveTime()+"/时");
+                }
+                dataMap.put("xiaZaoDay"+j,sb2.toString());
+            }
+            resultList.add(dataMap);
+
+        }
+        map.put("punchDate",punchDate);
+        map.put("resultList",resultList);
+        map.put("numberSize",numberList.size()*4+4+"");
+        return map;
+    }
+
 
 
 

@@ -105,4 +105,11 @@ public class CheckPunchCardService extends CrudService<CheckPunchCardDao, CheckP
 		map.put("punchDate",punchDate);
 		return dao.findXiaZaoByNumber(map);
 	}
+
+	public List<CheckPunchCard> findByNumberAndPunchDate(String number, String punchDate) {
+		Map map = new HashMap<>();
+		map.put("number",number);
+		map.put("punchDate",punchDate);
+		return dao.findByNumberAndPunchDate(map);
+	}
 }
