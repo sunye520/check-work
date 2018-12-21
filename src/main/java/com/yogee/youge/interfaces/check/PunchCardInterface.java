@@ -382,7 +382,7 @@ public class PunchCardInterface {
     public String checkOnWork(HttpServletRequest request,HttpServletResponse response) {
         logger.info("checkOnWork ----------Start--------");
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
-            String yearMonth = (String)jsonData.get("yearMonth");
+        String yearMonth = (String)jsonData.get("yearMonth");
         if (StringUtils.isEmpty(yearMonth)){
             return HttpResultUtil.errorJson("月份为空!");
         }
@@ -654,10 +654,6 @@ public class PunchCardInterface {
         Map mapData = new HashMap();
         Map labelMap = new LinkedHashMap();
         labelMap.put("number","姓名/工号");
-        List<Dict> dictList = DictUtils.getDictList("qingjia_leixing");
-        for(Dict dictOne:dictList){
-            labelMap.put(dictOne.getValue(),dictOne.getLabel());
-        }
         labelMap.put("chi0","迟到<10");
         labelMap.put("chi10","10<迟到<20");
         labelMap.put("chi20","20<迟到<30");
@@ -666,6 +662,10 @@ public class PunchCardInterface {
         labelMap.put("zao10","10<早退<20");
         labelMap.put("zao20","20<早退<30");
         labelMap.put("zao30","30<早退");
+        List<Dict> dictList = DictUtils.getDictList("qingjia_leixing");
+        for(Dict dictOne:dictList){
+            labelMap.put(dictOne.getValue(),dictOne.getLabel());
+        }
         //查询某个月员工打卡人数
         List<CheckPunchCard> numberList = checkPunchCardService.findNumberByYearMonth(yearMonth);
         List parentList = new ArrayList();
@@ -847,8 +847,161 @@ public class PunchCardInterface {
         return map;
     }
 
+    /**
+     * 导出员工考勤汇总表excel
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "exportCheckOnWorkCollect", method = RequestMethod.POST)
+    @ResponseBody
+    public String exportCheckOnWorkCollect(HttpServletRequest request,HttpServletResponse response) {
+        logger.info("exportCheckOnWorkCollect ----------Start--------");
+//        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+//        String yearMonth = (String)jsonData.get("yearMonth");
+//        if (StringUtils.isEmpty(yearMonth)){
+//            return HttpResultUtil.errorJson("yearMonth为空!");
+//        }
+        try {
+            String yearMonth = "2018-11";
+            Map<String, Object> map = checkOnWorkCollectMap(yearMonth);
+            File file = null;
+            InputStream inputStream = null;
+            ServletOutputStream out = null;
+            request.setCharacterEncoding("UTF-8");
+            //根据模板类型
+            file = ExportExcel.createExcel(map,"myexcel","checkCollect.ftl",request);
+            inputStream = new FileInputStream(file);
+            response.setCharacterEncoding("utf-8");
+            response.setContentType("application/msexcel");
+            response.setHeader("content-disposition", "attachment;filename="+ URLEncoder.encode("员工考勤汇总表" + ".xls", "UTF-8"));
+            out = response.getOutputStream();
+            byte[] buffer = new byte[512]; // 缓冲区
+            int bytesToRead = -1;
+            // 通过循环将读入的Excel文件的内容输出到浏览器中
+            while ((bytesToRead = inputStream.read(buffer)) != -1) {
+                out.write(buffer, 0, bytesToRead);
+            }
+            out.flush();
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return HttpResultUtil.errorJson("导出失败!");
+        }
 
-
+    }
+    public Map checkOnWorkCollectMap(String punchDate) {
+        Map map = new HashMap();
+        //表头信息
+        List labelList = new ArrayList();
+        Map labelMap = new LinkedHashMap();
+        labelMap.put("xuhao","序号");
+        labelMap.put("number","姓名/工号");
+        labelMap.put("chi0","迟到<10分");
+        labelMap.put("chi10","10分<迟到<20分");
+        labelMap.put("chi20","20分<迟到<30分");
+        labelMap.put("chi30","30分<迟到");
+        labelMap.put("zao0","早退<10分");
+        labelMap.put("zao10","10分<早退<20分");
+        labelMap.put("zao20","20分<早退<30分");
+        labelMap.put("zao30","30分<早退");
+        List<Dict> dictList = DictUtils.getDictList("qingjia_leixing");
+        for(int i=0;i<dictList.size();i++){
+            labelMap.put("key"+i,dictList.get(i).getLabel());
+        }
+        labelList.add(labelMap);
+        //汇总信息
+        //查询某个月员工打卡人数
+        List<CheckPunchCard> numberList = checkPunchCardService.findNumberByYearMonth(punchDate);
+        List resultList = new ArrayList();
+        int k=1;
+        for(CheckPunchCard checkPunchCard:numberList){
+            Map parentMap = new HashMap();
+            //查询某个月员工请假的类型的时间
+            List<CheckPunchCard> askLiveTimeList = checkPunchCardService.findAskLiveTimeByNumber(checkPunchCard.getNumber(),punchDate);
+            List<Dict> dictListOne = DictUtils.getDictList("qingjia_leixing");
+            for(int i=0;i<dictListOne.size();i++){
+                Boolean dictBoolean = true;
+                for(CheckPunchCard card:askLiveTimeList){
+                    if(dictListOne.get(i).getValue().equals(card.getValue())){
+                        parentMap.put("key"+i,card.getSumTime()+"小时");
+                        dictBoolean = false;
+                        continue;
+                    }
+                }
+                if(dictBoolean){
+                    parentMap.put("key"+i,"0小时");
+                }
+            }
+            //查询某个月员工迟到的时间
+            int chiNum0=0;
+            int chiNum10=0;
+            int chiNum20=0;
+            int chiNum30=0;
+            int Chi0=0;
+            int Chi10=0;
+            int Chi20=0;
+            int Chi30=0;
+            List<CheckPunchCard> chiList = checkPunchCardService.findShangChiByNumber(checkPunchCard.getNumber(),punchDate);
+            for(CheckPunchCard chi:chiList){
+                int chiDaoTime = Integer.parseInt(chi.getShangChiTime());
+                if(0<chiDaoTime && chiDaoTime<=10){
+                    Chi0=Chi0+chiDaoTime;
+                    chiNum0++;
+                }else if(10<chiDaoTime && chiDaoTime<=20){
+                    Chi10=Chi10+chiDaoTime;
+                    chiNum10++;
+                }else if(20<chiDaoTime && chiDaoTime<=30){
+                    Chi20=Chi20+chiDaoTime;
+                    chiNum20++;
+                }else{
+                    Chi30=Chi30+chiDaoTime;
+                    chiNum30++;
+                }
+            }
+            parentMap.put("chi0",chiNum0+"次 "+Chi0+"分钟");
+            parentMap.put("chi10",chiNum10+"次 "+Chi10+"分钟");
+            parentMap.put("chi20",chiNum20+"次 "+Chi20+"分钟");
+            parentMap.put("chi30",chiNum30+"次 "+Chi30+"分钟");
+            //查询某个月员工早退的时间
+            int zaoNum0=0;
+            int zaoNum10=0;
+            int zaoNum20=0;
+            int zaoNum30=0;
+            int zao0=0;
+            int zao10=0;
+            int zao20=0;
+            int zao30=0;
+            List<CheckPunchCard> zaoList = checkPunchCardService.findXiaZaoByNumber(checkPunchCard.getNumber(),punchDate);
+            for(CheckPunchCard zao:zaoList){
+                int zaoTuiTime = Integer.parseInt(zao.getXiaZaoTime());
+                if(0<zaoTuiTime && zaoTuiTime<=10){
+                    zao0=zao0+zaoTuiTime;
+                    zaoNum0++;
+                }else if(10<zaoTuiTime && zaoTuiTime<=20){
+                    zao10=zao10+zaoTuiTime;
+                    zaoNum10++;
+                }else if(20<zaoTuiTime && zaoTuiTime<=30){
+                    zao20=zao20+zaoTuiTime;
+                    zaoNum20++;
+                }else{
+                    zao30=zao30+zaoTuiTime;
+                    zaoNum30++;
+                }
+            }
+            parentMap.put("zao0",zaoNum0+"次 "+zao0+"分钟");
+            parentMap.put("zao10",zaoNum10+"次 "+zao10+"分钟");
+            parentMap.put("zao20",zaoNum20+"次 "+zao20+"分钟");
+            parentMap.put("zao30",zaoNum30+"次 "+zao30+"分钟");
+            parentMap.put("number",checkPunchCard.getNumber());
+            parentMap.put("name",checkPunchCard.getName());
+            parentMap.put("xuhao",k++);
+            resultList.add(parentMap);
+        }
+        map.put("punchDate",punchDate);
+        map.put("labelList",labelList);
+        map.put("resultList",resultList);
+        return map;
+    }
 
 
 }
