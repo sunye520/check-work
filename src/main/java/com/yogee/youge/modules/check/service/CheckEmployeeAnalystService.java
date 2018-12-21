@@ -5,7 +5,9 @@ package com.yogee.youge.modules.check.service;
 
 import com.yogee.youge.common.service.CrudService;
 import com.yogee.youge.modules.check.dao.CheckUserDao;
+import com.yogee.youge.modules.check.entity.CheckDepartment;
 import com.yogee.youge.modules.check.entity.CheckUser;
+import com.yogee.youge.modules.sys.entity.Dict;
 import com.yogee.youge.modules.sys.service.DictService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,8 @@ import java.util.Map;
 @Transactional(readOnly = true)
 public class CheckEmployeeAnalystService extends CrudService<CheckUserDao, CheckUser> {
 
+    @Autowired
+    CheckDepartmentService checkDepartmentService;
     @Autowired
     DictService dictService;
 
@@ -69,10 +73,8 @@ public class CheckEmployeeAnalystService extends CrudService<CheckUserDao, Check
      *
      * @return
      */
-    public List<Map<String,Object>> findCheckUserByAge() {
-        /*Dict dict = new Dict();
-        dict.setType("age");
-        List<Dict> ageGroup = dictService.findList(dict);*/
+    public List<Map<String, Object>> findCheckUserByAge() {
+
         List<Map> ageMaps = dao.findCheckUserAge();//根据生日查询员工的年龄
         int a = 0;//20岁以下的人数
         int b = 0;//21岁~30岁的人数
@@ -157,7 +159,7 @@ public class CheckEmployeeAnalystService extends CrudService<CheckUserDao, Check
         m3.put("count", c);
         maps.add(m3);
         Map<String, Object> m4 = new HashMap<>();
-        m4.put("name", "5年以上10年以下5年以上10年以下");
+        m4.put("name", "5年以上10年以下");
         m4.put("count", d);
         maps.add(m4);
         Map<String, Object> m5 = new HashMap<>();
@@ -169,5 +171,172 @@ public class CheckEmployeeAnalystService extends CrudService<CheckUserDao, Check
 
     public List<Map> findCheckUserByDepartment() {
         return dao.findCheckUserByDepartment();
+    }
+
+    public Map<String, Object> findExcelData() {
+        List<Map> departmentMaps = new ArrayList<>();
+        List<Map> technologyMaps = new ArrayList<>();
+        CheckDepartment department = new CheckDepartment();
+        department.setDelFlag("0");
+        department.setDepartmentType("1");//一级部门
+        List<CheckDepartment> checkDepartments = checkDepartmentService.findList(department);
+        //按部门查询各个属性人数
+        for (CheckDepartment cd : checkDepartments) {
+            CheckUser user = new CheckUser();
+            user.setBumen(cd.getName());
+            Map<String, Object> excelMap = dao.findExcelDataByDepartment(user);
+
+            List<Map> ageMaps = dao.findCheckUserAgeByDepartment(cd.getName());
+            int a = 0;//20岁以下的人数
+            int b = 0;//21岁~30岁的人数
+            int c = 0;//31岁~40岁的人数
+            int d = 0;//41岁~50岁的人数
+            int e = 0;//51岁~60岁的人数
+            for (Map m : ageMaps) {
+                int age = Integer.parseInt(m.get("age").toString());
+                if (age <= 20) {
+                    a++;
+                } else if (age <= 30) {
+                    b++;
+                } else if (age <= 40) {
+                    c++;
+                } else if (age <= 50) {
+                    d++;
+                } else if (age <= 60) {
+                    e++;
+                }
+            }
+            excelMap.put("age1", a);
+            excelMap.put("age2", b);
+            excelMap.put("age3", c);
+            excelMap.put("age4", d);
+            excelMap.put("age5", e);
+            List<Map> workingYearsMaps = dao.findCheckUserWorkingYearsByDepartment(cd.getName());
+            int f = 0;//1年及其以下的人数
+            int g = 0;//1年以上3年以下的人数
+            int h = 0;//3年以上5年以下的人数
+            int i = 0;//5年以上10年以下的人数
+            int j = 0;//10年以上的人数
+            for (Map m : workingYearsMaps) {
+                int years = Integer.parseInt(m.get("years").toString());
+                if (years <= 1) {
+                    f++;
+                } else if (years <= 3) {
+                    g++;
+                } else if (years <= 5) {
+                    h++;
+                } else if (years <= 10) {
+                    i++;
+                } else {
+                    j++;
+                }
+            }
+            excelMap.put("workingYears1", f);
+            excelMap.put("workingYears2", g);
+            excelMap.put("workingYears3", h);
+            excelMap.put("workingYears4", i);
+            excelMap.put("workingYears5", j);
+
+            departmentMaps.add(excelMap);
+        }
+
+        //按技术类别查询各个属性人数
+        List<String> dicts = dictService.findBytype("jishuleibie");
+        for (String s : dicts) {
+            CheckUser user = new CheckUser();
+            user.setJishuLeibie(s);
+            Map<String, Object> excelMap = dao.findExcelDataByTechnology(user);
+            //按技术类别查询年龄,并分组
+            List<Map> ageMaps = dao.findCheckUserAgeByTechnology(s);
+            int a = 0;//20岁以下的人数
+            int b = 0;//21岁~30岁的人数
+            int c = 0;//31岁~40岁的人数
+            int d = 0;//41岁~50岁的人数
+            int e = 0;//51岁~60岁的人数
+            for (Map m : ageMaps) {
+                int age = Integer.parseInt(m.get("age").toString());
+                if (age <= 20) {
+                    a++;
+                } else if (age <= 30) {
+                    b++;
+                } else if (age <= 40) {
+                    c++;
+                } else if (age <= 50) {
+                    d++;
+                } else if (age <= 60) {
+                    e++;
+                }
+            }
+            excelMap.put("age1", a);
+            excelMap.put("age2", b);
+            excelMap.put("age3", c);
+            excelMap.put("age4", d);
+            excelMap.put("age5", e);
+            //按技术类别查询司龄,并分组
+            List<Map> workingYearsMaps = dao.findCheckUserWorkingYearsByTechnology(s);
+            int f = 0;//1年及其以下的人数
+            int g = 0;//1年以上3年以下的人数
+            int h = 0;//3年以上5年以下的人数
+            int i = 0;//5年以上10年以下的人数
+            int j = 0;//10年以上的人数
+            for (Map m : workingYearsMaps) {
+                int years = Integer.parseInt(m.get("years").toString());
+                if (years <= 1) {
+                    f++;
+                } else if (years <= 3) {
+                    g++;
+                } else if (years <= 5) {
+                    h++;
+                } else if (years <= 10) {
+                    i++;
+                } else {
+                    j++;
+                }
+            }
+            excelMap.put("workingYears1", f);
+            excelMap.put("workingYears2", g);
+            excelMap.put("workingYears3", h);
+            excelMap.put("workingYears4", i);
+            excelMap.put("workingYears5", j);
+            technologyMaps.add(excelMap);
+        }
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("department", departmentMaps);
+        map.put("technology", technologyMaps);
+        //合计
+
+        Map<String, Object> totalMap = dao.findExcelDataByDepartment(new CheckUser());
+        List<Map<String,Object>> ageMap = findCheckUserByAge();//年龄分布
+        for(Map m :ageMap){
+            if("≤20".equals(m.get("name"))){
+                totalMap.put("age1",m.get("count"));
+            }else if("20-30".equals(m.get("name"))){
+                totalMap.put("age2",m.get("count"));
+            }else if("31-40".equals(m.get("name"))){
+                totalMap.put("age3",m.get("count"));
+            }else if("41-50".equals(m.get("name"))){
+                totalMap.put("age4",m.get("count"));
+            }else if("51-60".equals(m.get("name"))){
+                totalMap.put("age5",m.get("count"));
+            }
+        }
+        List<Map<String,Object>> workingYearsMap = findCheckUserByWorkingYears();//司龄分布
+
+        for(Map m :workingYearsMap){
+            if("1年及其以下".equals(m.get("name"))){
+                totalMap.put("workingYears1",m.get("count"));
+            }else if("1年以上3年以下".equals(m.get("name"))){
+                totalMap.put("workingYears2",m.get("count"));
+            }else if("3年以上5年以下".equals(m.get("name"))){
+                totalMap.put("workingYears3",m.get("count"));
+            }else if("5年以上10年以下".equals(m.get("name"))){
+                totalMap.put("workingYears4",m.get("count"));
+            }else if("10年以上".equals(m.get("name"))){
+                totalMap.put("workingYears5",m.get("count"));
+            }
+        }
+        map.put("totalMap", totalMap);
+        return map;
     }
 }

@@ -104,11 +104,11 @@ public class EmployeeAnalystInterface {
      * @param request
      * @return
      */
-    @RequestMapping(value = "analyst", method = RequestMethod.GET)
+    @RequestMapping(value = "analyst", method = RequestMethod.POST)
     @ResponseBody
     public String employeeAnalystList(CheckUser checkUser, HttpServletRequest request, HttpServletResponse response) {
         logger.info("app employeeList---------- Start--------");
-        Map<String,Object> mapData = new HashMap();
+        Map<String,Object> mapData = new HashMap<>();
         List<Map> genderMap = checkEmployeeAnalystService.findCheckUserByGender();//性别分布
         List<Map> educationMap = checkEmployeeAnalystService.findCheckUserByEducation();//学历分布
         List<Map> technologyMap = checkEmployeeAnalystService.findCheckUserByTechnology();//技术类型分布
@@ -125,6 +125,22 @@ public class EmployeeAnalystInterface {
         mapData.put("department",departmentMap);
         mapData.put("age",ageMap);
         mapData.put("workingYears",workingYearsMap);
+        return HttpResultUtil.successJson(mapData);
+    }
+
+    /**
+     * excel 数据填充
+     *
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "excelData", method = RequestMethod.POST)
+    @ResponseBody
+    public String excelDataList(CheckUser checkUser, HttpServletRequest request, HttpServletResponse response) {
+        logger.info("app employeeList---------- Start--------");
+        Map<String,Object> mapData = new HashMap<>();
+        Map excelMap = checkEmployeeAnalystService.findExcelData();
+        mapData.put("excelMap",excelMap);
         return HttpResultUtil.successJson(mapData);
     }
 }

@@ -377,6 +377,92 @@
 		SELECT  bumen , COUNT(id) AS count FROM check_user WHERE del_flag = 0 GROUP BY bumen;
 	</select>
 
+	<select id="findExcelDataByDepartment" resultType="java.util.HashMap">
+
+		SELECT <if test="bumen != null and  bumen != ''"> (SELECT d.name FROM check_department d WHERE d.del_flag=0  AND d.name =#{bumen}) AS name, </if>
+		COUNT(id) AS total,
+			(SELECT COUNT(id) AS count FROM check_user WHERE del_flag=0
+															 AND cengji_leibie ="高层" <include refid="findExcelSql"/>)AS level1,
+			(SELECT COUNT(id) AS count FROM check_user WHERE del_flag=0
+															 AND cengji_leibie ="中层" <include refid="findExcelSql"/>)AS level2,
+			(SELECT COUNT(id) AS count FROM check_user WHERE del_flag=0
+															 AND cengji_leibie ="基层" <include refid="findExcelSql"/>)AS level3,
+			(SELECT COUNT(id) AS count FROM check_user WHERE del_flag=0
+															 AND xingbie ="男" <include refid="findExcelSql"/>)AS gender1,
+			(SELECT COUNT(id) AS count FROM check_user WHERE del_flag=0
+															 AND xingbie ="女" <include refid="findExcelSql"/>)AS gender2,
+			(SELECT COUNT(id) AS count FROM check_user WHERE del_flag=0
+															 AND zuigao_xueli ="高中" <include refid="findExcelSql"/>)AS education1,
+			(SELECT COUNT(id) AS count FROM check_user WHERE del_flag=0
+															 AND zuigao_xueli ="中专" <include refid="findExcelSql"/>)AS education2,
+			(SELECT COUNT(id) AS count FROM check_user WHERE del_flag=0
+															 AND zuigao_xueli ="专科" <include refid="findExcelSql"/>)AS education3,
+			(SELECT COUNT(id) AS count FROM check_user WHERE del_flag=0
+															 AND zuigao_xueli ="本科" <include refid="findExcelSql"/>)AS education4,
+			(SELECT COUNT(id) AS count FROM check_user WHERE del_flag=0
+															 AND zuigao_xueli ="硕士" <include refid="findExcelSql"/>)AS education5,
+			(SELECT COUNT(id) AS count FROM check_user WHERE del_flag=0
+															 AND zuigao_xueli ="博士" <include refid="findExcelSql"/>)AS education6,
+			(SELECT COUNT(id) AS count FROM check_user WHERE del_flag=0
+															 AND hetong_leixing ="0" <include refid="findExcelSql"/>)AS weizhuanzheng
+		FROM check_user WHERE del_flag = 0 <include refid="findExcelSql"/>;
+	</select>
+
+	<select id="findCheckUserAgeByDepartment" resultType="java.util.HashMap">
+        SELECT  name , ROUND(DATEDIFF(CURDATE(), birthday)/365.2422) AS age FROM check_user WHERE del_flag = 0 AND bumen = #{name};
+	</select>
+
+	<select id="findCheckUserWorkingYearsByDepartment" resultType="java.util.HashMap">
+		SELECT  name , ROUND(DATEDIFF(CURDATE(), ruzhi_date)/365.2422) AS years FROM check_user WHERE del_flag = 0 AND bumen = #{name};
+	</select>
+
+	<select id="findExcelDataByTechnology" resultType="java.util.HashMap">
+		SELECT (SELECT label FROM sys_dict WHERE del_flag = '0' <if test="jishuLeibie != null and  jishuLeibie != ''">AND label LIKE concat('%',#{jishuLeibie},'%') </if> ) AS name,
+			COUNT(id) AS total,
+			(SELECT COUNT(id) AS count FROM check_user WHERE del_flag=0
+															 AND cengji_leibie ="高层" <include refid="findExcelSql"/>)AS level1,
+			(SELECT COUNT(id) AS count FROM check_user WHERE del_flag=0
+															 AND cengji_leibie ="中层" <include refid="findExcelSql"/>)AS level2,
+			(SELECT COUNT(id) AS count FROM check_user WHERE del_flag=0
+															 AND cengji_leibie ="基层" <include refid="findExcelSql"/>)AS level3,
+			(SELECT COUNT(id) AS count FROM check_user WHERE del_flag=0
+															 AND xingbie ="男" <include refid="findExcelSql"/>)AS gender1,
+			(SELECT COUNT(id) AS count FROM check_user WHERE del_flag=0
+															 AND xingbie ="女" <include refid="findExcelSql"/>)AS gender2,
+			(SELECT COUNT(id) AS count FROM check_user WHERE del_flag=0
+															 AND zuigao_xueli ="高中" <include refid="findExcelSql"/>)AS education1,
+			(SELECT COUNT(id) AS count FROM check_user WHERE del_flag=0
+															 AND zuigao_xueli ="中专" <include refid="findExcelSql"/>)AS education2,
+			(SELECT COUNT(id) AS count FROM check_user WHERE del_flag=0
+															 AND zuigao_xueli ="专科" <include refid="findExcelSql"/>)AS education3,
+			(SELECT COUNT(id) AS count FROM check_user WHERE del_flag=0
+															 AND zuigao_xueli ="本科" <include refid="findExcelSql"/>)AS education4,
+			(SELECT COUNT(id) AS count FROM check_user WHERE del_flag=0
+															 AND zuigao_xueli ="硕士" <include refid="findExcelSql"/>)AS education5,
+			(SELECT COUNT(id) AS count FROM check_user WHERE del_flag=0
+															 AND zuigao_xueli ="博士" <include refid="findExcelSql"/>)AS education6,
+			(SELECT COUNT(id) AS count FROM check_user WHERE del_flag=0
+															 AND hetong_leixing ="0" <include refid="findExcelSql"/>)AS weizhuanzheng
+		FROM check_user WHERE del_flag = 0 <include refid="findExcelSql"/>;
+	</select>
+
+
+	<select id="findCheckUserAgeByTechnology" resultType="java.util.HashMap">
+		SELECT  name , ROUND(DATEDIFF(CURDATE(), birthday)/365.2422) AS age FROM check_user WHERE del_flag = 0 AND jishu_leibie LIKE concat('%',#{name},'%');
+	</select>
+
+	<select id="findCheckUserWorkingYearsByTechnology" resultType="java.util.HashMap">
+		SELECT  name , ROUND(DATEDIFF(CURDATE(), ruzhi_date)/365.2422) AS years FROM check_user WHERE del_flag = 0 AND jishu_leibie LIKE concat('%',#{name},'%');
+	</select>
+
+	<sql id="findExcelSql" >
+		<if test="bumen != null and  bumen != ''">
+			AND bumen = #{bumen}
+		</if>
+		<if test="jishuLeibie != null and  jishuLeibie != ''">
+			AND jishu_leibie LIKE concat('%',#{jishuLeibie},'%')
+		</if>
+	</sql>
 
 
 </mapper>
