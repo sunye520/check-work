@@ -164,18 +164,18 @@ public class AbnormalSituationInterface {
     @ResponseBody
     public String downloadAdjustingExcel(HttpServletRequest request, HttpServletResponse response) {
         logger.info("导出调动信息Excel downloadAdjustingExcel ----------Start--------");
-//        Map jsonData = HttpServletRequestUtils.readJsonData(request);
-//        String year = (String)jsonData.get("year");
-//        String month = (String)jsonData.get("month");
-//        if (StringUtils.isEmpty(year)){
-//            return HttpResultUtil.errorJson("year为空!");
-//        }
-//        if (StringUtils.isEmpty(month)){
-//            return HttpResultUtil.errorJson("month为空!");
-//        }
+        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+        String year = (String)jsonData.get("year");
+        String month = (String)jsonData.get("month");
+        if (StringUtils.isEmpty(year)){
+            return HttpResultUtil.errorJson("year为空!");
+        }
+        if (StringUtils.isEmpty(month)){
+            return HttpResultUtil.errorJson("month为空!");
+        }
 
-        String year = "2018";
-        String month = "12";
+//        String year = "2018";
+//        String month = "12";
 
 
         try {
