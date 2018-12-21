@@ -35,30 +35,30 @@ public interface CheckUserDao extends CrudDao<CheckUser> {
      * 按性别查询人员分布
      * @return
      */
-    List<Map> findCheckUserByGender();
+    List<Map<String,Object>> findCheckUserByGender();
     /**
      * 按学历查询人员分布
      * @return
      */
-    List<Map> findCheckUserByEducation();
+    List<Map<String,Object>> findCheckUserByEducation();
 
     /**
      * 按技术类别查询人员分布
      * @return
      */
-    List<Map> findCheckUserByTechnology();
+    List<Map<String, Object>> findCheckUserByTechnology();
 
     /**
      * 按层级查询人员分布
      * @return
      */
-    List<Map> findCheckUserByLevel();
+    List<Map<String, Object>> findCheckUserByLevel();
 
     /**
      * 按政治面貌查询人员分布
      * @return
      */
-    List<Map> findCheckUserByPolitics();
+    List<Map<String, Object>> findCheckUserByPolitics();
 
     /**
      * 查询每个人的年龄分布
@@ -76,7 +76,7 @@ public interface CheckUserDao extends CrudDao<CheckUser> {
      * 按部门统计人员
      * @return
      */
-    List<Map> findCheckUserByDepartment();
+    List<Map<String, Object>> findCheckUserByDepartment();
 
     /**
      *按部门统计人数

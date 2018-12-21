@@ -59,7 +59,7 @@ public class EmployeeAnalystInterface {
         try {
             long total = checkUserService.findAllCount(checkUser);//在职员工总数
 
-            List<Map> genderMap = checkEmployeeAnalystService.findCheckUserByGender();
+            List<Map<String,Object>> genderMap = checkEmployeeAnalystService.findCheckUserByGender();
             for (Map m : genderMap) {
                 String gender = (String) m.get("xingbie");
                 long count = (long) m.get("count");
@@ -109,12 +109,12 @@ public class EmployeeAnalystInterface {
     public String employeeAnalystList(CheckUser checkUser, HttpServletRequest request, HttpServletResponse response) {
         logger.info("app employeeList---------- Start--------");
         Map<String,Object> mapData = new HashMap<>();
-        List<Map> genderMap = checkEmployeeAnalystService.findCheckUserByGender();//性别分布
-        List<Map> educationMap = checkEmployeeAnalystService.findCheckUserByEducation();//学历分布
-        List<Map> technologyMap = checkEmployeeAnalystService.findCheckUserByTechnology();//技术类型分布
-        List<Map> levelMap = checkEmployeeAnalystService.findCheckUserByLevel();//层级(高层,中层,基层)分布
-        List<Map> politicsMap = checkEmployeeAnalystService.findCheckUserByPolitics();//政治面貌分布
-        List<Map> departmentMap = checkEmployeeAnalystService.findCheckUserByDepartment();//部门分布
+        List<Map<String,Object>> genderMap = checkEmployeeAnalystService.findCheckUserByGender();//性别分布
+        List<Map<String,Object>> educationMap = checkEmployeeAnalystService.findCheckUserByEducation();//学历分布
+        List<Map<String, Object>> technologyMap = checkEmployeeAnalystService.findCheckUserByTechnology();//技术类型分布
+        List<Map<String, Object>> levelMap = checkEmployeeAnalystService.findCheckUserByLevel();//层级(高层,中层,基层)分布
+        List<Map<String, Object>> politicsMap = checkEmployeeAnalystService.findCheckUserByPolitics();//政治面貌分布
+        List<Map<String, Object>> departmentMap = checkEmployeeAnalystService.findCheckUserByDepartment();//部门分布
         List<Map<String,Object>> ageMap = checkEmployeeAnalystService.findCheckUserByAge();//年龄分布
         List<Map<String,Object>> workingYearsMap = checkEmployeeAnalystService.findCheckUserByWorkingYears();//司龄分布
         mapData.put("gender",genderMap);
@@ -138,9 +138,7 @@ public class EmployeeAnalystInterface {
     @ResponseBody
     public String excelDataList(CheckUser checkUser, HttpServletRequest request, HttpServletResponse response) {
         logger.info("app employeeList---------- Start--------");
-        Map<String,Object> mapData = new HashMap<>();
         Map excelMap = checkEmployeeAnalystService.findExcelData();
-        mapData.put("excelMap",excelMap);
-        return HttpResultUtil.successJson(mapData);
+        return HttpResultUtil.successJson(excelMap);
     }
 }

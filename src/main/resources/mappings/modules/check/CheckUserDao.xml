@@ -346,23 +346,23 @@
 
 
 	<select id="findCheckUserByGender" resultType="java.util.HashMap">
-		SELECT  xingbie , COUNT(id) AS count FROM check_user WHERE del_flag = 0 GROUP BY xingbie;
+		SELECT  xingbie AS name , COUNT(id) AS count FROM check_user WHERE del_flag = 0 GROUP BY xingbie;
 	</select>
 
 	<select id="findCheckUserByEducation" resultType="java.util.HashMap">
-		SELECT  zuigao_xueli , COUNT(id) AS count FROM check_user WHERE del_flag = 0 GROUP BY zuigao_xueli;
+		SELECT  zuigao_xueli  AS name , COUNT(id) AS count FROM check_user WHERE del_flag = 0 GROUP BY zuigao_xueli;
 	</select>
 
 	<select id="findCheckUserByTechnology" resultType="java.util.HashMap">
-		SELECT  jishu_leibie , COUNT(id) AS count FROM check_user WHERE del_flag = 0 GROUP BY jishu_leibie;
+		SELECT  jishu_leibie  AS name , COUNT(id) AS count FROM check_user WHERE del_flag = 0 GROUP BY jishu_leibie;
 	</select>
 
 	<select id="findCheckUserByLevel" resultType="java.util.HashMap">
-		SELECT  cengji_leibie , COUNT(id) AS count FROM check_user WHERE del_flag = 0 GROUP BY cengji_leibie;
+		SELECT  cengji_leibie  AS name , COUNT(id) AS count FROM check_user WHERE del_flag = 0 GROUP BY cengji_leibie;
 	</select>
 
 	<select id="findCheckUserByPolitics" resultType="java.util.HashMap">
-		SELECT  zhengzhi_mianmao , COUNT(id) AS count FROM check_user WHERE del_flag = 0 GROUP BY zhengzhi_mianmao;
+		SELECT  zhengzhi_mianmao  AS name , COUNT(id) AS count FROM check_user WHERE del_flag = 0 GROUP BY zhengzhi_mianmao;
 	</select>
 
 	<select id="findCheckUserAge" resultType="java.util.HashMap">
@@ -374,7 +374,7 @@
 	</select>
 
 	<select id="findCheckUserByDepartment" resultType="java.util.HashMap">
-		SELECT  bumen , COUNT(id) AS count FROM check_user WHERE del_flag = 0 GROUP BY bumen;
+		SELECT  bumen  AS name , COUNT(id) AS count FROM check_user WHERE del_flag = 0 GROUP BY bumen;
 	</select>
 
 	<select id="findExcelDataByDepartment" resultType="java.util.HashMap">
