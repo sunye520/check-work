@@ -571,8 +571,23 @@ public class PunchCardInterface {
     @ResponseBody
     public String selectBusinessDate(HttpServletRequest request,HttpServletResponse response) {
         logger.info("selectBusinessDate ----------Start--------");
-        Map map = PunchCardInterface.getBusinessDate(checkBusinessDateService);
-        return HttpResultUtil.successJson(map);
+        String shangban = (String) CacheUtils.get("businessDate", "shangban");
+        String wuxiu = (String) CacheUtils.get("businessDate", "wuxiu");
+        String xiaban = (String) CacheUtils.get("businessDate", "xiaban");
+        if(StringUtils.isBlank(shangban) || StringUtils.isBlank(wuxiu) || StringUtils.isBlank(xiaban)){
+            CheckBusinessDate checkBusinessDate = checkBusinessDateService.get("1");
+            shangban=checkBusinessDate.getShangbanDate();
+            CacheUtils.put("businessDate", "shangban", shangban);
+            wuxiu=checkBusinessDate.getWuxiuDate();
+            CacheUtils.put("businessDate", "wuxiu", wuxiu);
+            xiaban=checkBusinessDate.getShangbanDate();
+            CacheUtils.put("businessDate", "xiaban", xiaban);
+        }
+        Map mapData = new HashMap();
+        mapData.put("shangban",shangban+":00");
+        mapData.put("wuxiu",wuxiu+":00");
+        mapData.put("xiaban",xiaban+":00");
+        return HttpResultUtil.successJson(mapData);
     }
 
     /**
@@ -597,6 +612,9 @@ public class PunchCardInterface {
         if (StringUtils.isEmpty(xiaban)){
             return HttpResultUtil.errorJson("下班时间为空!");
         }
+        shangban=shangban.substring(0,5);
+        wuxiu=wuxiu.substring(0,5);
+        xiaban=xiaban.substring(0,5);
         CheckBusinessDate checkBusinessDate = checkBusinessDateService.get("1");
         checkBusinessDate.setShangbanDate(shangban);
         checkBusinessDate.setWuxiuDate(wuxiu);
@@ -652,76 +670,83 @@ public class PunchCardInterface {
             return HttpResultUtil.errorJson("月份为空!");
         }
         Map mapData = new HashMap();
-        Map labelMap = new LinkedHashMap();
-        labelMap.put("number","姓名/工号");
-        labelMap.put("chi0","迟到<10");
-        labelMap.put("chi10","10<迟到<20");
-        labelMap.put("chi20","20<迟到<30");
-        labelMap.put("chi30","30<迟到");
-        labelMap.put("zao0","早退<10");
-        labelMap.put("zao10","10<早退<20");
-        labelMap.put("zao20","20<早退<30");
-        labelMap.put("zao30","30<早退");
-        List<Dict> dictList = DictUtils.getDictList("qingjia_leixing");
-        for(Dict dictOne:dictList){
-            labelMap.put(dictOne.getValue(),dictOne.getLabel());
+//        Map labelMap = new LinkedHashMap();
+        List LabelList = new LinkedList();
+//        labelMap.put("number","姓名/工号");
+//        labelMap.put("chi0","迟到<10");
+//        labelMap.put("chi10","10<迟到<20");
+//        labelMap.put("chi20","20<迟到<30");
+//        labelMap.put("chi30","30<迟到");
+//        labelMap.put("zao0","早退<10");
+//        labelMap.put("zao10","10<早退<20");
+//        labelMap.put("zao20","20<早退<30");
+//        labelMap.put("zao30","30<早退");
+//        List<Dict> dictList = DictUtils.getDictList("qingjia_leixing");
+//        for(Dict dictOne:dictList){
+//            labelMap.put(dictOne.getValue(),dictOne.getLabel());
+//        }
+        Map mapOne = new HashMap();
+        mapOne.put("label","number");
+        mapOne.put("value","姓名/工号");
+        LabelList.add(mapOne);
+        List<Dict> chizaoList = DictUtils.getDictList("chidao_zaotui");
+        for(Dict dictTwo:chizaoList){
+            Map mapTwo = new HashMap();
+            mapTwo.put("label",dictTwo.getLabel());
+            mapTwo.put("value",dictTwo.getValue());
+            LabelList.add(mapTwo);
         }
+        List<Dict> dictList = DictUtils.getDictList("qingjia_leixing");
+        for(Dict dictThree:dictList){
+            Map mapThree = new HashMap();
+            mapThree.put("label",dictThree.getLabel());
+            mapThree.put("value",dictThree.getValue());
+            LabelList.add(mapThree);
+        }
+
         //查询某个月员工打卡人数
         List<CheckPunchCard> numberList = checkPunchCardService.findNumberByYearMonth(yearMonth);
-        List parentList = new ArrayList();
+        List parentList = new LinkedList();
         for(CheckPunchCard checkPunchCard:numberList){
+            List sonList = new LinkedList();
             Map parentMap = new HashMap();
-            //查询某个月员工请假的类型的时间
-            List<CheckPunchCard> askLiveTimeList = checkPunchCardService.findAskLiveTimeByNumber(checkPunchCard.getNumber(),yearMonth);
-            List<Dict> dictListOne = DictUtils.getDictList("qingjia_leixing");
-            for(Dict dict:dictListOne){
-                Boolean dictBoolean = true;
-                for(CheckPunchCard card:askLiveTimeList){
-                    if(dict.getValue().equals(card.getValue())){
-                        parentMap.put(dict.getValue(),card.getSumTime()+"小时");
-                        dictBoolean = false;
-                        continue;
-                    }
-                }
-                if(dictBoolean){
-                    parentMap.put(dict.getValue(),"0小时");
-                }
-            }
+            Map mapZero = new HashMap();
+            mapZero.put("name",checkPunchCard.getName());
+//            mapZero.put("value","name");
+            mapZero.put("number",checkPunchCard.getNumber());
+//            mapZero.put("value","number");
+            sonList.add(mapZero);
             //查询某个月员工迟到的时间
-            int chiNum0=0;
-            int chiNum10=0;
-            int chiNum20=0;
-            int chiNum30=0;
-            int Chi0=0;
-            int Chi10=0;
-            int Chi20=0;
-            int Chi30=0;
+            int chi0Num=0;
+            int chi10Num=0;
+            int chi20Num=0;
+            int chi30Num=0;
+            int chi0=0;
+            int chi10=0;
+            int chi20=0;
+            int chi30=0;
             List<CheckPunchCard> chiList = checkPunchCardService.findShangChiByNumber(checkPunchCard.getNumber(),yearMonth);
             for(CheckPunchCard chi:chiList){
                 int chiDaoTime = Integer.parseInt(chi.getShangChiTime());
                 if(0<chiDaoTime && chiDaoTime<=10){
-                    Chi0=Chi0+chiDaoTime;
-                    chiNum0++;
+                    chi0=chi0+chiDaoTime;
+                    chi0Num++;
                 }else if(10<chiDaoTime && chiDaoTime<=20){
-                    Chi10=Chi10+chiDaoTime;
-                    chiNum10++;
+                    chi10=chi10+chiDaoTime;
+                    chi10Num++;
                 }else if(20<chiDaoTime && chiDaoTime<=30){
-                    Chi20=Chi20+chiDaoTime;
-                    chiNum20++;
+                    chi20=chi20+chiDaoTime;
+                    chi20Num++;
                 }else{
-                    Chi30=Chi30+chiDaoTime;
-                    chiNum30++;
+                    chi30=chi30+chiDaoTime;
+                    chi30Num++;
                 }
             }
-            parentMap.put("chi0",chiNum0+"次 "+Chi0+"分钟");
-            parentMap.put("chi10",chiNum10+"次 "+Chi10+"分钟");
-            parentMap.put("chi20",chiNum20+"次 "+Chi20+"分钟");
-            parentMap.put("chi30",chiNum30+"次 "+Chi30+"分钟");
             //查询某个月员工早退的时间
-            int zaoNum0=0;
-            int zaoNum10=0;
-            int zaoNum20=0;
-            int zaoNum30=0;
+            int zao0Num=0;
+            int zao10Num=0;
+            int zao20Num=0;
+            int zao30Num=0;
             int zao0=0;
             int zao10=0;
             int zao20=0;
@@ -731,27 +756,90 @@ public class PunchCardInterface {
                 int zaoTuiTime = Integer.parseInt(zao.getXiaZaoTime());
                 if(0<zaoTuiTime && zaoTuiTime<=10){
                     zao0=zao0+zaoTuiTime;
-                    zaoNum0++;
+                    zao0Num++;
                 }else if(10<zaoTuiTime && zaoTuiTime<=20){
                     zao10=zao10+zaoTuiTime;
-                    zaoNum10++;
+                    zao10Num++;
                 }else if(20<zaoTuiTime && zaoTuiTime<=30){
                     zao20=zao20+zaoTuiTime;
-                    zaoNum20++;
+                    zao20Num++;
                 }else{
                     zao30=zao30+zaoTuiTime;
-                    zaoNum30++;
+                    zao30Num++;
                 }
             }
-            parentMap.put("zao0",zaoNum0+"次 "+zao0+"分钟");
-            parentMap.put("zao10",zaoNum10+"次 "+zao10+"分钟");
-            parentMap.put("zao20",zaoNum20+"次 "+zao20+"分钟");
-            parentMap.put("zao30",zaoNum30+"次 "+zao30+"分钟");
-            parentMap.put("number",checkPunchCard.getNumber());
+            List<Dict> dictListOne = DictUtils.getDictList("chidao_zaotui");
+            for(Dict dict:dictListOne){
+                Map oneMap = new HashMap();
+                switch (dict.getValue()){
+                    case "chi0":
+                        oneMap.put("name",chi0Num+"次 "+chi0+"分钟");
+                        oneMap.put("value",dict.getValue());
+                        sonList.add(oneMap);
+                    break;
+                    case "chi10":
+                        oneMap.put("name",chi10Num+"次 "+chi10+"分钟");
+                        oneMap.put("value",dict.getValue());
+                        sonList.add(oneMap);
+                    break;
+                    case "chi20":
+                        oneMap.put("name",chi20Num+"次 "+chi20+"分钟");
+                        oneMap.put("value",dict.getValue());
+                        sonList.add(oneMap);
+                    break;
+                    case "chi30":
+                        oneMap.put("name",chi30Num+"次 "+chi30+"分钟");
+                        oneMap.put("value",dict.getValue());
+                        sonList.add(oneMap);
+                    break;
+                    case "zao0":
+                        oneMap.put("name",zao0Num+"次 "+zao0+"分钟");
+                        oneMap.put("value",dict.getValue());
+                        sonList.add(oneMap);
+                    break;
+                    case "zao10":
+                        oneMap.put("name",zao10Num+"次 "+zao10+"分钟");
+                        oneMap.put("value",dict.getValue());
+                        sonList.add(oneMap);
+                    break;
+                    case "zao20":
+                        oneMap.put("name",zao20Num+"次 "+zao20+"分钟");
+                        oneMap.put("value",dict.getValue());
+                        sonList.add(oneMap);
+                    break;
+                    case "zao30":
+                        oneMap.put("name",zao30Num+"次 "+zao30+"分钟");
+                        oneMap.put("value",dict.getValue());
+                        sonList.add(oneMap);
+                    break;
+                }
+
+            }
+            //查询某个月员工请假的类型的时间
+            List<CheckPunchCard> askLiveTimeList = checkPunchCardService.findAskLiveTimeByNumber(checkPunchCard.getNumber(),yearMonth);
+            List<Dict> dictListTwo = DictUtils.getDictList("qingjia_leixing");
+            for(Dict dict:dictListTwo){
+                Map mapTwo = new HashMap();
+                Boolean dictBoolean = true;
+                for(CheckPunchCard card:askLiveTimeList){
+                    if(dict.getValue().equals(card.getValue())){
+                        mapTwo.put("name",card.getSumTime()+"小时");
+                        mapTwo.put("value",dict.getValue());
+                        dictBoolean = false;
+                        continue;
+                    }
+                }
+                if(dictBoolean){
+                    mapTwo.put("name","0小时");
+                    mapTwo.put("value",dict.getValue());
+                }
+                sonList.add(mapTwo);
+            }
+            parentMap.put("sonList",sonList);
             parentList.add(parentMap);
         }
-        mapData.put("labelMap",labelMap);
-        mapData.put("list",parentList);
+        mapData.put("LabelList",LabelList);
+        mapData.put("parentList",parentList);
         return HttpResultUtil.successJson(mapData);
     }
 
