@@ -170,8 +170,9 @@
 	</select>
 
 
-	<select id="querySonById" resultType="String">
+	<select id="querySonById" resultType="CheckDepartment">
 		SELECT
+			id,
 			NAME
 		FROM
 			check_department

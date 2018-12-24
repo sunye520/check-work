@@ -346,7 +346,7 @@ public class AbnormalSituationInterface {
             List<String> bumenList = checkDepartmentService.findByDepartmentType("1");
             String str = bumenList.get(0);
             bumenList.remove(0);
-            //根据部门查询调岗记录数
+            //根据部门查询所有数据
             List<Map> countByTimeDepartment = checkAdjustingPostsService.findCountByTimeDepartment(str, createDate, bumenList, formatDate);
             if (countByTimeDepartment != null) {
                 //先删除这个月的数据在新增
@@ -378,7 +378,7 @@ public class AbnormalSituationInterface {
             List<String> jishuleibieList = dictService.findBytype("jishuleibie");
             String str = jishuleibieList.get(0);
             jishuleibieList.remove(0);
-            //根据技术岗位查询调岗记录数
+            //根据技术岗位查询所有数据
             List<Map> countByTimeTechnology = checkAdjustingPostsService.findCountByTimeTechnology(str, createDate,jishuleibieList,formatDate);
 
             if (countByTimeTechnology != null) {
@@ -457,6 +457,12 @@ public class AbnormalSituationInterface {
     public static void main(String[] args){
 
         String format1 = sdf.format(new Date());
+
+
+        String str = "2018-12-01";
+
+
+
         String substring = format1.substring(0, 7);
         System.out.println(substring);
     }

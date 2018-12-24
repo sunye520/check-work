@@ -131,6 +131,7 @@
 		WHERE
 			del_flag = '0'
 		AND type = #{type}
+		ORDER BY sort
 	</select>
 
 	<select id="findDictByMap" resultType="Dict">

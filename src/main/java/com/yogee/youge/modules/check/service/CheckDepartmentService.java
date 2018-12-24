@@ -65,7 +65,7 @@ public class CheckDepartmentService extends CrudService<CheckDepartmentDao, Chec
 	}
 
 
-	public List<String> querySonById(String id) {
+	public List<CheckDepartment> querySonById(String id) {
 		return dao.querySonById(id);
 	}
 

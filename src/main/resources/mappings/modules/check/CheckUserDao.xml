@@ -328,11 +328,11 @@
 		AND name LIKE concat('%',#{name},'%')
 	</select>
 
-	<select id="findByNumber">
+	<select id="findByNumber" resultType="CheckUser">
 		select * from check_user where number = #{number} and del_flag = 0
 	</select>
 
-	<select id="findByName">
+	<select id="findByName" resultType="CheckUser">
 		select * from check_user where name = #{name} and del_flag = 0
 	</select>
 

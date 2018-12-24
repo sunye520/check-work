@@ -5,6 +5,7 @@ import com.yogee.youge.common.utils.excel.ExportExcel;
 import com.yogee.youge.interfaces.util.DateUtil;
 import com.yogee.youge.interfaces.util.HttpResultUtil;
 import com.yogee.youge.interfaces.util.HttpServletRequestUtils;
+import com.yogee.youge.modules.check.entity.CheckDepartment;
 import com.yogee.youge.modules.check.entity.CheckUser;
 import com.yogee.youge.modules.check.service.CheckDepartmentService;
 import com.yogee.youge.modules.check.service.CheckUserService;
@@ -205,7 +206,7 @@ public class EmployeeInterface {
                 if(StringUtils.isEmpty(bumen)) return HttpResultUtil.errorJson("部门为空!");
                 if(StringUtils.isEmpty(erjiBumen)) return HttpResultUtil.errorJson("二级部门为空!");
                 if(StringUtils.isEmpty(gangwei)) return HttpResultUtil.errorJson("岗位为空!");
-                if(StringUtils.isEmpty(jishuLeibie)) return HttpResultUtil.errorJson("技术类别为空!");
+                //if(StringUtils.isEmpty(jishuLeibie)) return HttpResultUtil.errorJson("技术类别为空!");
                 if(StringUtils.isEmpty(cengjiLeibie)) return HttpResultUtil.errorJson("层级类别为空!");
                 if(StringUtils.isEmpty(yuangongType)) return HttpResultUtil.errorJson("员工类型为空!");
                 if(StringUtils.isEmpty(ruzhiDate)) return HttpResultUtil.errorJson("入职时间为空!");
@@ -228,7 +229,7 @@ public class EmployeeInterface {
                 //if(StringUtils.isEmpty(diyiXueli)) return HttpResultUtil.errorJson("第一学历为空!");
                 //if(StringUtils.isEmpty(diyiZhuanye)) return HttpResultUtil.errorJson("第一专业为空!");
                 //if(StringUtils.isEmpty(diyiYuanxiao)) return HttpResultUtil.errorJson("第一专业毕业院校为空!");
-                //if(StringUtils.isEmpty(shifouTongzhao)) return HttpResultUtil.errorJson("是否统招为空!");
+                if(StringUtils.isEmpty(shifouTongzhao)) return HttpResultUtil.errorJson("是否统招为空!");
                 if(StringUtils.isEmpty(zuigaoXueli)) return HttpResultUtil.errorJson("最高学历为空!");
                 //if(StringUtils.isEmpty(zhuanye)) return HttpResultUtil.errorJson("专业为空!");
                 //if(StringUtils.isEmpty(biyeYuanxiao)) return HttpResultUtil.errorJson("毕业院校为空!");
@@ -248,11 +249,11 @@ public class EmployeeInterface {
                 return HttpResultUtil.errorJson("类型错误!");
         }
         List<CheckUser> byNumber = checkUserService.findByNumber(number);
-        if(byNumber != null){
+        if(byNumber.size() != 0){
             return HttpResultUtil.errorJson("员工工号重复，请重新填写!");
         }
         List<CheckUser> byName = checkUserService.findByName(number);
-        if(byName != null){
+        if(byName.size() != 0){
             return HttpResultUtil.errorJson("员工姓名重复，请重新填写!");
         }
         checkUser.setNumber(number);
@@ -261,11 +262,17 @@ public class EmployeeInterface {
         checkUser.setBumen(bumen);
         checkUser.setErjiBumen(erjiBumen);
         checkUser.setGangwei(gangwei);
+        if(jishuLeibie.equals("无")) {
+            jishuLeibie = "";
+        }
         checkUser.setJishuLeibie(jishuLeibie);
         checkUser.setCengjiLeibie(cengjiLeibie);
         checkUser.setYuangongType(yuangongType);
         checkUser.setRuzhiDate(ruzhiDate);
         checkUser.setHetongType(hetongType);
+        if(hetongTime.equals("无")) {
+            hetongdaoqiTime = "无固定期限";
+        }
         checkUser.setHetongTime(hetongTime);
         checkUser.setHetongdaoqiTime(hetongdaoqiTime);
         checkUser.setHetongNumber(hetongNumber);
@@ -749,29 +756,105 @@ public class EmployeeInterface {
     public String queryDict(HttpServletRequest request){
         logger.info("app queryDict---------- Start--------");
         List<String> jishuleibie = dictService.findBytype("jishuleibie"); //技术类别
+            List list = new ArrayList();
+            for (int i = 0; i <jishuleibie.size() ; i++) {
+                Map map = new HashMap();
+                map.put("id", i);
+                map.put("a", jishuleibie.get(i));
+                list.add(map);
+            }
         List<String> cengjileibie = dictService.findBytype("cengjileibie"); //层级类别
+            List list1 = new ArrayList();
+            for (int i = 0; i <cengjileibie.size() ; i++) {
+                Map map = new HashMap();
+                map.put("id", i);
+                map.put("a", cengjileibie.get(i));
+                list1.add(map);
+            }
         List<String> yuangongleixing = dictService.findBytype("yuangong_leixing"); //员工类型
+            List list2 = new ArrayList();
+            for (int i = 0; i <yuangongleixing.size() ; i++) {
+                Map map = new HashMap();
+                map.put("id", i);
+                map.put("a", yuangongleixing.get(i));
+                list2.add(map);
+            }
         List<String> hetongleixing = dictService.findBytype("hetong_leixing"); //合同类型
+            List list3 = new ArrayList();
+            for (int i = 0; i <hetongleixing.size() ; i++) {
+                Map map = new HashMap();
+                map.put("id", i);
+                map.put("a", hetongleixing.get(i));
+                list3.add(map);
+            }
         List<String> hetongqixian = dictService.findBytype("hetong_qixian"); //合同期限
+            List list4 = new ArrayList();
+            for (int i = 0; i <hetongqixian.size() ; i++) {
+                Map map = new HashMap();
+                map.put("id", i);
+                map.put("a", hetongqixian.get(i));
+                list4.add(map);
+            }
         List<String> yes_no = dictService.findBytype("yes_no"); //是-否
+            List list5 = new ArrayList();
+            for (int i = 0; i <yes_no.size() ; i++) {
+                Map map = new HashMap();
+                map.put("id", i);
+                map.put("a", yes_no.get(i));
+                list5.add(map);
+            }
         List<String> zhengzhimianmao = dictService.findBytype("zhengzhimianmao"); //政治面貌
+            List list6 = new ArrayList();
+            for (int i = 0; i <zhengzhimianmao.size() ; i++) {
+                Map map = new HashMap();
+                map.put("id", i);
+                map.put("a", zhengzhimianmao.get(i));
+                list6.add(map);
+            }
         List<String> hujixingzhi = dictService.findBytype("huji_xingzhi"); //户籍性质
+            List list7 = new ArrayList();
+            for (int i = 0; i <hujixingzhi.size() ; i++) {
+                Map map = new HashMap();
+                map.put("id", i);
+                map.put("a", hujixingzhi.get(i));
+                list7.add(map);
+            }
         List<String> xueli = dictService.findBytype("xueli"); //学历
+            List list8 = new ArrayList();
+            for (int i = 0; i <xueli.size() ; i++) {
+                Map map = new HashMap();
+                map.put("id", i);
+                map.put("a", xueli.get(i));
+                list8.add(map);
+            }
         List<String> hunyin = dictService.findBytype("hunyin"); //婚姻
+            List list9 = new ArrayList();
+            for (int i = 0; i <hunyin.size() ; i++) {
+                Map map = new HashMap();
+                map.put("id", i);
+                map.put("a", hunyin.get(i));
+                list9.add(map);
+            }
         List<String> gangwei = dictService.findBytype("gangwei"); //岗位
-
+            List list10 = new ArrayList();
+            for (int i = 0; i <gangwei.size() ; i++) {
+                Map map = new HashMap();
+                map.put("id", i);
+                map.put("a", gangwei.get(i));
+                list10.add(map);
+            }
         Map mapData = new HashMap();
-        mapData.put("jishuleibie",jishuleibie);
-        mapData.put("cengjileibie",cengjileibie);
-        mapData.put("yuangongleixing",yuangongleixing);
-        mapData.put("hetongleixing",hetongleixing);
-        mapData.put("hetongqixian",hetongqixian);
-        mapData.put("yesno",yes_no);
-        mapData.put("zhengzhimianmao",zhengzhimianmao);
-        mapData.put("hujixingzhi",hujixingzhi);
-        mapData.put("xueli",xueli);
-        mapData.put("hunyinzhuangkuang",hunyin);
-        mapData.put("gangwei",gangwei);
+        mapData.put("jishuleibie",list);
+        mapData.put("cengjileibie",list1);
+        mapData.put("yuangongleixing",list2);
+        mapData.put("hetongleixing",list3);
+        mapData.put("hetongqixian",list4);
+        mapData.put("yesno",list5);
+        mapData.put("zhengzhimianmao",list6);
+        mapData.put("hujixingzhi",list7);
+        mapData.put("xueli",list8);
+        mapData.put("hunyinzhuangkuang",list9);
+        mapData.put("gangwei",list10);
         return HttpResultUtil.successJson(mapData);
     }
 
@@ -789,7 +872,7 @@ public class EmployeeInterface {
         if (StringUtils.isEmpty(id)){
             return HttpResultUtil.errorJson("无一级部门ID!");
         }
-        List<String> list = checkDepartmentService.querySonById(id);
+        List<CheckDepartment> list = checkDepartmentService.querySonById(id);
 
         Map mapData = new HashMap();
         mapData.put("list",list);
