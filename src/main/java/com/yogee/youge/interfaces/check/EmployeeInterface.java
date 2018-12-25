@@ -463,8 +463,13 @@ public class EmployeeInterface {
                 return HttpResultUtil.errorJson("请上传以xlsx结尾的文件！");
             }
 
+            List<CheckUser> checkUserList = new ArrayList<>();
+            String number1 = "";
+            String name1 = "";
 
-            //1、获取文件输入流
+
+
+                    //1、获取文件输入流
             //InputStream inputStream = new FileInputStream("D://123.xlsx");
             //2、获取Excel工作簿对象
             XSSFWorkbook workbook = new XSSFWorkbook(inputStream1);
@@ -486,6 +491,15 @@ public class EmployeeInterface {
                 String number = row.getCell(1).getStringCellValue();
 
                 String name = row.getCell(2).getStringCellValue();
+
+                List<CheckUser> byNumber = checkUserService.findByNumber(number);
+                if(byNumber.size() != 0) {
+                     number1 = number1 + "," + byNumber.get(0).getNumber();
+                }
+                List<CheckUser> byName = checkUserService.findByName(name);
+                if(byName.size() != 0) {
+                     name1 = name1 + "," + byName.get(0).getName();
+                }
                 String xingbie = row.getCell(3).getStringCellValue();
                 String bumen = row.getCell(4).getStringCellValue();
                 String erjiBumen = row.getCell(5).getStringCellValue();
@@ -628,8 +642,18 @@ public class EmployeeInterface {
                 checkUser.setJinjiTelephone(jinjiTelephone);
                 checkUser.setYuangongzuodanwei(yuangongzuodanwei);
                 checkUser.setShifouLizhi("0");
-                checkUserService.save(checkUser);
+                checkUserList.add(checkUser);
+
             }
+
+            if(name1.isEmpty() && number1.isEmpty()){
+                for (CheckUser checkUser : checkUserList) {
+                    checkUserService.save(checkUser);
+                }
+            }else{
+                return HttpResultUtil.errorJson("员工名重复:"+ name1 +"  员工号重复:"+number1+"请修改后重新上传！");
+            }
+
             //5、关闭流
             inputStream1.close();
         } catch (IOException e) {
