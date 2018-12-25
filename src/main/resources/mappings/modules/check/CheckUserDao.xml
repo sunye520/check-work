@@ -252,7 +252,57 @@
 	</update>
 
 	<select id="findListByNameLikeAndCounts" resultType="java.util.HashMap">
-		select *
+		select
+		number,
+		name,
+		xingbie,
+		bumen,
+		erji_bumen,
+		gangwei,
+		jishu_leibie,
+		cengji_leibie,
+		yuangong_type,
+		ruzhi_date,
+		hetong_type,
+		hetong_time,
+		hetongdaoqi_time,
+		hetong_number,
+		shiyongqi_time,
+		shiyongqi_date,
+		case hetong_leixing
+		when '0' then '未转正'
+		when '1' then '转正'
+		else '' end as hetong_leixing,
+		zhuanzheng_date,
+		shenfenzheng,
+		birthday,
+		canjiagongzuo_date,
+		jiguan,
+		minzu,
+		zhengzhi_mianmao,
+		hunyin_zhuangkuang,
+		huji_xingzhi,
+		diyi_xueli,
+		diyi_zhuanye,
+		diyi_yuanxiao,
+		shifou_tongzhao,
+		zuigao_xueli,
+		zhuanye,
+		biye_yuanxiao,
+		telephone,
+		xianzhuzhi,
+		jinji_lianxiren,
+		jinji_telephone,
+		yuangongzuodanwei,
+		case shifou_lizhi
+		when '0' then '在职'
+		when '1' then '离职'
+		else '' end as shifou_lizhi,
+		case lizhi_leixing
+		when '0' then '主动'
+		when '1' then '被动'
+		else '' end as lizhi_leixing,
+		lizhi_time
 		from check_user
 		where del_flag = 0
 		<if test="nameLike != ''.toString() ">

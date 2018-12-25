@@ -70,4 +70,10 @@ public class CheckDepartmentService extends CrudService<CheckDepartmentDao, Chec
 	}
 
 
+
+
+	public String findByname(String bumen) {
+		return dao.findByname(bumen);
+	}
+
 }

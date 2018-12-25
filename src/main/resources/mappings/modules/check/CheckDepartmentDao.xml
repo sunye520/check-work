@@ -183,4 +183,8 @@
 			NAME
 
 	</select>
+
+	<select id="findByname" resultType="String">
+		select id from check_department where del_flag = '0' and name = #{name} limit 1
+	</select>
 </mapper>

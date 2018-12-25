@@ -140,8 +140,36 @@ public class EmployeeInterface {
         if (StringUtils.isEmpty(userId)) return HttpResultUtil.errorJson("用户id为空!");
         CheckUser checkUser = checkUserService.get(userId);
         if (checkUser == null) return HttpResultUtil.errorJson("无此用户!");
+
+
+        String hetongLeixing = checkUser.getHetongLeixing();
+        if(hetongLeixing.equals("1")){
+            checkUser.setHetongLeixing("否");
+        }else{
+            checkUser.setHetongLeixing("是");
+        }
+
+        String shifouLizhi = checkUser.getShifouLizhi();
+        if(shifouLizhi.equals("0")){
+            checkUser.setShifouLizhi("在职");
+        }else{
+            checkUser.setShifouLizhi("离职");
+        }
+
+        String lizhiLeixing = checkUser.getLizhiLeixing();
+        if(lizhiLeixing != null){
+            if(lizhiLeixing.equals("0")){
+                checkUser.setShifouLizhi("主动");
+            }else if(lizhiLeixing.equals("1")){
+                checkUser.setShifouLizhi("被动");
+            }
+        }
+
+        String bumen = checkUser.getBumen();
+        String DepartmenId = checkDepartmentService.findByname(bumen);
         Map mapData = new HashMap();
         mapData.put("user",checkUser);
+        mapData.put("departmenId",DepartmenId);
         return HttpResultUtil.successJson(mapData);
     }
 
@@ -199,7 +227,7 @@ public class EmployeeInterface {
         switch (type){
             case "0":
                 checkUser = new CheckUser();
-                checkUser.setShifouLizhi("0");
+
                 if(StringUtils.isEmpty(number)) return HttpResultUtil.errorJson("工号为空!");
                 if(StringUtils.isEmpty(name)) return HttpResultUtil.errorJson("姓名为空!");
                 if(StringUtils.isEmpty(xingbie)) return HttpResultUtil.errorJson("性别为空!");
@@ -248,13 +276,17 @@ public class EmployeeInterface {
             default:
                 return HttpResultUtil.errorJson("类型错误!");
         }
-        List<CheckUser> byNumber = checkUserService.findByNumber(number);
-        if(byNumber.size() != 0){
-            return HttpResultUtil.errorJson("员工工号重复，请重新填写!");
-        }
-        List<CheckUser> byName = checkUserService.findByName(number);
-        if(byName.size() != 0){
-            return HttpResultUtil.errorJson("员工姓名重复，请重新填写!");
+
+        if(type.equals("0")){
+            List<CheckUser> byNumber = checkUserService.findByNumber(number);
+            if(byNumber.size() != 0){
+                return HttpResultUtil.errorJson("员工工号重复，请重新填写!");
+            }
+            List<CheckUser> byName = checkUserService.findByName(name);
+            if(byName.size() != 0){
+                return HttpResultUtil.errorJson("员工姓名重复，请重新填写!");
+            }
+            checkUser.setShifouLizhi("0"); //新增 离职状态为 0-在职
         }
         checkUser.setNumber(number);
         checkUser.setName(name);
@@ -306,9 +338,6 @@ public class EmployeeInterface {
         checkUser.setJinjiLianxiren(jinjiLianxiren);
         checkUser.setJinjiTelephone(jinjiTelephone);
         checkUser.setYuangongzuodanwei(yuangongzuodanwei);
-        if(type.equals("0")){
-            checkUser.setShifouLizhi("0"); //新增 离职状态为 0-在职
-        }
         checkUserService.save(checkUser);
         return HttpResultUtil.successJson(new HashMap());
     }

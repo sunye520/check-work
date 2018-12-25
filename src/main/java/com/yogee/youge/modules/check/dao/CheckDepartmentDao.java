@@ -27,4 +27,6 @@ public interface CheckDepartmentDao extends CrudDao<CheckDepartment> {
 
     List<CheckDepartment> querySonById(String id);
 
+    String findByname(String name);
+
 }
