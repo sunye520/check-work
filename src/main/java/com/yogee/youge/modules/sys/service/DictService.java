@@ -57,4 +57,10 @@ public class DictService extends CrudService<DictDao, Dict> {
 	public void insetDict(Dict dict) {
 		dao.insetDict(dict);
 	}
+
+	public List<String> findByjishuleibie(String type) {
+		return dao.findByjishuleibie(type);
+
+	}
+
 }

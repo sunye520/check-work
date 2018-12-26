@@ -3,14 +3,12 @@
  */
 package com.yogee.youge.modules.sys.dao;
 
-import java.util.List;
-import java.util.Map;
-
 import com.yogee.youge.common.persistence.CrudDao;
 import com.yogee.youge.common.persistence.annotation.MyBatisDao;
 import com.yogee.youge.modules.sys.entity.Dict;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 字典DAO接口
@@ -28,4 +26,6 @@ public interface DictDao extends CrudDao<Dict> {
     List<Dict> findDictByMap(Map map);
 
     void insetDict(Dict dict);
+
+    List<String> findByjishuleibie(String type);
 }

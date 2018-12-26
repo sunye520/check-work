@@ -153,5 +153,19 @@
 		</if>
 		ORDER BY type, sort, update_date DESC
 	</select>
+
+
+	<select id="findByjishuleibie" resultType="string">
+		SELECT
+		label
+		FROM
+		sys_dict
+		WHERE
+		del_flag = '0'
+		AND type = #{type}
+		AND value != 'wu'
+		ORDER BY sort
+	</select>
+
 	
 </mapper>
