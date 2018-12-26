@@ -378,7 +378,7 @@ public class AbnormalSituationInterface {
 
             //TODO  这里需要获取 技术类 进行循环拼接
             //通过type查询技术类别
-            List<String> jishuleibieList = dictService.findBytype("jishuleibie");
+            List<String> jishuleibieList = dictService.findByjishuleibie("jishuleibie");
             String str = jishuleibieList.get(0);
             jishuleibieList.remove(0);
             //根据技术岗位查询所有数据
