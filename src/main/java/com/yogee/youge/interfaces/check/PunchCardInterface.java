@@ -119,7 +119,7 @@ public class PunchCardInterface {
                     //是否可以导入标识
                     boolean isDaoru=false;
                     //查看用户表里是否有该员工
-                    List<CheckUser> checkUserList = checkUserService.findListByName(name);
+                    List<CheckUser> checkUserList = checkUserService.findListByName(name,punchMonth);
                     for(int j=1;j< dayOfMonth+1; j++){
                         String punchDate="";
                         if(j<10){
@@ -170,9 +170,10 @@ public class PunchCardInterface {
                                 mapMorning.put("xiaZaoName","");
                                 dayList.add(mapMorning);
                             }else if(cellLength==4){
-                                //打卡是否迟到
+                                //只打一次卡
                                 compareFour(cell,mapMorning,dayList);
                             }else{
+                                //打卡超过2次
                                 compareThanFour(cell,mapMorning,dayList);
                             }
                             checkPunchCardService.saveList(dayList);
@@ -184,6 +185,7 @@ public class PunchCardInterface {
                     //清空name
                     name="";
                 }else{
+                    //偶数行 取名字
                     name= row.getCell(10).getStringCellValue();
                     System.out.println(name);
                 }
@@ -211,7 +213,7 @@ public class PunchCardInterface {
             CacheUtils.put("businessDate", "shangban", shangban);
             wuxiu=checkBusinessDate.getWuxiuDate();
             CacheUtils.put("businessDate", "wuxiu", wuxiu);
-            xiaban=checkBusinessDate.getShangbanDate();
+            xiaban=checkBusinessDate.getXiabanDate();
             CacheUtils.put("businessDate", "xiaban", xiaban);
         }
         Date b=sdf.parse(shangban);
@@ -282,7 +284,7 @@ public class PunchCardInterface {
             CacheUtils.put("businessDate", "shangban", shangban);
             wuxiu=checkBusinessDate.getWuxiuDate();
             CacheUtils.put("businessDate", "wuxiu", wuxiu);
-            xiaban=checkBusinessDate.getShangbanDate();
+            xiaban=checkBusinessDate.getXiabanDate();
             CacheUtils.put("businessDate", "xiaban", xiaban);
         }
         Date b=sdf.parse(shangban);
@@ -537,7 +539,7 @@ public class PunchCardInterface {
                         String xiaban = (String) CacheUtils.get("businessDate", "xiaban");
                         if(StringUtils.isBlank(xiaban)){
                             CheckBusinessDate checkBusinessDate = checkBusinessDateService.get("1");
-                            xiaban=checkBusinessDate.getShangbanDate();
+                            xiaban=checkBusinessDate.getXiabanDate();
                             CacheUtils.put("businessDate", "xiaban", xiaban);
                         }
                         SimpleDateFormat sdf=new SimpleDateFormat("HH:mm");
@@ -580,7 +582,7 @@ public class PunchCardInterface {
             CacheUtils.put("businessDate", "shangban", shangban);
             wuxiu=checkBusinessDate.getWuxiuDate();
             CacheUtils.put("businessDate", "wuxiu", wuxiu);
-            xiaban=checkBusinessDate.getShangbanDate();
+            xiaban=checkBusinessDate.getXiabanDate();
             CacheUtils.put("businessDate", "xiaban", xiaban);
         }
         Map mapData = new HashMap();
@@ -612,9 +614,13 @@ public class PunchCardInterface {
         if (StringUtils.isEmpty(xiaban)){
             return HttpResultUtil.errorJson("下班时间为空!");
         }
-        shangban=shangban.substring(0,5);
-        wuxiu=wuxiu.substring(0,5);
-        xiaban=xiaban.substring(0,5);
+        try{
+            shangban=shangban.substring(0,5);
+            wuxiu=wuxiu.substring(0,5);
+            xiaban=xiaban.substring(0,5);
+        }catch (Exception e){
+            return HttpResultUtil.errorJson("时间格式有误!");
+        }
         CheckBusinessDate checkBusinessDate = checkBusinessDateService.get("1");
         checkBusinessDate.setShangbanDate(shangban);
         checkBusinessDate.setWuxiuDate(wuxiu);
@@ -642,7 +648,7 @@ public class PunchCardInterface {
             CacheUtils.put("businessDate", "shangban", shangban);
             wuxiu=checkBusinessDate.getWuxiuDate();
             CacheUtils.put("businessDate", "wuxiu", wuxiu);
-            xiaban=checkBusinessDate.getShangbanDate();
+            xiaban=checkBusinessDate.getXiabanDate();
             CacheUtils.put("businessDate", "xiaban", xiaban);
         }
         Map mapData = new HashMap();
@@ -686,8 +692,8 @@ public class PunchCardInterface {
 //            labelMap.put(dictOne.getValue(),dictOne.getLabel());
 //        }
         Map mapOne = new HashMap();
-        mapOne.put("label","number");
-        mapOne.put("value","姓名/工号");
+        mapOne.put("label","姓名/工号");
+        mapOne.put("value","number");
         LabelList.add(mapOne);
         List<Dict> chizaoList = DictUtils.getDictList("chidao_zaotui");
         for(Dict dictTwo:chizaoList){
@@ -709,13 +715,12 @@ public class PunchCardInterface {
         List parentList = new LinkedList();
         for(CheckPunchCard checkPunchCard:numberList){
             List sonList = new LinkedList();
+            List sonTwoList = new LinkedList();
             Map parentMap = new HashMap();
             Map mapZero = new HashMap();
             mapZero.put("name",checkPunchCard.getName());
-//            mapZero.put("value","name");
             mapZero.put("number",checkPunchCard.getNumber());
-//            mapZero.put("value","number");
-            sonList.add(mapZero);
+            sonTwoList.add(mapZero);
             //查询某个月员工迟到的时间
             int chi0Num=0;
             int chi10Num=0;
@@ -836,6 +841,7 @@ public class PunchCardInterface {
                 sonList.add(mapTwo);
             }
             parentMap.put("sonList",sonList);
+            parentMap.put("sonTwoList",sonTwoList);
             parentList.add(parentMap);
         }
         mapData.put("LabelList",LabelList);
@@ -853,13 +859,13 @@ public class PunchCardInterface {
     @ResponseBody
     public String exportCheckOnWork(HttpServletRequest request,HttpServletResponse response) {
         logger.info("exportCheckOnWork ----------Start--------");
-//        Map jsonData = HttpServletRequestUtils.readJsonData(request);
-//        String yearMonth = (String)jsonData.get("yearMonth");
-//        if (StringUtils.isEmpty(yearMonth)){
-//            return HttpResultUtil.errorJson("yearMonth为空!");
-//        }
+        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+        String yearMonth = (String)jsonData.get("yearMonth");
+        if (StringUtils.isEmpty(yearMonth)){
+            return HttpResultUtil.errorJson("yearMonth为空!");
+        }
         try {
-            String yearMonth = "2018-11";
+//            String yearMonth = "2018-11";
             Map<String, Object> map = checkOnWorkMap(yearMonth);
             File file = null;
             InputStream inputStream = null;
@@ -919,7 +925,7 @@ public class PunchCardInterface {
                 StringBuffer sb2 = new StringBuffer();
                 CheckPunchCard bean2 = checkPunchCardList.get(j-1);
                 if(bean2.getXiaZao().equals("1")){
-                    sb2.append("迟到；");
+                    sb2.append("早退；");
                 }
                 if(!bean2.getXiaAskLeave().equals("0")){
                     sb2.append(DictUtils.getDictLabel(bean2.getXiaAskLeave(),"qingjia_leixing","")+bean2.getXiaAskLeaveTime()+"/时");
@@ -944,13 +950,13 @@ public class PunchCardInterface {
     @ResponseBody
     public String exportCheckOnWorkCollect(HttpServletRequest request,HttpServletResponse response) {
         logger.info("exportCheckOnWorkCollect ----------Start--------");
-//        Map jsonData = HttpServletRequestUtils.readJsonData(request);
-//        String yearMonth = (String)jsonData.get("yearMonth");
-//        if (StringUtils.isEmpty(yearMonth)){
-//            return HttpResultUtil.errorJson("yearMonth为空!");
-//        }
+        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+        String yearMonth = (String)jsonData.get("yearMonth");
+        if (StringUtils.isEmpty(yearMonth)){
+            return HttpResultUtil.errorJson("yearMonth为空!");
+        }
         try {
-            String yearMonth = "2018-11";
+//            String yearMonth = "2018-11";
             Map<String, Object> map = checkOnWorkCollectMap(yearMonth);
             File file = null;
             InputStream inputStream = null;

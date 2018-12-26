@@ -306,7 +306,7 @@
 		from check_user
 		where del_flag = 0
 		<if test="nameLike != ''.toString() ">
-			and LIKE CONCAT(CONCAT('%',#{nameLike},'%'))
+			and name  LIKE CONCAT('%',#{nameLike},'%')
 		</if>
 		order by cast(number as UNSIGNED INTEGER)
 		<if test="count != '0'.toString() ">
@@ -370,12 +370,20 @@
 		AND number = #{number}
 		limit 1
 	</select>
-	<!--根据员工姓名查询-->
+	<!--根据员工姓名查询 未离职并且 已离职是否在当前日期范围内-->
 	<select id="findListByName" resultType="CheckUser">
 		select *
 		from check_user
 		where del_flag = 0
 		AND name LIKE concat('%',#{name},'%')
+		AND shifou_lizhi = '0'
+		UNION
+		select *
+		from check_user
+		where del_flag = 0
+		AND name LIKE concat('%',#{name}','%')
+		AND shifou_lizhi = '1'
+		AND lizhi_time >= #{punchMonth}
 	</select>
 
 	<select id="findByNumber" resultType="CheckUser">
