@@ -859,8 +859,12 @@ public class PunchCardInterface {
     @ResponseBody
     public String exportCheckOnWork(HttpServletRequest request,HttpServletResponse response) {
         logger.info("exportCheckOnWork ----------Start--------");
-        Map jsonData = HttpServletRequestUtils.readJsonData(request);
-        String yearMonth = (String)jsonData.get("yearMonth");
+//        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+//        String yearMonth = (String)jsonData.get("yearMonth");
+//        if (StringUtils.isEmpty(yearMonth)){
+//            return HttpResultUtil.errorJson("yearMonth为空!");
+//        }
+        String yearMonth =  request.getParameter("yearMonth");
         if (StringUtils.isEmpty(yearMonth)){
             return HttpResultUtil.errorJson("yearMonth为空!");
         }
@@ -950,8 +954,12 @@ public class PunchCardInterface {
     @ResponseBody
     public String exportCheckOnWorkCollect(HttpServletRequest request,HttpServletResponse response) {
         logger.info("exportCheckOnWorkCollect ----------Start--------");
-        Map jsonData = HttpServletRequestUtils.readJsonData(request);
-        String yearMonth = (String)jsonData.get("yearMonth");
+//        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+//        String yearMonth = (String)jsonData.get("yearMonth");
+//        if (StringUtils.isEmpty(yearMonth)){
+//            return HttpResultUtil.errorJson("yearMonth为空!");
+//        }
+        String yearMonth =  request.getParameter("yearMonth");
         if (StringUtils.isEmpty(yearMonth)){
             return HttpResultUtil.errorJson("yearMonth为空!");
         }
