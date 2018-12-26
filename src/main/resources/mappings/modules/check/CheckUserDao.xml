@@ -399,40 +399,40 @@
 		SELECT
 			COUNT(1)
 		FROM check_user a
-		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL} AND a.shifou_lizhi=0
 	</select>
 
 
 	<select id="findCheckUserByGender" resultType="java.util.HashMap">
-		SELECT  xingbie AS name , COUNT(id) AS count FROM check_user WHERE del_flag = 0 GROUP BY xingbie;
+		SELECT  xingbie AS name , COUNT(id) AS count FROM check_user WHERE del_flag = 0 AND a.shifou_lizhi=0 GROUP BY xingbie;
 	</select>
 
 	<select id="findCheckUserByEducation" resultType="java.util.HashMap">
-		SELECT  zuigao_xueli  AS name , COUNT(id) AS count FROM check_user WHERE del_flag = 0 GROUP BY zuigao_xueli;
+		SELECT  zuigao_xueli  AS name , COUNT(id) AS count FROM check_user WHERE del_flag = 0 AND a.shifou_lizhi=0 GROUP BY zuigao_xueli;
 	</select>
 
 	<select id="findCheckUserByTechnology" resultType="java.util.HashMap">
-		SELECT  jishu_leibie  AS name , COUNT(id) AS count FROM check_user WHERE del_flag = 0 GROUP BY jishu_leibie;
+		SELECT  jishu_leibie  AS name , COUNT(id) AS count FROM check_user WHERE del_flag = 0 AND a.shifou_lizhi=0 GROUP BY jishu_leibie;
 	</select>
 
 	<select id="findCheckUserByLevel" resultType="java.util.HashMap">
-		SELECT  cengji_leibie  AS name , COUNT(id) AS count FROM check_user WHERE del_flag = 0 GROUP BY cengji_leibie;
+		SELECT  cengji_leibie  AS name , COUNT(id) AS count FROM check_user WHERE del_flag = 0 AND a.shifou_lizhi=0 GROUP BY cengji_leibie;
 	</select>
 
 	<select id="findCheckUserByPolitics" resultType="java.util.HashMap">
-		SELECT  zhengzhi_mianmao  AS name , COUNT(id) AS count FROM check_user WHERE del_flag = 0 GROUP BY zhengzhi_mianmao;
+		SELECT  zhengzhi_mianmao  AS name , COUNT(id) AS count FROM check_user WHERE del_flag = 0 AND a.shifou_lizhi=0 GROUP BY zhengzhi_mianmao;
 	</select>
 
 	<select id="findCheckUserAge" resultType="java.util.HashMap">
-		SELECT  name , ROUND(DATEDIFF(CURDATE(), birthday)/365.2422) AS age FROM check_user WHERE del_flag = 0 ;
+		SELECT  name , ROUND(DATEDIFF(CURDATE(), birthday)/365.2422) AS age FROM check_user WHERE del_flag = 0 AND a.shifou_lizhi=0 ;
 	</select>
 
 	<select id="findCheckUserWorkingYears" resultType="java.util.HashMap">
-		SELECT  name , ROUND(DATEDIFF(CURDATE(), ruzhi_date)/365.2422) AS years FROM check_user WHERE del_flag = 0 ;
+		SELECT  name , ROUND(DATEDIFF(CURDATE(), ruzhi_date)/365.2422) AS years FROM check_user WHERE del_flag = 0 AND a.shifou_lizhi=0 ;
 	</select>
 
 	<select id="findCheckUserByDepartment" resultType="java.util.HashMap">
-		SELECT  bumen  AS name , COUNT(id) AS count FROM check_user WHERE del_flag = 0 GROUP BY bumen;
+		SELECT  bumen  AS name , COUNT(id) AS count FROM check_user WHERE del_flag = 0 AND a.shifou_lizhi=0 GROUP BY bumen;
 	</select>
 
 	<select id="findExcelDataByDepartment" resultType="java.util.HashMap">
@@ -467,11 +467,11 @@
 	</select>
 
 	<select id="findCheckUserAgeByDepartment" resultType="java.util.HashMap">
-        SELECT  name , ROUND(DATEDIFF(CURDATE(), birthday)/365.2422) AS age FROM check_user WHERE del_flag = 0 AND bumen = #{name};
+        SELECT  name , ROUND(DATEDIFF(CURDATE(), birthday)/365.2422) AS age FROM check_user WHERE del_flag = 0 AND a.shifou_lizhi=0 AND bumen = #{name};
 	</select>
 
 	<select id="findCheckUserWorkingYearsByDepartment" resultType="java.util.HashMap">
-		SELECT  name , ROUND(DATEDIFF(CURDATE(), ruzhi_date)/365.2422) AS years FROM check_user WHERE del_flag = 0 AND bumen = #{name};
+		SELECT  name , ROUND(DATEDIFF(CURDATE(), ruzhi_date)/365.2422) AS years FROM check_user WHERE del_flag = 0 AND a.shifou_lizhi=0 AND bumen = #{name};
 	</select>
 
 	<select id="findExcelDataByTechnology" resultType="java.util.HashMap">
@@ -514,6 +514,7 @@
 	</select>
 
 	<sql id="findExcelSql" >
+		AND a.shifou_lizhi=0
 		<if test="bumen != null and  bumen != ''">
 			AND bumen = #{bumen}
 		</if>
