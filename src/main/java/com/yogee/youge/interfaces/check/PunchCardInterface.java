@@ -400,9 +400,8 @@ public class PunchCardInterface {
                 sonList = new ArrayList();
                 parentId = checkPunchCard.getNumber();
             }
-            if(! checkPunchCard.getNumber().toString().equals(parentId) ){
+            if(! checkPunchCard.getNumber().equals(parentId) ){
                 parentMap.put("sonList",sonList);
-                parentMap.put("size",sonList.size()+"");
                 resultList.add(parentMap);
                 parentMap = new HashMap<>();
                 sonList = new ArrayList();
@@ -429,9 +428,15 @@ public class PunchCardInterface {
             sonList.add(sonMap);
         }
         parentMap.put("sonList", sonList);
-        parentMap.put("size",sonList.size()+"");
         resultList.add(parentMap);
+        //计算本月天数
+        int year = Integer.parseInt(yearMonth.substring(0,4));
+        int month =Integer.parseInt(yearMonth.substring(5,7));
+        Calendar c = Calendar.getInstance();
+        c.set(year, month, 0); //输入类型为int类型
+        int dayOfMonth= c.get(Calendar.DAY_OF_MONTH);
         mapData.put("resultList",resultList);
+        mapData.put("dayOfMonth",dayOfMonth+"");
         return HttpResultUtil.successJson(mapData);
     }
 
@@ -859,8 +864,12 @@ public class PunchCardInterface {
     @ResponseBody
     public String exportCheckOnWork(HttpServletRequest request,HttpServletResponse response) {
         logger.info("exportCheckOnWork ----------Start--------");
-        Map jsonData = HttpServletRequestUtils.readJsonData(request);
-        String yearMonth = (String)jsonData.get("yearMonth");
+//        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+//        String yearMonth = (String)jsonData.get("yearMonth");
+//        if (StringUtils.isEmpty(yearMonth)){
+//            return HttpResultUtil.errorJson("yearMonth为空!");
+//        }
+        String yearMonth =  request.getParameter("yearMonth");
         if (StringUtils.isEmpty(yearMonth)){
             return HttpResultUtil.errorJson("yearMonth为空!");
         }
@@ -950,8 +959,12 @@ public class PunchCardInterface {
     @ResponseBody
     public String exportCheckOnWorkCollect(HttpServletRequest request,HttpServletResponse response) {
         logger.info("exportCheckOnWorkCollect ----------Start--------");
-        Map jsonData = HttpServletRequestUtils.readJsonData(request);
-        String yearMonth = (String)jsonData.get("yearMonth");
+//        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+//        String yearMonth = (String)jsonData.get("yearMonth");
+//        if (StringUtils.isEmpty(yearMonth)){
+//            return HttpResultUtil.errorJson("yearMonth为空!");
+//        }
+        String  yearMonth =  request.getParameter("yearMonth");
         if (StringUtils.isEmpty(yearMonth)){
             return HttpResultUtil.errorJson("yearMonth为空!");
         }

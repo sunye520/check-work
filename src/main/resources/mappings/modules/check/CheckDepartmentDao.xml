@@ -105,37 +105,45 @@
 	<!--部门列表-->
 	<select id="findDepartment" resultType="CheckDepartment">
 		SELECT
+			*
+		FROM
+			(
+		SELECT
 			p.id parentId,
-			p.name parentName,
+			p. NAME parentName,
 			a.id sonId,
-			a.name sonName
+			a. NAME sonName
 		FROM
 			check_department a
 		LEFT JOIN check_department p ON a.parent_id = p.id
 		WHERE
 			a.department_type = 2
-		and a.del_flag = 0
+		AND a.del_flag = 0
 		UNION ALL
-		SELECT
-			a.id parentId,
-			a.name parentName,
-			'' AS sonId,
-			'' AS sonName
-		FROM
-			check_department a
-		WHERE
-			a.department_type = 1
-		and a.del_flag = 0
-		AND a.id NOT IN (
 			SELECT
-				t.parent_id
+				a.id parentId,
+				a. NAME parentName,
+				'' AS sonId,
+				'' AS sonName
 			FROM
-				check_department t
+				check_department a
 			WHERE
-				t.department_type = 2
-			and t.del_flag = 0
-			GROUP BY t.parent_id
-		)
+				a.department_type = 1
+			AND a.del_flag = 0
+			AND a.id NOT IN (
+				SELECT
+					t.parent_id
+				FROM
+					check_department t
+				WHERE
+					t.department_type = 2
+				AND t.del_flag = 0
+				GROUP BY
+					t.parent_id
+			)
+				) X
+			ORDER BY
+				X.parentId
 	</select>
 
 	<!--查看-->
