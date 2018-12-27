@@ -1752,8 +1752,8 @@
                 <Cell ss:StyleID="s97">
                     <Data ss:Type="String">${user.hetongTime?if_exists}</Data>
                 </Cell>
-                <Cell ss:StyleID="s105" ss:Formula="=EDATE(R[1]C[-6],36)-1">
-                    <Data ss:Type="Number"></Data>
+                <Cell ss:StyleID="s105" >
+                    <Data ss:Type="String">${user.hetongdaoqiTime?if_exists}</Data>
                 </Cell>
                 <Cell ss:StyleID="s97">
                     <Data ss:Type="String">${user.hetongNumber?if_exists}</Data>
@@ -1761,8 +1761,8 @@
                 <Cell ss:StyleID="s96">
                     <Data ss:Type="String">${user.shiyongqiTime?if_exists}</Data>
                 </Cell>
-                <Cell ss:StyleID="s105" ss:Formula="=EDATE(RC[-9],RC[-1])-1">
-                    <Data ss:Type="Number"></Data>
+                <Cell ss:StyleID="s105">
+                    <Data ss:Type="String">${user.shiyongqiDate?if_exists}</Data>
                 </Cell>
                 <Cell ss:StyleID="s97">
                     <Data ss:Type="String">${user.hetongLeixing?if_exists}</Data>
