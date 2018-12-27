@@ -167,15 +167,20 @@ public class AbnormalSituationInterface {
 //        Map jsonData = HttpServletRequestUtils.readJsonData(request);
 //        String year = (String)jsonData.get("year");
 //        String month = (String)jsonData.get("month");
-
-        String year = request.getParameter("year");
-        String month = request.getParameter("month");
-        if (StringUtils.isEmpty(year)){
-            return HttpResultUtil.errorJson("year为空!");
+//        String year = request.getParameter("year");
+//        String month = request.getParameter("month");
+        String yearMonth = request.getParameter("yearMonth");
+        if (StringUtils.isEmpty(yearMonth)){
+            return HttpResultUtil.errorJson("yearMonth为空!");
         }
-        if (StringUtils.isEmpty(month)){
-            return HttpResultUtil.errorJson("month为空!");
-        }
+        String year = yearMonth.substring(0,4);
+        String month =yearMonth.substring(5,7);
+//        if (StringUtils.isEmpty(year)){
+//            return HttpResultUtil.errorJson("year为空!");
+//        }
+//        if (StringUtils.isEmpty(month)){
+//            return HttpResultUtil.errorJson("month为空!");
+//        }
 
 //        String year = "2018";
 //        String month = "12";
