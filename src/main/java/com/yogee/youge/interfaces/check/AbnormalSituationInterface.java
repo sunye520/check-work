@@ -101,7 +101,7 @@ public class AbnormalSituationInterface {
             return HttpResultUtil.errorJson("无此用户!");
         }
 
-        if( !bumen.equals(fromBumen) && !erjiBumen.equals(fromErjiBumen) && !gangwei.equals(fromGangwei)){
+        if( !bumen.equals(fromBumen) || !erjiBumen.equals(fromErjiBumen) || !gangwei.equals(fromGangwei)){
             checkUser.setBumen(bumen);//部门
             checkUser.setErjiBumen(erjiBumen);//二级部门
             checkUser.setGangwei(gangwei);//岗位
