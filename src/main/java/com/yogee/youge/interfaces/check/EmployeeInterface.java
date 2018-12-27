@@ -476,6 +476,16 @@ public class EmployeeInterface {
             //3、得到Excel工作表对象
             XSSFSheet sheetAt = workbook.getSheetAt(0);
 
+//            Workbook workbook = null;
+//            try {
+//                workbook = WorkbookFactory.create(inputStream1);
+//            } catch (InvalidFormatException e) {
+//                e.printStackTrace();
+//            }
+//            //3、得到Excel工作表对象
+//            Sheet sheetAt = workbook.getSheetAt(2);  //示意访问sheet
+
+
             //4、循环读取表格数据
             for (Row row : sheetAt) {
                 //首行（即表头）不读取

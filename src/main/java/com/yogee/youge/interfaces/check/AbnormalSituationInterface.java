@@ -86,15 +86,15 @@ public class AbnormalSituationInterface {
         if (StringUtils.isEmpty(bumen)){
             return HttpResultUtil.errorJson("bumen为空!");
         }
-        if (StringUtils.isEmpty(erjiBumen)){
-            return HttpResultUtil.errorJson("erjiBumen为空!");
-        }
+//        if (StringUtils.isEmpty(erjiBumen)){
+//            return HttpResultUtil.errorJson("erjiBumen为空!");
+//        }
         if (StringUtils.isEmpty(gangwei)){
             return HttpResultUtil.errorJson("gangwei为空!");
         }
-        if (StringUtils.isEmpty(jishuLeibie)){
-            return HttpResultUtil.errorJson("jishuLeibie为空!");
-        }
+//        if (StringUtils.isEmpty(jishuLeibie)){
+//            return HttpResultUtil.errorJson("jishuLeibie为空!");
+//        }
 
         CheckUser checkUser = checkUserService.get(userId);
         if (checkUser == null){
