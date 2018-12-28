@@ -232,7 +232,7 @@ public class EmployeeInterface {
                 if(StringUtils.isEmpty(name)) return HttpResultUtil.errorJson("姓名为空!");
                 if(StringUtils.isEmpty(xingbie)) return HttpResultUtil.errorJson("性别为空!");
                 if(StringUtils.isEmpty(bumen)) return HttpResultUtil.errorJson("部门为空!");
-                if(StringUtils.isEmpty(erjiBumen)) return HttpResultUtil.errorJson("二级部门为空!");
+                //if(StringUtils.isEmpty(erjiBumen)) return HttpResultUtil.errorJson("二级部门为空!");
                 if(StringUtils.isEmpty(gangwei)) return HttpResultUtil.errorJson("岗位为空!");
                 //if(StringUtils.isEmpty(jishuLeibie)) return HttpResultUtil.errorJson("技术类别为空!");
                 if(StringUtils.isEmpty(cengjiLeibie)) return HttpResultUtil.errorJson("层级类别为空!");
@@ -244,7 +244,7 @@ public class EmployeeInterface {
                 if(StringUtils.isEmpty(hetongNumber)) return HttpResultUtil.errorJson("第几次签订合同为空!");
                 if(StringUtils.isEmpty(shiyongqiTime)) return HttpResultUtil.errorJson("试用期期限/月为空!");
                 if(StringUtils.isEmpty(shiyongqiDate)) return HttpResultUtil.errorJson("试用期到期日期为空!");
-                if(StringUtils.isEmpty(hetongLeixing)) return HttpResultUtil.errorJson("合同类型为空!");//是否转正
+                if(StringUtils.isEmpty(hetongLeixing)) return HttpResultUtil.errorJson("是否转正为空!");//是否转正
                 if(StringUtils.isEmpty(zhuanzhengDate)) return HttpResultUtil.errorJson("转正日期为空!");
                 if(StringUtils.isEmpty(shenfenzheng)) return HttpResultUtil.errorJson("身份证号为空!");
                 if(StringUtils.isEmpty(birthday)) return HttpResultUtil.errorJson("出生日期为空!");
