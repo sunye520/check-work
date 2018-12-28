@@ -154,6 +154,14 @@
 		WHERE a.del_flag = '0'
 		and a.name =#{name}
 	</select>
+	<select id="findDepartmentByNameAndId" resultType="java.lang.Integer">
+		SELECT
+		count(a.id)
+		FROM check_department a
+		WHERE a.del_flag = '0'
+		and a.name =#{name}
+		and a.id != #{id}
+	</select>
 	<!--查询一级部门-->
 	<select id="findParentDepartment" resultType="CheckDepartment">
 		SELECT
@@ -195,4 +203,11 @@
 	<select id="findByname" resultType="String">
 		select id from check_department where del_flag = '0' and name = #{name} limit 1
 	</select>
+
+	<update id="updateDepartment">
+		UPDATE check_department SET
+			update_date = NOW(),
+			name = #{name}
+		WHERE id = #{id}
+	</update>
 </mapper>

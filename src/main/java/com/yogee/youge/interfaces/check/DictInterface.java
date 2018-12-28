@@ -132,6 +132,56 @@ public class DictInterface {
         return HttpResultUtil.successJson(dataMap);
     }
 
+    /**
+     * 修改部门
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "updateDepartment", method = RequestMethod.POST)
+    @ResponseBody
+    public String updateDepartment(HttpServletRequest request,HttpServletResponse response) {
+        logger.info("updateDepartment ----------Start--------");
+        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+        String parentName = (String)jsonData.get("parentName");
+        String parentId = (String)jsonData.get("parentId");
+        String sonName = (String)jsonData.get("sonName");
+        String sonId = (String)jsonData.get("sonId");
+        int countParentName = checkDepartmentService.findDepartmentByNameAndId(parentName,parentId);
+        if(countParentName>0){
+            return HttpResultUtil.errorJson("您修改的一级部门名字重复!");
+        }
+        checkDepartmentService.updateDepartment(parentName,parentId);
+        if(StringUtils.isNotEmpty(sonId)){
+            int countSonName = checkDepartmentService.findDepartmentByNameAndId(sonName,sonId);
+            if(countSonName>0){
+                return HttpResultUtil.errorJson("您修改的二级部门名字重复!");
+            }
+            checkDepartmentService.updateDepartment(sonName,sonId);
+        }
+        Map dataMap = new HashMap();
+        return HttpResultUtil.successJson(dataMap);
+    }
+    /**
+     * 删除部门
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "deleteDepartment", method = RequestMethod.POST)
+    @ResponseBody
+    public String deleteDepartment(HttpServletRequest request,HttpServletResponse response) {
+        logger.info("deleteDepartment ----------Start--------");
+        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+        String parentId = (String)jsonData.get("parentId");
+        String sonId = (String)jsonData.get("sonId");
+        if(StringUtils.isNotEmpty(sonId)){
+            checkDepartmentService.delete(checkDepartmentService.get(sonId));//删除二级部门
+        }else{
+            checkDepartmentService.delete(checkDepartmentService.get(parentId));//删除一级部门
+        }
+        Map dataMap = new HashMap();
+        return HttpResultUtil.successJson(dataMap);
+    }
+
 
 
     /**

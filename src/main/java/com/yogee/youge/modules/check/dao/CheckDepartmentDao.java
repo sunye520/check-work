@@ -8,6 +8,7 @@ import com.yogee.youge.common.persistence.annotation.MyBatisDao;
 import com.yogee.youge.modules.check.entity.CheckDepartment;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 部门信息DAO接口
@@ -29,4 +30,7 @@ public interface CheckDepartmentDao extends CrudDao<CheckDepartment> {
 
     String findByname(String name);
 
+    int findDepartmentByNameAndId(Map map);
+
+    void updateDepartment(Map map);
 }

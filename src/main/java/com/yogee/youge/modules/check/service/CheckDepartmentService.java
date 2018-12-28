@@ -10,7 +10,9 @@ import com.yogee.youge.modules.check.entity.CheckDepartment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 部门信息Service
@@ -76,4 +78,17 @@ public class CheckDepartmentService extends CrudService<CheckDepartmentDao, Chec
 		return dao.findByname(bumen);
 	}
 
+	public int findDepartmentByNameAndId(String name, String id) {
+		Map map = new HashMap();
+		map.put("name",name);
+		map.put("id",id);
+		return dao.findDepartmentByNameAndId(map);
+	}
+	@Transactional(readOnly = false)
+	public void updateDepartment(String name, String id) {
+		Map map = new HashMap();
+		map.put("name",name);
+		map.put("id",id);
+		dao.updateDepartment(map);
+	}
 }
