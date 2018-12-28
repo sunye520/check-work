@@ -277,15 +277,16 @@ public class EmployeeInterface {
                 return HttpResultUtil.errorJson("类型错误!");
         }
 
+        List<CheckUser> byNumber = checkUserService.findByNumber(number);
+        if(byNumber.size() != 0){
+            return HttpResultUtil.errorJson("员工工号重复，请重新填写!");
+        }
+        List<CheckUser> byName = checkUserService.findByName(name);
+        if(byName.size() != 0){
+            return HttpResultUtil.errorJson("员工姓名重复，请重新填写!");
+        }
         if(type.equals("0")){
-            List<CheckUser> byNumber = checkUserService.findByNumber(number);
-            if(byNumber.size() != 0){
-                return HttpResultUtil.errorJson("员工工号重复，请重新填写!");
-            }
-            List<CheckUser> byName = checkUserService.findByName(name);
-            if(byName.size() != 0){
-                return HttpResultUtil.errorJson("员工姓名重复，请重新填写!");
-            }
+
             checkUser.setShifouLizhi("0"); //新增 离职状态为 0-在职
         }
         checkUser.setNumber(number);
