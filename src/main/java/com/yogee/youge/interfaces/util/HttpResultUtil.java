@@ -54,6 +54,25 @@ public class HttpResultUtil {
         logger.info("error result ------------" + result);
         return result;
     }
+    /**
+     * 错误的JSON
+     * @param msg 提示信息
+     * @return
+     */
+    public static String errorJson2(String msg) {
+        Map resultFlag = new HashMap();
+        resultFlag.put("result","2");
+        Map map = new HashMap();
+
+        map.put(Constant.RESPONSE_DATA_KEY, resultFlag);
+        map.put(Constant.RESPONSE_STATE_KEY, Constant.ERROR);
+        map.put(Constant.RESPONSE_MSG_KEY, msg);
+
+        String result = JsonMapper.nonDefaultMapper().toJson(map);
+
+        logger.info("error result ------------" + result);
+        return result;
+    }
 
     /**
      * 安卓端：逻辑错误但是需要进行页面跳转，需要用success标识

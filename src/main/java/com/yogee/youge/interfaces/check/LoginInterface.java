@@ -55,7 +55,7 @@ public class LoginInterface {
             return HttpResultUtil.errorJson("您的登录账号不存在!");
         }
         if (!SystemService.validatePassword(password, user.getPassword())) {
-            return HttpResultUtil.errorJson("您的登录密码不正确!");
+            return HttpResultUtil.errorJson2("您的登录密码不正确!");
         }
         Map dataMap = new HashMap();
         return HttpResultUtil.successJson(dataMap);
@@ -89,9 +89,10 @@ public class LoginInterface {
             return HttpResultUtil.errorJson("您的登录账号不存在!");
         }
         if (!SystemService.validatePassword(password, user.getPassword())) {
-            return HttpResultUtil.errorJson("您的原密码不正确!");
+            return HttpResultUtil.errorJson2("您的原密码不正确!");
         }
         user.setPassword(SystemService.entryptPassword(xinPassword));
+        systemService.saveUser(user);
         Map dataMap = new HashMap();
         return HttpResultUtil.successJson(dataMap);
     }
