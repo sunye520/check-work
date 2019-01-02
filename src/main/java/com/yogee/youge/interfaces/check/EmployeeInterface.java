@@ -272,22 +272,38 @@ public class EmployeeInterface {
                 if (StringUtils.isEmpty(userId)) return HttpResultUtil.errorJson("用户id为空!");
                 checkUser = checkUserService.get(userId);
                 if (checkUser == null) return HttpResultUtil.errorJson("无此用户!");
+
+
+                List<CheckUser> byNumber = checkUserService.findByNumber(number);
+                if(byNumber.size() != 0){
+                    if(!userId.equals(byNumber.get(0).getId())){
+                        return HttpResultUtil.errorJson("员工工号重复，请重新填写!");
+                    }
+                }
+                List<CheckUser> byName = checkUserService.findByName(name);
+                if(byName.size() != 0){
+                    if(!userId.equals(byNumber.get(0).getId())){
+                        return HttpResultUtil.errorJson("员工姓名重复，请重新填写!");
+                    }
+                }
                 break;
             default:
                 return HttpResultUtil.errorJson("类型错误!");
         }
 
-        List<CheckUser> byNumber = checkUserService.findByNumber(number);
-        if(byNumber.size() != 0){
-            return HttpResultUtil.errorJson("员工工号重复，请重新填写!");
-        }
-        List<CheckUser> byName = checkUserService.findByName(name);
-        if(byName.size() != 0){
-            return HttpResultUtil.errorJson("员工姓名重复，请重新填写!");
-        }
+
         if(type.equals("0")){
 
             checkUser.setShifouLizhi("0"); //新增 离职状态为 0-在职
+
+            List<CheckUser> byNumber = checkUserService.findByNumber(number);
+            if(byNumber.size() != 0){
+                return HttpResultUtil.errorJson("员工工号重复，请重新填写!");
+            }
+            List<CheckUser> byName = checkUserService.findByName(name);
+            if(byName.size() != 0){
+                return HttpResultUtil.errorJson("员工姓名重复，请重新填写!");
+            }
         }
         checkUser.setNumber(number);
         checkUser.setName(name);
