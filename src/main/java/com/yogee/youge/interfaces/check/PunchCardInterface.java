@@ -519,8 +519,19 @@ public class PunchCardInterface {
                         }
                         SimpleDateFormat sdf=new SimpleDateFormat("HH:mm");
                         Date b=sdf.parse(shangban);
+                        if(StringUtils.isEmpty(checkPunchCard.getShangCellTime())){
+                            return HttpResultUtil.errorJson("未打卡不能标记迟到!");
+                        }
                         Date time1=sdf.parse(checkPunchCard.getShangCellTime());
                         double k = (time1.getTime() - b.getTime()) / (1000 * 60);
+                        if(k<0){
+                            List<CheckUser> byNumber  = checkUserService.findByNumber(number);
+                            if(byNumber.size()>0){
+                                return HttpResultUtil.errorJson(byNumber.get(0).getName()+"未迟到，不能标记迟到!");
+                            }else{
+                                return HttpResultUtil.errorJson("该数据未迟到，不能标记迟到!");
+                            }
+                        }
                         checkPunchCard.setShangChiName("迟到");
                         checkPunchCard.setShangChi(shangChi);
                         checkPunchCard.setShangChiTime((int)k+"");
@@ -549,8 +560,19 @@ public class PunchCardInterface {
                         }
                         SimpleDateFormat sdf=new SimpleDateFormat("HH:mm");
                         Date d=sdf.parse(xiaban);
+                        if(StringUtils.isEmpty(checkPunchCard.getXiaCellTime())){
+                            return HttpResultUtil.errorJson("未打卡不能标记早退!");
+                        }
                         Date time2=sdf.parse(checkPunchCard.getXiaCellTime());
                         double k = (d.getTime() - time2.getTime() ) / (1000 * 60);
+                        if(k<0){
+                            List<CheckUser> byNumber  = checkUserService.findByNumber(number);
+                            if(byNumber.size()>0){
+                                return HttpResultUtil.errorJson(byNumber.get(0).getName()+"未早退，不能标记早退!");
+                            }else{
+                                return HttpResultUtil.errorJson("该数据未早退，不能标记早退!");
+                            }
+                        }
                         checkPunchCard.setXiaZao(xiaZao);
                         checkPunchCard.setXiaZaoTime((int)k+"");
                         checkPunchCard.setXiaZaoName("早退");
@@ -624,6 +646,23 @@ public class PunchCardInterface {
             wuxiu=wuxiu.substring(0,5);
             xiaban=xiaban.substring(0,5);
         }catch (Exception e){
+            return HttpResultUtil.errorJson("时间格式有误!");
+        }
+        SimpleDateFormat sdf=new SimpleDateFormat("HH:mm");
+        try {
+            Date shangbanDate = sdf.parse(shangban);
+            Date wuxiuDate = sdf.parse(wuxiu);
+            Date xiabanDate = sdf.parse(xiaban);
+            if(shangbanDate.equals(wuxiuDate) || shangbanDate.after(wuxiuDate) ){
+                return HttpResultUtil.errorJson("上班时间不能晚于午休时间!");
+            }
+            if(shangbanDate.equals(xiabanDate) || shangbanDate.after(xiabanDate) ){
+                return HttpResultUtil.errorJson("上班时间不能晚于下班时间!");
+            }
+            if(wuxiuDate.equals(xiabanDate) || wuxiuDate.after(xiabanDate) ){
+                return HttpResultUtil.errorJson("午休时间不能晚于下班时间!");
+            }
+        } catch (ParseException e) {
             return HttpResultUtil.errorJson("时间格式有误!");
         }
         CheckBusinessDate checkBusinessDate = checkBusinessDateService.get("1");
@@ -920,7 +959,7 @@ public class PunchCardInterface {
                 StringBuffer sb = new StringBuffer();
                 CheckPunchCard bean = checkPunchCardList.get(j-1);
                 if(bean.getShangChi().equals("1")){
-                    sb.append("迟到；");
+                    sb.append("迟到"+bean.getShangChiTime()+"/分；");
                 }
                 if(!bean.getShangAskLeave().equals("0")){
                     sb.append(DictUtils.getDictLabel(bean.getShangAskLeave(),"qingjia_leixing","")+bean.getShangAskLeaveTime()+"/时");
@@ -934,7 +973,7 @@ public class PunchCardInterface {
                 StringBuffer sb2 = new StringBuffer();
                 CheckPunchCard bean2 = checkPunchCardList.get(j-1);
                 if(bean2.getXiaZao().equals("1")){
-                    sb2.append("早退；");
+                    sb2.append("早退"+bean2.getXiaZaoTime()+"/分；");
                 }
                 if(!bean2.getXiaAskLeave().equals("0")){
                     sb2.append(DictUtils.getDictLabel(bean2.getXiaAskLeave(),"qingjia_leixing","")+bean2.getXiaAskLeaveTime()+"/时");

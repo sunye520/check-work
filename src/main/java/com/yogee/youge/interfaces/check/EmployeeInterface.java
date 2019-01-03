@@ -282,7 +282,7 @@ public class EmployeeInterface {
                 }
                 List<CheckUser> byName = checkUserService.findByName(name);
                 if(byName.size() != 0){
-                    if(!userId.equals(byNumber.get(0).getId())){
+                    if(!userId.equals(byName.get(0).getId())){
                         return HttpResultUtil.errorJson("员工姓名重复，请重新填写!");
                     }
                 }
