@@ -1,26 +1,21 @@
 package com.yogee.youge.interfaces.check;
 
-import com.yogee.youge.common.config.Global;
 import com.yogee.youge.common.utils.CacheUtils;
-import com.yogee.youge.common.utils.DateUtils;
 import com.yogee.youge.common.utils.IdGen;
 import com.yogee.youge.common.utils.StringUtils;
 import com.yogee.youge.common.utils.excel.ExportExcel;
 import com.yogee.youge.interfaces.util.HttpResultUtil;
 import com.yogee.youge.interfaces.util.HttpServletRequestUtils;
-import com.yogee.youge.modules.check.entity.*;
+import com.yogee.youge.modules.check.entity.CheckBusinessDate;
+import com.yogee.youge.modules.check.entity.CheckPunchCard;
+import com.yogee.youge.modules.check.entity.CheckUser;
 import com.yogee.youge.modules.check.service.CheckBusinessDateService;
-import com.yogee.youge.modules.check.service.CheckDepartmentService;
 import com.yogee.youge.modules.check.service.CheckPunchCardService;
 import com.yogee.youge.modules.check.service.CheckUserService;
 import com.yogee.youge.modules.sys.entity.Dict;
-import com.yogee.youge.modules.sys.service.DictService;
 import com.yogee.youge.modules.sys.utils.DictUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +32,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -109,6 +103,7 @@ public class PunchCardInterface {
                         Calendar c = Calendar.getInstance();
                         c.set(year, month, 0); //输入类型为int类型
                         dayOfMonth= c.get(Calendar.DAY_OF_MONTH);
+                        System.out.println(dayOfMonth);
                         punchMonth=year+"-"+month;
 //                        System.out.println(year + "年" + month + "月有" + dayOfMonth + "天");
                     }
@@ -184,10 +179,16 @@ public class PunchCardInterface {
                     System.out.println(dayList);
                     //清空name
                     name="";
-                }else{
-                    //偶数行 取名字
-                    name= row.getCell(10).getStringCellValue();
-                    System.out.println(name);
+                }else {
+
+                    Cell cell = row.getCell(10);
+                    if( cell == null ){
+                        break;
+                    }else{
+                        //偶数行 取名字
+                        name = row.getCell(10).getStringCellValue();
+                        System.out.println(name);
+                    }
                 }
             }
             //5、关闭流

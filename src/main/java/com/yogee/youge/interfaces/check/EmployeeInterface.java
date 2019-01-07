@@ -1,5 +1,6 @@
 package com.yogee.youge.interfaces.check;
 
+import com.yogee.youge.common.utils.DateUtils;
 import com.yogee.youge.common.utils.StringUtils;
 import com.yogee.youge.common.utils.excel.ExportExcel;
 import com.yogee.youge.interfaces.util.DateUtil;
@@ -11,6 +12,7 @@ import com.yogee.youge.modules.check.service.CheckDepartmentService;
 import com.yogee.youge.modules.check.service.CheckUserService;
 import com.yogee.youge.modules.sys.service.DictService;
 import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -34,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -93,24 +96,24 @@ public class EmployeeInterface {
                     if(!ruzhiDate.isEmpty()){
                         Date date1 = sdf.parse(ruzhiDate);
                         int year1 = DateUtil.getYear(parse,date1);
-                        int month1 = DateUtil.getMonth(parse,date1);
+                        String month1 = DateUtil.getMonth(parse,date1);
                         map.put("companyAgeMonth", String.valueOf(month1));//司龄
                         map.put("companyAgeYear", String.valueOf(year1));//司龄/年
                     }else{
-                        map.put("companyAgeMonth", "0");//司龄
-                        map.put("companyAgeYear", "0");//司龄/年
+                        map.put("companyAgeMonth", "");//司龄
+                        map.put("companyAgeYear", "");//司龄/年
                     }
 
                     if(!canjiagongzuoDate.isEmpty()){
                         Date date2 = sdf.parse(canjiagongzuoDate);
                         int year2 = DateUtil.getYear(parse,date2);
-                        int month2 = DateUtil.getMonth(parse,date2);
+                        String month2 = DateUtil.getMonth(parse,date2);
 
                         map.put("workAgeMonth", String.valueOf(month2));//工作年限
                         map.put("workAgeYear", String.valueOf(year2));//工作年限/年
                     }else{
-                        map.put("workAgeMonth","0");//工作年限
-                        map.put("workAgeYear", "0");//工作年限/年
+                        map.put("workAgeMonth","");//工作年限
+                        map.put("workAgeYear", "");//工作年限/年
                     }
                 } catch (ParseException e) {
                     logger.debug("日期格式错误");
@@ -419,7 +422,7 @@ public class EmployeeInterface {
                     if (!ruzhiDate.isEmpty()) {
                         Date date1 = sdf.parse(ruzhiDate);
                         int year1 = DateUtil.getYear(parse, date1);
-                        int month1 = DateUtil.getMonth(parse, date1);
+                        String month1 = DateUtil.getMonth(parse, date1);
                         checkUser.setCompanyAgeMonth(String.valueOf(month1));//司龄
                         checkUser.setCompanyAgeYear(String.valueOf(year1));//司龄/年
                     } else {
@@ -430,7 +433,7 @@ public class EmployeeInterface {
                     if (!canjiagongzuoDate.isEmpty()) {
                         Date date2 = sdf.parse(canjiagongzuoDate);
                         int year2 = DateUtil.getYear(parse, date2);
-                        int month2 = DateUtil.getMonth(parse, date2);
+                        String month2 = DateUtil.getMonth(parse, date2);
 
                         checkUser.setWorkAgeMonth(String.valueOf(month2));//工作年限
                         checkUser.setWorkAgeYear(String.valueOf(year2));//工作年限/年
@@ -509,8 +512,8 @@ public class EmployeeInterface {
                 if (row.getRowNum() < 3) {
                     continue;
                 }
-                String stringCellValue = row.getCell(1).getStringCellValue();
-                if( stringCellValue == null || stringCellValue.isEmpty()){
+                Cell cell = row.getCell(1);
+                if( cell == null ){
                     break;
                 }
                 //读取当前行中单元格数据，索引从0开始
@@ -534,6 +537,7 @@ public class EmployeeInterface {
                 String jishuLeibie = row.getCell(7).getStringCellValue();
                 String cengjiLeibie = row.getCell(8).getStringCellValue();
                 String yuangongType = row.getCell(9).getStringCellValue();
+                Cell cell2 = row.getCell(10);
                 String ruzhiDate = DateUtil.UpdateExcelDate(row.getCell(10));//入职时间
                 //String ruzhiDate = row.getCell(10).getStringCellValue();
                 String hetongType = row.getCell(14).getStringCellValue();
@@ -600,7 +604,22 @@ public class EmployeeInterface {
                 String birthday = year + '-' + month + "-" + date1;
                 //String birthday = row.getCell(23).getStringCellValue();
 
-                String canjiagongzuoDate = DateUtil.UpdateExcelDate(row.getCell(25));
+                //TODO 参加工作年限  更改
+                //String asd = DateUtil.UpdateExcelDate(row.getCell(25));
+
+                Cell cell3 = row.getCell(25);
+                String canjiagongzuoDate = "";
+                double numericCellValue = row.getCell(25).getNumericCellValue();
+                if(numericCellValue != 0.0){
+                    String cell1 = String.valueOf(numericCellValue);
+                    Calendar calendar = new GregorianCalendar(1900,0,-1);
+                    Date d = calendar.getTime();
+
+                    String substring1 = cell1.substring(0, cell1.length() - 2);
+                    Date dd = DateUtils.addDays(d, Integer.valueOf(substring1));
+                    canjiagongzuoDate = sdf.format(dd);
+                }
+
                 //String canjiagongzuoDate = row.getCell(25).getStringCellValue();
                 String jiguan = row.getCell(28).getStringCellValue();
                 String minzu = row.getCell(29).getStringCellValue();
@@ -725,25 +744,31 @@ public class EmployeeInterface {
                         Date parse = sdf.parse(format);
                         if(!ruzhiDate.isEmpty()){
                             Date date1 = sdf.parse(ruzhiDate);
-                            int year1 = DateUtil.getYear(parse,date1);
-                            int month1 = DateUtil.getMonth(parse,date1);
+                            int year1 = DateUtil.getMonthInt(parse, date1);
+                            DecimalFormat df=new DecimalFormat("0.00");
+                            String year1Format = df.format((float) year1 / 12);
+
+                            String month1 = DateUtil.getMonth(parse,date1);
                             checkUser.setCompanyAgeMonth(String.valueOf(month1));//司龄
-                            checkUser.setCompanyAgeYear(String.valueOf(year1));//司龄/年
+                            checkUser.setCompanyAgeYear(String.valueOf(year1Format));//司龄/年
                         }else{
-                            checkUser.setCompanyAgeMonth("0");//司龄
-                            checkUser.setCompanyAgeYear("0");//司龄/年
+                            checkUser.setCompanyAgeMonth("");//司龄
+                            checkUser.setCompanyAgeYear("");//司龄/年
                         }
 
                         if(!canjiagongzuoDate.isEmpty()){
                             Date date2 = sdf.parse(canjiagongzuoDate);
-                            int year2 = DateUtil.getYear(parse,date2);
-                            int month2 = DateUtil.getMonth(parse,date2);
+                            int year2 = DateUtil.getMonthInt(parse,date2);
+                            DecimalFormat df=new DecimalFormat("0.00");
+                            String yearFormat = df.format((float) year2 / 12);
+
+                            String month2 = DateUtil.getMonth(parse,date2);
 
                             checkUser.setWorkAgeMonth(String.valueOf(month2));//工作年限
-                            checkUser.setWorkAgeYear(String.valueOf(year2));//工作年限/年
+                            checkUser.setWorkAgeYear(String.valueOf(yearFormat));//工作年限/年
                         }else{
-                            checkUser.setWorkAgeMonth("0");//工作年限
-                            checkUser.setWorkAgeYear("0");//工作年限/年
+                            checkUser.setWorkAgeMonth("");//工作年限
+                            checkUser.setWorkAgeYear("");//工作年限/年
                         }
                     } catch (ParseException e) {
                         logger.debug("日期格式错误");

@@ -231,9 +231,9 @@ public class UserController extends BaseController {
 						Date date1 = sdf.parse(ruzhiDate);
 						Date date2 = sdf.parse(canjiagongzuoDate);
 						int year1 = DateUtil.getYear(date1,date);
-						int month1 = DateUtil.getMonth(date1,date);
+						String month1 = DateUtil.getMonth(date1,date);
 						int year2 = DateUtil.getYear(date2,date);
-						int month2 = DateUtil.getMonth(date2,date);
+						String month2 = DateUtil.getMonth(date2,date);
 						checkUser.setWorkAgeMonth(String.valueOf(month2));//工作年限
 						checkUser.setWorkAgeYear(String.valueOf(year2));//工作年限/年
 						checkUser.setCompanyAgeMonth(String.valueOf(month1));//司龄
